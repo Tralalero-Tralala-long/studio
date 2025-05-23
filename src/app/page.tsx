@@ -78,9 +78,9 @@ export default function HomePage() {
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
-                src="https://storage.googleapis.com/imagine_code_bucket_shared_images/generated_192e779a-ab72-4c1e-a65f-a5e43231f362.png"
-                alt="Collage of popular game characters and scenes like Call of Duty, Fortnite, GTA, FIFA, and platforms like Steam, Epic Games Store with 'Best Games' text"
-                data-ai-hint="game collage"
+                src="https://dex-bin.bnbstatic.com/static/dapp-uploads/rkBBOwV3vR6x1WykzTYpI"
+                alt="Abstract gaming or crypto graphic for promo pulse hero section"
+                data-ai-hint="gaming abstract"
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg shadow-md"
