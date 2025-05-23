@@ -3,7 +3,7 @@
 
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from 'lucide-react'; // Corrected import
+import { User } from 'lucide-react'; // Corrected import to User
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const { mode } = useAppContext();
   return (
     <div className="container mx-auto p-4 md:p-8">
-      <Card className={`${mode === 'gaming' ? 'bg-card border-primary' : 'bg-card'}`}>
+      <Card className={`${mode === 'gaming' ? 'bg-card border-primary' : 'bg-card'} shadow-lg`}>
         <CardHeader>
           <div className="flex items-center gap-3">
             <User className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
@@ -43,7 +43,8 @@ export default function ProfilePage() {
             <Input id="email" type="email" defaultValue="promouser@example.com" className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} />
           </div>
           
-          {/* More profile settings can be added here */}
+          {/* More profile settings can be added here, e.g., change password, notification preferences */}
+          
           <Button className={`${mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal'} w-full md:w-auto`}>
             Update Profile
           </Button>

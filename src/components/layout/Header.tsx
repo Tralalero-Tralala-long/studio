@@ -6,7 +6,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Scan, Ticket, UserCircle, User, Users, Search } from 'lucide-react'; // Added Search icon
+import { Flame, Home, Scan, Ticket, UserCircle, Users, Search } from 'lucide-react'; // Removed User, added UserCircle for consistency
 
 export default function Header() {
   const { mode } = useAppContext();
@@ -33,8 +33,8 @@ export default function Header() {
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
-          <Link href="/login" className={navLinkClass}> 
-            <User className="inline-block w-4 h-4 mr-1" /> Profile
+          <Link href="/profile" className={navLinkClass}> {/* Changed href to /profile */}
+            <UserCircle className="inline-block w-4 h-4 mr-1" /> Profile {/* Changed icon to UserCircle for consistency */}
           </Link>
           <Link href="/top-contributors" className={navLinkClass}>
             <Users className="inline-block w-4 h-4 mr-1" /> Top Contributors
@@ -54,12 +54,12 @@ export default function Header() {
               <Search className="h-5 w-5" />
             </Button>
           </Link>
-          <Link href="/login">
+          <Link href="/profile"> {/* Changed href to /profile */}
             <Button 
               variant="outline" 
               size="icon" 
               className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal border-input hover:border-primary'}`}
-              aria-label="Login or Profile"
+              aria-label="Profile" // Changed aria-label
             >
               <UserCircle className="h-5 w-5" />
             </Button>
@@ -70,11 +70,11 @@ export default function Header() {
   );
 }
 
-// Placeholder pages for navigation items
+// Placeholder pages for navigation items (can be removed if actual pages exist and are preferred)
 export function MyCouponsPage() {
   return <div className="container mx-auto p-4"><h1 className="text-2xl font-bold">My Coupons</h1><p>Your saved coupons will appear here.</p></div>;
 }
 
-export function ProfilePage() {
+export function ProfilePage() { // This export can be removed if src/app/profile/page.tsx is the single source of truth
   return <div className="container mx-auto p-4"><h1 className="text-2xl font-bold">Profile</h1><p>User profile settings will be here.</p></div>;
 }

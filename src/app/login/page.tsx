@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from 'next/link';
-import Image from 'next/image'; // Added Image import
+import Image from 'next/image';
+import { useRouter } from 'next/navigation'; // Added useRouter
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +37,7 @@ type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
   const { mode } = useAppContext();
+  const router = useRouter(); // Initialized router
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -50,7 +52,8 @@ export default function LoginPage() {
   function onSubmit(data: LoginFormValues) {
     // Placeholder for Firebase Auth
     console.log(data);
-    alert("Login form submitted (placeholder). Check console for data.");
+    alert("Login form submitted (placeholder). Check console for data. Redirecting to home...");
+    router.push('/'); // Redirect to homepage
   }
 
   const buttonClass = mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal';
@@ -63,7 +66,7 @@ export default function LoginPage() {
         data-ai-hint="doodle animation"
         layout="fill"
         objectFit="cover"
-        className="fixed inset-0 z-[-1] opacity-30 dark:opacity-20" // Adjusted opacity
+        className="fixed inset-0 z-[-1] opacity-30 dark:opacity-20"
       />
       <div className="flex items-center justify-center min-h-[calc(100vh-var(--header-height,8rem))] py-12">
         <Card className={`w-full max-w-md shadow-2xl ${mode === 'gaming' ? 'border-primary' : ''} bg-background/90 dark:bg-background/80 backdrop-blur-sm`}>
@@ -167,19 +170,17 @@ export default function LoginPage() {
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className={`px-2 bg-background text-muted-foreground`}> {/* Simplified bg class */}
+                  <span className={`px-2 bg-background text-muted-foreground`}>
                     Or continue with
                   </span>
                 </div>
               </div>
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <Button variant="outline" className={`w-full ${buttonClass}`}>
-                   {/* Placeholder for Google Icon SVG */}
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.85l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
                   Google
                 </Button>
                 <Button variant="outline" className={`w-full ${buttonClass}`}>
-                  {/* Apple Icon SVG */}
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple</title><path d="M18.86,15.28A4.36,4.36,0,0,1,15.12,20a4.34,4.34,0,0,1-2.73-1.31,4.64,4.64,0,0,0-.91-2.93c-.76-1.38-2.13-2.3-3.68-2.31a5.2,5.2,0,0,0-4.23,2.43,4.58,4.58,0,0,1-2.52-3.19,4.5,4.5,0,0,1,1.79-4.12A4.11,4.11,0,0,1,5.36,8a4.54,4.54,0,0,1,3.42.68,4.3,4.3,0,0,0,3.31.32,4.38,4.38,0,0,0,2.62-1.32,4.47,4.47,0,0,1,4.15,1.55C19.53,11.34,19.53,13.79,18.86,15.28ZM13.81,4.46A3.67,3.67,0,0,0,12,3.55a3.53,3.53,0,0,0-1.79.9,3.4,3.4,0,0,0-1.11,2.58,3.44,3.44,0,0,0,1.11,2.59,3.55,3.55,0,0,0,3.58,0A3.43,3.43,0,0,0,15,7,3.47,3.47,0,0,0,13.81,4.46Z"/></svg>
                   Apple
                 </Button>
