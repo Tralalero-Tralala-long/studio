@@ -10,7 +10,7 @@ import { Search, Box, Gamepad2, PackageIcon } from 'lucide-react';
 
 // Data for Special Gaming Features
 const gamingFeatures = [
-  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.qsLjpdf1FVFrchTM3v0v-gHaEK?w=322&h=181&c=7&r=0&o=5&dpr=1.3&pid=1.7", dataAiHint: "treasure chest" },
+  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest" },
   { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "controller sale" },
   { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "mystery gift" },
 ];
@@ -79,7 +79,7 @@ export default function HomePage() {
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
                 src="https://dex-bin.bnbstatic.com/static/dapp-uploads/rkBBOwV3vR6x1WykzTYpI"
-                alt="Abstract gaming or crypto graphic for promo pulse hero section"
+                alt="Abstract gaming graphic with controller and neon lights"
                 data-ai-hint="gaming abstract"
                 layout="fill"
                 objectFit="cover"
