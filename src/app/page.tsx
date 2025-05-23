@@ -12,7 +12,7 @@ import { Search, Box, Gamepad2, PackageIcon } from 'lucide-react';
 const gamingFeatures = [
   { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest" },
   { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "controller sale" },
-  { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "mystery gift" },
+  // { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "mystery gift" },
 ];
 
 export default function HomePage() {
@@ -60,7 +60,7 @@ export default function HomePage() {
     );
   } else { // mode === 'gaming'
     const heroTitle = "Level Up Your Savings!";
-    const heroDescription = "Discover exciting gaming offers, loot drops, and mystery boxes from major platforms like Steam and Epic Games Store, plus in-game codes for titles like Call of Duty, Fortnite, GTA, FIFA, Roblox, TDS, and more.";
+    const heroDescription = "Discover exciting gaming offers, loot drops from major platforms like Steam and Epic Games Store, plus in-game codes for titles like Call of Duty, Fortnite, GTA, FIFA, Roblox, TDS, and more.";
     return (
       <div className="w-full space-y-8">
         <Card className="shadow-xl bg-card text-card-foreground border-primary">
@@ -79,7 +79,7 @@ export default function HomePage() {
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
                 src="https://dex-bin.bnbstatic.com/static/dapp-uploads/rkBBOwV3vR6x1WykzTYpI"
-                alt="Abstract gaming graphic with controller and neon lights"
+                alt="Abstract gaming graphic with controller and neon lights for platforms like Steam, Epic Games, Call of Duty, Fortnite, GTA, FIFA"
                 data-ai-hint="gaming abstract"
                 layout="fill"
                 objectFit="cover"
@@ -95,7 +95,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold mb-6 text-center font-orbitron text-primary">
             Special Gaming Features
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Adjusted grid-cols for 2 items */}
             {gamingFeatures.map(feature => (
               <Card key={feature.title} className="text-center shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-card border-accent">
                 <CardHeader>
