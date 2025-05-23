@@ -33,7 +33,7 @@ export default function Header() {
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
-          <Link href="/login" className={navLinkClass}> {/* Changed /profile to /login */}
+          <Link href="/login" className={navLinkClass}> 
             <User className="inline-block w-4 h-4 mr-1" /> Profile
           </Link>
         </nav>
@@ -42,7 +42,11 @@ export default function Header() {
           <DealAlertsToggle />
           <ModeToggle />
           <Link href="/login">
-            <Button variant={mode === 'gaming' ? 'outline' : 'default'} size="icon" className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal'}`}>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal'}`}
+            >
               <UserCircle className="h-5 w-5" />
               <span className="sr-only">Login</span>
             </Button>
@@ -61,3 +65,4 @@ export function MyCouponsPage() {
 export function ProfilePage() {
   return <div className="container mx-auto p-4"><h1 className="text-2xl font-bold">Profile</h1><p>User profile settings will be here.</p></div>;
 }
+
