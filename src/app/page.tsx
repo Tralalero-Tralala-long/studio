@@ -12,7 +12,7 @@ export default function HomePage() {
   const heroTitle = mode === 'normal' ? "Find Amazing Deals!" : "Level Up Your Savings!";
   const heroDescription = mode === 'normal' 
     ? "Scan for the latest promo codes from your favorite e-commerce and delivery platforms."
-    : "Discover exclusive gaming offers, loot drops, and mystery boxes from Steam, Epic, and Riot.";
+    : "Discover exciting gaming offers, loot drops, and mystery boxes from Steam, Epic, and Riot.";
 
   return (
     <div className="w-full">
@@ -27,7 +27,7 @@ export default function HomePage() {
         </CardHeader>
         <CardContent className="flex flex-col md:flex-row items-center gap-4">
           <p className={`flex-1 text-base ${mode === 'gaming' ? 'font-rajdhani' : ''}`}>
-            PromoPulse helps you unlock savings effortlessly. Switch between Normal Mode for everyday shopping deals and Gaming Mode for exclusive offers on games and platforms. Enable Deal Alerts to never miss out!
+            PromoPulse helps you unlock savings effortlessly. Switch between Normal Mode for everyday shopping deals and Gaming Mode for exciting offers on games and platforms. Enable Deal Alerts to never miss out!
           </p>
           <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
             <Image 
@@ -46,3 +46,4 @@ export default function HomePage() {
     </div>
   );
 }
+
