@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
         hostname: 'media.wired.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.freepik.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

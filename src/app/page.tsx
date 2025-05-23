@@ -37,9 +37,9 @@ export default function HomePage() {
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
-                src="https://placehold.co/600x400.png"
-                alt="Shopping bags and discounts"
-                data-ai-hint="shopping discount"
+                src="https://img.freepik.com/premium-vector/using-promo-code-online-shopping-checkout_773186-1109.jpg"
+                alt="Illustration of online shopping with promo codes"
+                data-ai-hint="online shopping promo code"
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg shadow-md"
