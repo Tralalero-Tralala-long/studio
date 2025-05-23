@@ -6,7 +6,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Scan, Ticket, UserCircle, User } from 'lucide-react';
+import { Flame, Home, Scan, Ticket, UserCircle, User, Users } from 'lucide-react'; // Added Users icon
 
 export default function Header() {
   const { mode } = useAppContext();
@@ -36,6 +36,9 @@ export default function Header() {
           <Link href="/login" className={navLinkClass}> 
             <User className="inline-block w-4 h-4 mr-1" /> Profile
           </Link>
+          <Link href="/top-contributors" className={navLinkClass}>
+            <Users className="inline-block w-4 h-4 mr-1" /> Top Contributors
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-3">
@@ -45,7 +48,7 @@ export default function Header() {
             <Button 
               variant="outline" 
               size="icon" 
-              className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal'}`}
+              className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal border-input hover:border-primary'}`}
             >
               <UserCircle className="h-5 w-5" />
               <span className="sr-only">Login</span>
@@ -65,4 +68,3 @@ export function MyCouponsPage() {
 export function ProfilePage() {
   return <div className="container mx-auto p-4"><h1 className="text-2xl font-bold">Profile</h1><p>User profile settings will be here.</p></div>;
 }
-
