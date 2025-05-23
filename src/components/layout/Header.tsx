@@ -16,7 +16,7 @@ export default function Header() {
   return (
     <header className={`sticky top-0 z-50 w-full border-b ${mode === 'gaming' ? 'bg-background border-border' : 'bg-card border-border'} shadow-sm`}>
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 md:mr-8"> {/* Added md:mr-8 here */}
           <Flame className={`h-7 w-7 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
           <span className={`text-xl font-bold ${mode === 'gaming' ? 'text-primary-foreground font-orbitron' : 'text-foreground font-semibold'}`}>
             PromoPulse
