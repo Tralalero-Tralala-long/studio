@@ -6,12 +6,12 @@ import HomeTabs from '@/components/home/HomeTabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Box, Gamepad2 } from 'lucide-react'; // Removed PackageIcon as it's no longer used
+import { Search, Box, Gamepad2 } from 'lucide-react';
 
 // Data for Special Gaming Features
 const gamingFeatures = [
   { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest" },
-  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.ljiBpy3__hQEYM32534sgAHaD4?rs=1&pid=ImgDetMain", dataAiHint: "gaming deals controller" },
+  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png", dataAiHint: "gaming deals sale" },
 ];
 
 export default function HomePage() {

@@ -34,6 +34,12 @@ const nextConfig: NextConfig = {
         hostname: 'dex-bin.bnbstatic.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.wired.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
