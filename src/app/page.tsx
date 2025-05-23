@@ -10,9 +10,9 @@ import { Search, Box, Gamepad2, PackageIcon } from 'lucide-react';
 
 // Data for Special Gaming Features
 const gamingFeatures = [
-  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "gaming loot" },
-  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "controller sale" },
-  { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "mystery gift" },
+  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.qsLjpdf1FVFrchTM3v0v-gHaEK?w=322&h=181&c=7&r=0&o=5&dpr=1.3&pid=1.7", dataAiHint: "treasure chest" },
+  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "controller sale" },
+  { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "mystery gift" },
 ];
 
 export default function HomePage() {
@@ -79,7 +79,7 @@ export default function HomePage() {
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
                 src="https://storage.googleapis.com/imagine_code_bucket_shared_images/generated_192e779a-ab72-4c1e-a65f-a5e43231f362.png"
-                alt="Collage of popular game characters and scenes with 'Best Games' text"
+                alt="Collage of popular game characters and scenes like Call of Duty, Fortnite, GTA, FIFA, and platforms like Steam, Epic Games Store with 'Best Games' text"
                 data-ai-hint="game collage"
                 layout="fill"
                 objectFit="cover"
@@ -103,7 +103,7 @@ export default function HomePage() {
                   <CardTitle className="text-xl font-rajdhani text-accent">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Image src={`https://placehold.co/300x200.png`} alt={feature.title} data-ai-hint={feature.dataAiHint} width={300} height={200} className="rounded-md mb-4 aspect-video object-cover" />
+                  <Image src={feature.imageUrl} alt={feature.title} data-ai-hint={feature.dataAiHint} width={300} height={200} className="rounded-md mb-4 aspect-video object-cover" />
                   <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
                 <CardFooter>
