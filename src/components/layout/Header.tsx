@@ -6,12 +6,14 @@ import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Scan, Ticket, UserCircle, Users, Search } from 'lucide-react'; // Removed User, added UserCircle for consistency
+import { Flame, Home, Scan, Ticket, UserCircle, Users, Search } from 'lucide-react';
 
 export default function Header() {
-  const { mode } = useAppContext();
+  const { mode, isAuthenticated } = useAppContext();
 
   const navLinkClass = `text-sm font-medium transition-colors hover:text-primary ${mode === 'gaming' ? 'text-primary-foreground hover:text-accent' : 'text-foreground'}`;
+  const profileLink = isAuthenticated ? "/profile" : "/login";
+  const profileAriaLabel = isAuthenticated ? "Profile" : "Login or Sign Up";
 
   return (
     <header className={`sticky top-0 z-50 w-full border-b ${mode === 'gaming' ? 'bg-background border-border' : 'bg-card border-border'} shadow-sm`}>
@@ -33,8 +35,8 @@ export default function Header() {
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
-          <Link href="/profile" className={navLinkClass}> {/* Changed href to /profile */}
-            <UserCircle className="inline-block w-4 h-4 mr-1" /> Profile {/* Changed icon to UserCircle for consistency */}
+          <Link href={profileLink} className={navLinkClass}>
+            <UserCircle className="inline-block w-4 h-4 mr-1" /> {isAuthenticated ? "Profile" : "Login"}
           </Link>
           <Link href="/top-contributors" className={navLinkClass}>
             <Users className="inline-block w-4 h-4 mr-1" /> Top Contributors
@@ -54,12 +56,12 @@ export default function Header() {
               <Search className="h-5 w-5" />
             </Button>
           </Link>
-          <Link href="/profile"> {/* Changed href to /profile */}
+          <Link href={profileLink}>
             <Button 
               variant="outline" 
               size="icon" 
               className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal border-input hover:border-primary'}`}
-              aria-label="Profile" // Changed aria-label
+              aria-label={profileAriaLabel}
             >
               <UserCircle className="h-5 w-5" />
             </Button>

@@ -12,6 +12,8 @@ interface AppContextProps {
   dealAlerts: boolean;
   setDealAlerts: (enabled: boolean) => void;
   toggleMode: () => void;
+  isAuthenticated: boolean;
+  setIsAuthenticated: (isAuth: boolean) => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -19,6 +21,7 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<Mode>('normal');
   const [dealAlerts, setDealAlerts] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticatedState] = useState<boolean>(false);
 
   useEffect(() => {
     // Persist mode preference
@@ -31,6 +34,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (storedDealAlerts) {
       setDealAlerts(JSON.parse(storedDealAlerts));
     }
+    // Persist authentication state
+    const storedAuth = localStorage.getItem('promoPulseIsAuthenticated');
+    if (storedAuth) {
+      setIsAuthenticatedState(JSON.parse(storedAuth));
+    }
   }, []);
 
   const setMode = (newMode: Mode) => {
@@ -39,7 +47,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (newMode === 'gaming') {
       document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('font-geist-sans');
-      document.documentElement.classList.add('font-orbitron'); // Or Rajdhani as preferred default for gaming
+      document.documentElement.classList.add('font-orbitron');
     } else {
       document.documentElement.classList.remove('dark');
       document.documentElement.classList.remove('font-orbitron');
@@ -57,13 +65,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('promoPulseDealAlerts', JSON.stringify(enabled));
   };
 
+  const handleSetIsAuthenticated = (isAuth: boolean) => {
+    setIsAuthenticatedState(isAuth);
+    localStorage.setItem('promoPulseIsAuthenticated', JSON.stringify(isAuth));
+  };
+
   const contextValue = useMemo(() => ({
     mode,
     setMode,
     dealAlerts,
     setDealAlerts: handleSetDealAlerts,
     toggleMode,
-  }), [mode, dealAlerts]);
+    isAuthenticated,
+    setIsAuthenticated: handleSetIsAuthenticated,
+  }), [mode, dealAlerts, isAuthenticated]);
 
   return (
     <AppContext.Provider value={contextValue}>
