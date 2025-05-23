@@ -6,7 +6,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Scan, Ticket, UserCircle, User, Users } from 'lucide-react'; // Added Users icon
+import { Flame, Home, Scan, Ticket, UserCircle, User, Users, Search } from 'lucide-react'; // Added Search icon
 
 export default function Header() {
   const { mode } = useAppContext();
@@ -44,14 +44,24 @@ export default function Header() {
         <div className="flex items-center space-x-3">
           <DealAlertsToggle />
           <ModeToggle />
+          <Link href="/search">
+            <Button
+              variant="outline"
+              size="icon"
+              className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal border-input hover:border-primary'}`}
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+          </Link>
           <Link href="/login">
             <Button 
               variant="outline" 
               size="icon" 
               className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal border-input hover:border-primary'}`}
+              aria-label="Login or Profile"
             >
               <UserCircle className="h-5 w-5" />
-              <span className="sr-only">Login</span>
             </Button>
           </Link>
         </div>
