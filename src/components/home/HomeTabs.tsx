@@ -5,8 +5,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift, Gamepad2, Puzzle, Shield, Search, Box, PackageIcon, Code } from 'lucide-react'; // Added Code icon
-import Image from 'next/image';
+import { ShoppingCart, Truck, Gift, Gamepad2, Puzzle, Shield, Code } from 'lucide-react';
 
 const promoExamples = [
   { id: 1, title: "20% Off Your Next Order", code: "SAVE20", platform: "E-commerce", expiry: "2024-12-31", description: "Get 20% off on all items in our store." },
@@ -51,13 +50,13 @@ export default function HomeTabs() {
     { value: 'steam', label: 'Steam', icon: <Gamepad2 className="w-4 h-4 mr-2" /> },
     { value: 'epic', label: 'Epic', icon: <Puzzle className="w-4 h-4 mr-2" /> },
     { value: 'riot', label: 'Riot', icon: <Shield className="w-4 h-4 mr-2" /> },
-    { value: 'ingame', label: 'In-Game', icon: <Code className="w-4 h-4 mr-2" /> }, // New In-Game tab
+    { value: 'ingame', label: 'In-Game', icon: <Code className="w-4 h-4 mr-2" /> },
   ];
 
   const tabs = mode === 'normal' ? normalTabs : gamingTabs;
   const currentPromos = mode === 'normal' 
     ? promoExamples.filter(p => ['E-commerce', 'Delivery', 'Referral'].includes(p.platform))
-    : promoExamples.filter(p => ['Steam', 'Epic', 'Riot', 'In-Game'].includes(p.platform)); // Added 'In-Game' to filter
+    : promoExamples.filter(p => ['Steam', 'Epic', 'Riot', 'In-Game'].includes(p.platform));
 
   return (
     <Tabs defaultValue={tabs[0].value} className="w-full">
@@ -72,7 +71,7 @@ export default function HomeTabs() {
       {tabs.map(tab => (
         <TabsContent key={tab.value} value={tab.value}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentPromos.filter(p => p.platform.toLowerCase().includes(tab.label.toLowerCase().replace('-', ''))).map(promo => ( // Handle "In-Game" label to match "In-Game" platform
+            {currentPromos.filter(p => p.platform.toLowerCase().includes(tab.label.toLowerCase().replace('-', ''))).map(promo => (
               <PromoCard key={promo.id} {...promo} mode={mode} />
             ))}
             {currentPromos.filter(p => p.platform.toLowerCase().includes(tab.label.toLowerCase().replace('-', ''))).length === 0 && (
@@ -81,41 +80,6 @@ export default function HomeTabs() {
           </div>
         </TabsContent>
       ))}
-
-      {mode === 'normal' && (
-        <div className="mt-8 text-center">
-          <Button size="lg" className="button-glow-normal bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 font-bold">
-            <Search className="w-5 h-5 mr-2" /> Scan All Codes
-          </Button>
-        </div>
-      )}
-
-      {mode === 'gaming' && (
-        <div className="mt-10">
-          <h2 className={`text-2xl font-bold mb-6 text-center ${mode === 'gaming' ? 'font-orbitron text-primary' : 'text-primary'}`}>Special Gaming Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "gaming loot" },
-              { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "controller sale" },
-              { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "mystery gift" },
-            ].map(feature => (
-              <Card key={feature.title} className={`text-center shadow-lg hover:shadow-2xl transition-shadow duration-300 ${mode === 'gaming' ? 'bg-card border-accent' : ''}`}>
-                <CardHeader>
-                  {feature.icon}
-                  <CardTitle className={`text-xl ${mode === 'gaming' ? 'font-rajdhani text-accent' : ''}`}>{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Image src={`https://placehold.co/300x200.png`} alt={feature.title} data-ai-hint={feature.dataAiHint} width={300} height={200} className="rounded-md mb-4 aspect-video object-cover" />
-                  <p className={`${mode === 'gaming' ? 'text-muted-foreground' : ''}`}>{feature.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full button-glow-gaming">Explore</Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
     </Tabs>
   );
 }
