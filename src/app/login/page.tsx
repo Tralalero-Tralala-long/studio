@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone } from 'lucide-react';
+import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone, BellOff } from 'lucide-react'; // Added BellOff
 import { useAppContext } from "@/contexts/AppContext"; // To style based on mode
 
 const loginFormSchema = z.object({
@@ -170,8 +170,8 @@ export default function LoginPage() {
                 Google
               </Button>
               <Button variant="outline" className={`w-full ${buttonClass}`}>
-                {/* Placeholder for Apple Icon SVG */}
-                <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple</title><path d="M12 6.7c-.2 0-.4.1-.5.2-.2.2-.4.6-.4.9 0 .4.2.8.4 1 .2.2.5.3.8.3s.6-.1.8-.3c.2-.2.4-.6.4-1 0-.3-.1-.7-.4-.9-.1-.1-.3-.2-.6-.2m5.8-1.4c-.5-.7-1.2-1-2.1-1-.9 0-1.7.4-2.3.8-.6.4-1 .8-1.2 1.2-.3-.4-.7-."/></svg>
+                {/* Apple Icon SVG */}
+                <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple</title><path d="M18.86,15.28A4.36,4.36,0,0,1,15.12,20a4.34,4.34,0,0,1-2.73-1.31,4.64,4.64,0,0,0-.91-2.93c-.76-1.38-2.13-2.3-3.68-2.31a5.2,5.2,0,0,0-4.23,2.43,4.58,4.58,0,0,1-2.52-3.19,4.5,4.5,0,0,1,1.79-4.12A4.11,4.11,0,0,1,5.36,8a4.54,4.54,0,0,1,3.42.68,4.3,4.3,0,0,0,3.31.32,4.38,4.38,0,0,0,2.62-1.32,4.47,4.47,0,0,1,4.15,1.55C19.53,11.34,19.53,13.79,18.86,15.28ZM13.81,4.46A3.67,3.67,0,0,0,12,3.55a3.53,3.53,0,0,0-1.79.9,3.4,3.4,0,0,0-1.11,2.58,3.44,3.44,0,0,0,1.11,2.59,3.55,3.55,0,0,0,3.58,0A3.43,3.43,0,0,0,15,7,3.47,3.47,0,0,0,13.81,4.46Z"/></svg>
                 Apple
               </Button>
             </div>

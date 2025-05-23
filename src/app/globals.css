@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -29,8 +30,10 @@ body {
     --primary: hsl(var(--primary-hsl)); /* #007AFF - vibrant blue */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --neon-green-accent-hsl: 105 100% 54%; /* #39FF14 */
+    --secondary-hsl: var(--neon-green-accent-hsl); /* Use Neon Green for secondary */
+    --secondary: hsl(var(--secondary-hsl));
+    --secondary-foreground: 240 10% 3.9%; /* Dark foreground for contrast */
 
     --muted: 207 67% 95%; /* #EBF4FA */
     --muted-foreground: 240 3.8% 46.1%;
@@ -39,8 +42,7 @@ body {
     --accent: hsl(var(--accent-hsl)); /* #663399 - lively indigo */
     --accent-foreground: 270 40% 98%;
     
-    --neon-green-accent-hsl: 105 100% 54%;
-    --neon-green-accent: hsl(var(--neon-green-accent-hsl)); /* #39FF14 */
+    --neon-green-accent: hsl(var(--neon-green-accent-hsl)); /* Exposed for direct use if needed */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -72,7 +74,7 @@ body {
     --primary: hsl(var(--primary-hsl)); /* #FF073A - Neon Red */
     --primary-foreground: 347 40% 98%;
 
-    --secondary: 0 0% 14.9%;
+    --secondary: 0 0% 14.9%; /* Default dark secondary, not neon green */
     --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 14.9%;
