@@ -82,7 +82,7 @@ export default function HomeTabs() {
 
       {mode === 'normal' && (
         <div className="mt-8 text-center">
-          <Button size="lg" className="button-glow-normal bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6">
+          <Button size="lg" className="button-glow-normal bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 font-bold">
             <Search className="w-5 h-5 mr-2" /> Scan All Codes
           </Button>
         </div>
