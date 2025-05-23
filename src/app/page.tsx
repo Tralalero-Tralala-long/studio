@@ -78,9 +78,9 @@ export default function HomePage() {
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
-                src="https://placehold.co/600x400.png"
-                alt="Gaming gear, codes, and loot boxes for games like Call of Duty, Fortnite, Steam, Epic Games"
-                data-ai-hint="popular games"
+                src="https://storage.googleapis.com/imagine_code_bucket_shared_images/generated_192e779a-ab72-4c1e-a65f-a5e43231f362.png"
+                alt="Collage of popular game characters and scenes with 'Best Games' text"
+                data-ai-hint="game collage"
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg shadow-md"
