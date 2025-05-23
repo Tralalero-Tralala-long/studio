@@ -6,13 +6,12 @@ import HomeTabs from '@/components/home/HomeTabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Box, Gamepad2, PackageIcon } from 'lucide-react';
+import { Search, Box, Gamepad2 } from 'lucide-react'; // Removed PackageIcon as it's no longer used
 
 // Data for Special Gaming Features
 const gamingFeatures = [
   { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest" },
-  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "controller sale" },
-  // { title: 'Mystery Boxes', description: 'Unlock mystery boxes for surprising rewards.', icon: <PackageIcon className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://placehold.co/300x200.png", dataAiHint: "mystery gift" },
+  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.ljiBpy3__hQEYM32534sgAHaD4?rs=1&pid=ImgDetMain", dataAiHint: "gaming deals controller" },
 ];
 
 export default function HomePage() {
@@ -80,7 +79,7 @@ export default function HomePage() {
               <Image 
                 src="https://dex-bin.bnbstatic.com/static/dapp-uploads/rkBBOwV3vR6x1WykzTYpI"
                 alt="Abstract gaming graphic with controller and neon lights for platforms like Steam, Epic Games, Call of Duty, Fortnite, GTA, FIFA"
-                data-ai-hint="gaming abstract"
+                data-ai-hint="gaming abstract console"
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg shadow-md"
@@ -95,7 +94,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold mb-6 text-center font-orbitron text-primary">
             Special Gaming Features
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Adjusted grid-cols for 2 items */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {gamingFeatures.map(feature => (
               <Card key={feature.title} className="text-center shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-card border-accent">
                 <CardHeader>
