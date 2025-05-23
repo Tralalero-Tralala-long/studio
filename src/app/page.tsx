@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Search, Box, Gamepad2, PackageIcon } from 'lucide-react';
 
-// Data for Special Gaming Features, moved from HomeTabs
+// Data for Special Gaming Features
 const gamingFeatures = [
   { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "gaming loot" },
   { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, dataAiHint: "controller sale" },
@@ -60,7 +60,7 @@ export default function HomePage() {
     );
   } else { // mode === 'gaming'
     const heroTitle = "Level Up Your Savings!";
-    const heroDescription = "Discover exciting gaming offers, loot drops, mystery boxes from major platforms, and in-game codes for titles like Roblox, TDS, and more.";
+    const heroDescription = "Discover exciting gaming offers, loot drops, and mystery boxes from major platforms like Steam and Epic Games Store, plus in-game codes for titles like Call of Duty, Fortnite, GTA, FIFA, Roblox, TDS, and more.";
     return (
       <div className="w-full space-y-8">
         <Card className="shadow-xl bg-card text-card-foreground border-primary">
@@ -74,13 +74,13 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center gap-4">
             <p className="flex-1 text-base font-rajdhani">
-              PromoPulse helps you unlock savings effortlessly. Switch to Normal Mode for everyday shopping deals. Enable Deal Alerts to never miss out!
+              PromoPulse helps you unlock savings effortlessly. Switch to Normal Mode for everyday shopping deals. Enable Deal Alerts to never miss out! Find codes for Steam, Epic Games Store, Call of Duty, Fortnite, GTA, FIFA, Roblox, and many more.
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image 
                 src="https://placehold.co/600x400.png"
-                alt="Gaming gear, codes, and loot boxes"
-                data-ai-hint="gaming codes lootbox"
+                alt="Gaming gear, codes, and loot boxes for games like Call of Duty, Fortnite, Steam, Epic Games"
+                data-ai-hint="popular games"
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg shadow-md"
