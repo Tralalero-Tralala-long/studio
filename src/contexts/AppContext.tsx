@@ -14,6 +14,10 @@ interface AppContextProps {
   toggleMode: () => void;
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuth: boolean) => void;
+  username: string | null;
+  setUsername: (name: string | null) => void;
+  email: string | null;
+  setEmail: (email: string | null) => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -22,22 +26,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<Mode>('normal');
   const [dealAlerts, setDealAlerts] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticatedState] = useState<boolean>(false);
+  const [username, setUsernameState] = useState<string | null>(null);
+  const [email, setEmailState] = useState<string | null>(null);
 
   useEffect(() => {
-    // Persist mode preference
     const storedMode = localStorage.getItem('promoPulseMode') as Mode | null;
     if (storedMode) {
       setModeState(storedMode);
     }
-    // Persist deal alerts preference
     const storedDealAlerts = localStorage.getItem('promoPulseDealAlerts');
     if (storedDealAlerts) {
       setDealAlerts(JSON.parse(storedDealAlerts));
     }
-    // Persist authentication state
     const storedAuth = localStorage.getItem('promoPulseIsAuthenticated');
     if (storedAuth) {
       setIsAuthenticatedState(JSON.parse(storedAuth));
+    }
+    const storedUsername = localStorage.getItem('promoPulseUsername');
+    if (storedUsername) {
+      setUsernameState(storedUsername);
+    }
+    const storedEmail = localStorage.getItem('promoPulseEmail');
+    if (storedEmail) {
+      setEmailState(storedEmail);
     }
   }, []);
 
@@ -70,6 +81,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('promoPulseIsAuthenticated', JSON.stringify(isAuth));
   };
 
+  const handleSetUsername = (name: string | null) => {
+    setUsernameState(name);
+    if (name) {
+      localStorage.setItem('promoPulseUsername', name);
+    } else {
+      localStorage.removeItem('promoPulseUsername');
+    }
+  };
+
+  const handleSetEmail = (addr: string | null) => {
+    setEmailState(addr);
+    if (addr) {
+      localStorage.setItem('promoPulseEmail', addr);
+    } else {
+      localStorage.removeItem('promoPulseEmail');
+    }
+  };
+
   const contextValue = useMemo(() => ({
     mode,
     setMode,
@@ -78,7 +107,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     toggleMode,
     isAuthenticated,
     setIsAuthenticated: handleSetIsAuthenticated,
-  }), [mode, dealAlerts, isAuthenticated]);
+    username,
+    setUsername: handleSetUsername,
+    email,
+    setEmail: handleSetEmail,
+  }), [mode, dealAlerts, isAuthenticated, username, email]);
 
   return (
     <AppContext.Provider value={contextValue}>
