@@ -1,7 +1,7 @@
 
 "use client";
 
-import { ShoppingCart, Gamepad2 } from 'lucide-react'; // Updated icons
+import { ShoppingCart, Gamepad2 } from 'lucide-react';
 import { useAppContext } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -21,9 +21,9 @@ export default function ModeToggle() {
             aria-label={`Switch to ${mode === 'normal' ? 'Gaming' : 'Normal'} mode`}
           >
             {mode === 'normal' ? (
-              <ShoppingCart className="h-[1.2rem] w-[1.2rem]" /> // ShoppingCart icon
+              <Gamepad2 className="h-[1.2rem] w-[1.2rem]" /> 
             ) : (
-              <Gamepad2 className="h-[1.2rem] w-[1.2rem]" /> // Gamepad2 icon
+              <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
             )}
           </Button>
         </TooltipTrigger>
