@@ -18,6 +18,7 @@ interface AppContextProps {
   setUsername: (name: string | null) => void;
   email: string | null;
   setEmail: (email: string | null) => void;
+  signOut: () => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -99,6 +100,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const performSignOut = () => {
+    handleSetIsAuthenticated(false);
+    handleSetUsername(null);
+    handleSetEmail(null);
+  };
+
   const contextValue = useMemo(() => ({
     mode,
     setMode,
@@ -111,6 +118,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUsername: handleSetUsername,
     email,
     setEmail: handleSetEmail,
+    signOut: performSignOut,
   }), [mode, dealAlerts, isAuthenticated, username, email]);
 
   return (

@@ -3,27 +3,30 @@
 
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// Removed Button import as it's no longer used for "Update Profile"
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-  const { mode, username, email } = useAppContext();
+  const { mode, username, email, signOut } = useAppContext();
+  const router = useRouter();
   
-  // Use local state for input fields to allow editing, initialized from context
   const [currentUsername, setCurrentUsername] = useState(username || "PromoUser123");
   const [currentEmail, setCurrentEmail] = useState(email || "promouser@example.com");
 
   useEffect(() => {
-    // Update local state if context changes (e.g., after login)
     setCurrentUsername(username || "PromoUser123");
     setCurrentEmail(email || "promouser@example.com");
   }, [username, email]);
 
-  // Removed handleUpdateProfile function as the button is removed
+  const handleSignOutClick = () => {
+    signOut();
+    router.push('/login');
+  };
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -55,7 +58,7 @@ export default function ProfilePage() {
               value={currentUsername} 
               onChange={(e) => setCurrentUsername(e.target.value)}
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
-              readOnly // If profile updates are removed, consider making fields read-only
+              readOnly
             />
           </div>
           <div className="space-y-2">
@@ -66,13 +69,18 @@ export default function ProfilePage() {
               value={currentEmail} 
               onChange={(e) => setCurrentEmail(e.target.value)}
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
-              readOnly // If profile updates are removed, consider making fields read-only
+              readOnly
             />
           </div>
           
-          {/* More profile settings can be added here, e.g., change password, notification preferences */}
-          
-          {/* Update Profile Button Removed */}
+          <Button 
+            onClick={handleSignOutClick} 
+            variant="outline" 
+            className={`w-full mt-4 ${mode === 'gaming' ? 'button-glow-gaming border-destructive hover:border-red-400' : 'button-glow-normal hover:border-destructive hover:text-destructive dark:hover:text-destructive'}`}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
         </CardContent>
       </Card>
     </div>
