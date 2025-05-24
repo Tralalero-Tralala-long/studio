@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Box, Gamepad2, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react'; // Added useState
+// Removed useState for initialGamingTab
 
 // Data for Special Gaming Features
 const gamingFeatures = [
@@ -36,28 +36,22 @@ const gamingFeatures = [
     icon: <Gift className="w-12 h-12 mx-auto mb-3 text-accent" />,
     imageUrl: "https://placehold.co/600x400.png",
     dataAiHint: "gift box code",
-    isExternalLink: false, // Changed from true
-    actionType: 'open_game_codes_tab', // Added an action type
-    // href is no longer used for external link
+    isExternalLink: true, // Reverted to true
+    href: "https://example.com/gamecodes" // Reverted to external link
+    // actionType removed
   }
 ];
 
 export default function HomePage() {
   const { mode } = useAppContext();
-  const [initialGamingTab, setInitialGamingTab] = useState<string | undefined>(undefined);
+  // Removed initialGamingTab state
 
   const handleGamingFeatureClick = (feature: typeof gamingFeatures[0]) => {
-    if (feature.actionType === 'open_game_codes_tab') {
-      setInitialGamingTab('game_codes'); // Unique identifier for the tab
-      // Optionally, scroll to HomeTabs component here
-      const homeTabsElement = document.getElementById('home-tabs-section');
-      if (homeTabsElement) {
-        homeTabsElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else if (feature.isExternalLink && feature.href) {
+    if (feature.isExternalLink && feature.href) { // Simplified to only handle external links
       window.open(feature.href, '_blank');
     }
-    // Handle other internal actions if any
+    // Removed logic for actionType === 'open_game_codes_tab'
+    // Removed scrollIntoView logic
   };
 
 
@@ -128,7 +122,7 @@ export default function HomePage() {
         </Card>
 
         <div id="home-tabs-section">
-          <HomeTabs initialTab={initialGamingTab} key={initialGamingTab} /> {/* Pass initialTab and key */}
+          <HomeTabs /> {/* Removed initialTab and key props */}
         </div>
 
         <div className="mt-10">
@@ -156,13 +150,24 @@ export default function HomePage() {
                   <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="outline"
-                    className="w-full button-glow-gaming"
-                    onClick={() => handleGamingFeatureClick(feature)}
-                  >
-                    Explore
-                  </Button>
+                  {feature.isExternalLink ? (
+                    <a
+                      href={feature.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(buttonVariants({ variant: 'outline' }), "w-full button-glow-gaming")}
+                    >
+                      Explore
+                    </a>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="w-full button-glow-gaming"
+                      onClick={() => handleGamingFeatureClick(feature)}
+                    >
+                      Explore
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}
