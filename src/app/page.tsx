@@ -37,7 +37,7 @@ const gamingFeatures = [
     imageUrl: "https://gamblemaniacs.com/admin/assets/images/07/07681a_promo-code.jpg",
     dataAiHint: "promo codes gaming",
     isExternalLink: false, 
-    href: "/game-codes" 
+    href: "/browse-codes" // Updated link
   }
 ];
 

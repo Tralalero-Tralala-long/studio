@@ -4,7 +4,7 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Copy, PlusCircle, CalendarDays, CheckSquare } from "lucide-react";
 import Link from "next/link";
 import { cn, isCodeExpired } from "@/lib/utils"; 
 import { useToast } from "@/hooks/use-toast";
@@ -14,15 +14,16 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-export const initialFreeFireCodes: PromoExample[] = [
-  // Example: { id: "ff1", title: "Diamond Bundle", code: "FREEFIREMAX", expiry: "2024-11-30", platform: "Free Fire (Garena)", category: "game_code", description: "Get 500 Diamonds.", isUsed: false }
+export const initialEcommerceCodes: PromoExample[] = [
+  { id: "ec1", title: "10% Off Electronics", code: "TECHSAVER10", expiry: "2024-12-31", platform: "E-commerce", category: "electronics_discount", description: "Get 10% off on select electronics.", isUsed: false },
+  { id: "ec2", title: "Free Shipping on Apparel", code: "STYLESHIP", expiry: "N/A", platform: "E-commerce", category: "apparel_shipping", description: "Free shipping on all apparel orders over $50.", isUsed: false },
 ];
 
-export default function FreeFireCodesPage() {
+export default function EcommerceCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
   const [codes, setCodes] = useState<PromoExample[]>(
-    initialFreeFireCodes
+    initialEcommerceCodes
       .filter(c => !isCodeExpired(c.expiry))
       .map(c => ({...c, isUsed: c.isUsed || false }))
   );
@@ -49,13 +50,13 @@ export default function FreeFireCodesPage() {
       id: Date.now().toString(),
       title: formData.title,
       code: formData.code,
-      platform: "Free Fire (Garena)", 
-      category: "game_code",
+      platform: "E-commerce", 
+      category: "ecommerce_deal", // Example category
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
       isUsed: false, 
     };
-
+    
     if (isCodeExpired(newPromo.expiry)) {
         toast({
             title: "Expired Code",
@@ -70,7 +71,7 @@ export default function FreeFireCodesPage() {
     setIsAddCodeFormOpen(false);
     toast({
       title: "Code Added!",
-      description: `"${newPromo.title}" has been successfully added to Free Fire Codes.`,
+      description: `"${newPromo.title}" has been successfully added to E-commerce Codes.`,
     });
   };
 
@@ -89,9 +90,9 @@ export default function FreeFireCodesPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Gamepad2 className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
+                <ShoppingCart className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Free Fire (Garena) Game Codes
+                  E-commerce Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -100,7 +101,7 @@ export default function FreeFireCodesPage() {
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Code
                   </Button>
                 )}
-                <Link href="/browse-codes" passHref> {/* Updated back link */}
+                <Link href="/browse-codes" passHref>
                   <Button 
                     variant="outline" 
                     className={cn(
@@ -114,7 +115,7 @@ export default function FreeFireCodesPage() {
               </div>
             </div>
             <CardDescription className={`${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'} pt-2`}>
-              Active codes for Free Fire (Garena). Redeem them in-game for rewards!
+              Active codes for various e-commerce platforms.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -124,12 +125,12 @@ export default function FreeFireCodesPage() {
                   key={item.id} 
                   className={cn(
                     `p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`,
-                    mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted',
+                    mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted', // Normal mode uses bg-muted for cards
                     item.isUsed ? 'opacity-60' : ''
                   )}
                 >
                   <div className="flex-grow space-y-1">
-                    <h3 className={cn(
+                     <h3 className={cn(
                         `text-lg font-semibold`,
                         mode === 'gaming' ? 'text-accent-foreground font-rajdhani' : 'text-card-foreground',
                         item.isUsed ? 'line-through' : ''
@@ -140,7 +141,7 @@ export default function FreeFireCodesPage() {
                         item.isUsed ? 'line-through' : ''
                       )}>{item.code}</p>
                     <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>{item.description}</p>
-                     {item.expiry && item.expiry !== "Not specified" && (
+                    {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
                         <span>Expires: {item.expiry}</span>
@@ -176,7 +177,7 @@ export default function FreeFireCodesPage() {
               ))
             ) : (
               <div className="p-6 border border-dashed rounded-lg text-center text-muted-foreground">
-                No active Free Fire (Garena) codes found at the moment. Check back soon!
+                No active E-commerce codes found at the moment. Check back soon!
               </div>
             )}
           </CardContent>
@@ -187,7 +188,7 @@ export default function FreeFireCodesPage() {
           isOpen={isAddCodeFormOpen}
           setIsOpen={setIsAddCodeFormOpen}
           onSubmitCode={handleAddCodeSubmit}
-          formTitle="Add New Free Fire Code"
+          formTitle="Add New E-commerce Code"
         />
       )}
     </>

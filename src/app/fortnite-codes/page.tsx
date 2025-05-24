@@ -4,7 +4,7 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
+import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare } from "lucide-react";
 import Link from "next/link";
 import { cn, isCodeExpired } from "@/lib/utils"; 
 import { useToast } from "@/hooks/use-toast";
@@ -14,9 +14,7 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-// Export initial codes for chatbot access
 export const initialFortniteCodes: PromoExample[] = [
-  // Codes removed as per request, can be added by dev
   // Example: { id: "fn1", title: "V-Bucks Pack", code: "FORTNITE2024", expiry: "2024-12-31", platform: "Fortnite", category: "game_code", description: "Get 1000 V-Bucks.", isUsed: false }
 ];
 
@@ -29,7 +27,6 @@ export default function FortniteCodesPage() {
       .map(c => ({...c, isUsed: c.isUsed || false }))
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
-
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -103,7 +100,7 @@ export default function FortniteCodesPage() {
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Code
                   </Button>
                 )}
-                <Link href="/game-codes" passHref>
+                <Link href="/browse-codes" passHref> {/* Updated back link */}
                   <Button 
                     variant="outline" 
                     className={cn(
@@ -111,7 +108,7 @@ export default function FortniteCodesPage() {
                     )}
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to All Game Codes
+                    Back to All Categories
                   </Button>
                 </Link>
               </div>

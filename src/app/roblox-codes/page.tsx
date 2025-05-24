@@ -3,7 +3,7 @@
 
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, ArrowLeft, Play } from "lucide-react"; // Added Play icon
+import { Code, ArrowLeft, Play } from "lucide-react";
 import Link from 'next/link';
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ export default function RobloxCodesPage() {
                 Roblox Game Codes
               </CardTitle>
             </div>
-            <Link href="/game-codes" passHref>
+            <Link href="/browse-codes" passHref> {/* Updated back link */}
               <Button 
                 variant="outline" 
                 className={cn(
@@ -29,7 +29,7 @@ export default function RobloxCodesPage() {
                 )}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to All Game Codes
+                Back to All Categories
               </Button>
             </Link>
           </div>
@@ -53,7 +53,6 @@ export default function RobloxCodesPage() {
             </Link>
           </div>
 
-          {/* Placeholder for other Roblox game code categories if needed in the future */}
           <div className="mt-8 p-6 border border-dashed rounded-lg text-center text-muted-foreground">
             More Roblox game categories will be listed here.
           </div>
