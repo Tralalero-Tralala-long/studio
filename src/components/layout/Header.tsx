@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -6,7 +5,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Ticket, UserCircle, Users, Search } from 'lucide-react'; // Removed Scan icon
+import { Flame, Home, Ticket, UserCircle, Users, Search, MessageCircle } from 'lucide-react'; // Added MessageCircle
 
 export default function Header() {
   const { mode, isAuthenticated } = useAppContext();
@@ -36,9 +35,11 @@ export default function Header() {
           <Link href="/" className={navLinkClass}>
             <Home className="inline-block w-4 h-4 mr-1" /> Home
           </Link>
-          {/* Scan link removed */}
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
+          </Link>
+          <Link href="/chatbot" className={navLinkClass}>
+            <MessageCircle className="inline-block w-4 h-4 mr-1" /> Chatbot
           </Link>
           <Link href={profileLinkPath} className={navLinkClass}>
             <UserCircle className="inline-block w-4 h-4 mr-1" /> {profileLinkText}
@@ -59,6 +60,17 @@ export default function Header() {
               aria-label="Search"
             >
               <Search className="h-5 w-5" />
+            </Button>
+          </Link>
+          {/* Chatbot icon button for smaller screens, if main nav is hidden */}
+          <Link href="/chatbot" className="md:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              className={`${mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal border-input hover:border-primary'}`}
+              aria-label="Chatbot"
+            >
+              <MessageCircle className="h-5 w-5" />
             </Button>
           </Link>
           <Link href={profileLinkPath}>
