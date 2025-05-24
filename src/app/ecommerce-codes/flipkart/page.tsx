@@ -16,6 +16,10 @@ import { Label } from "@/components/ui/label";
 
 export const initialFlipkartCodes: PromoExample[] = [
   { id: "fk1", title: "10% Off Electronics", code: "FLIPTECH10", expiry: "2025-03-15", platform: "Flipkart", category: "electronics", description: "Get 10% off on select electronics.", isUsed: false },
+  { id: "fk2", title: "Up to ₹25,000 Off on International Flights", code: "FKINT", expiry: "2025-05-31", platform: "Flipkart", category: "flights", description: "Get up to ₹25,000 Off on International Flights.", isUsed: false },
+  { id: "fk3", title: "Up to 25% Off on Domestic Flights", code: "FLYFK", expiry: "2025-05-31", platform: "Flipkart", category: "flights", description: "Get up to 25% Off on Domestic Flights.", isUsed: false },
+  { id: "fk4", title: "Up to 20% Off on Malaysia Flights (DBS Bank Offer)", code: "FLYMH", expiry: "2025-05-31", platform: "Flipkart", category: "flights", description: "Get up to 20% Off on Malaysia Flights with DBS Bank.", isUsed: false },
+  { id: "fk5", title: "Up to 15% Off on Flight Bookings", code: "FLYBSD", expiry: "2025-05-31", platform: "Flipkart", category: "flights", description: "Get up to 15% Off on Flight Bookings.", isUsed: false },
 ];
 
 export default function FlipkartCodesPage() {
@@ -50,7 +54,7 @@ export default function FlipkartCodesPage() {
       title: formData.title,
       code: formData.code,
       platform: "Flipkart",
-      category: "general_ecommerce",
+      category: "general_ecommerce", // Default category, can be more specific if form allows
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
       isUsed: false,
