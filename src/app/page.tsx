@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Box, Gamepad2, Gift, ShoppingCart } from 'lucide-react'; // Added ShoppingCart
+import { Box, Gamepad2, Gift, ShoppingCart, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Data for Special Gaming Features
@@ -96,9 +96,12 @@ export default function HomePage() {
             </Link>
         </div>
 
+        {/* Removed HomeTabs section for normal mode */}
+        {/* 
         <div id="home-tabs-section">
           <HomeTabs />
-        </div>
+        </div> 
+        */}
       </div>
     );
   } else { // mode === 'gaming'
@@ -168,7 +171,7 @@ export default function HomePage() {
                       rel="noopener noreferrer"
                       className={cn(buttonVariants({ variant: 'outline' }), "w-full button-glow-gaming")}
                     >
-                      Explore
+                      Explore <ExternalLink className="ml-2 h-4 w-4" />
                     </a>
                   ) : feature.href && feature.href !== "#" ? (
                     <Link
