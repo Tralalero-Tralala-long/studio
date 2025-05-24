@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialSwiggyCodes: PromoExample[] = [
-  // Example: { id: "sw1", title: "Free Delivery", code: "SWIGGYIT", expiry: "2025-02-28", platform: "Swiggy", category: "food_delivery", description: "Free delivery on orders above Rs.149.", isUsed: false }
+  { id: "sw1", title: "₹150 Off on Orders ₹299+", code: "WELCOMEBACK150", expiry: "2025-06-30", platform: "Swiggy", category: "food_delivery", description: "Get ₹150 off on orders above ₹299.", isUsed: false },
+  { id: "sw2", title: "₹125 Off on Orders ₹299+", code: "FLAT125", expiry: "2025-06-30", platform: "Swiggy", category: "food_delivery", description: "Get ₹125 off on orders above ₹299.", isUsed: false },
+  { id: "sw3", title: "60% Off on Food", code: "DEAL60", expiry: "2025-06-30", platform: "Swiggy", category: "food_delivery", description: "Get 60% off on food orders.", isUsed: false },
+  { id: "sw4", title: "25% Off First Order (Genie)", code: "GETGENIE", expiry: "2025-06-30", platform: "Swiggy", category: "food_delivery", description: "Get 25% off your first Swiggy Genie order.", isUsed: false },
 ];
 
 export default function SwiggyCodesPage() {
@@ -143,7 +146,7 @@ export default function SwiggyCodesPage() {
                      {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
@@ -193,3 +196,4 @@ export default function SwiggyCodesPage() {
     </>
   );
 }
+
