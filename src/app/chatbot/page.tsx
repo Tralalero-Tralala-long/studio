@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type FormEvent, useRef, useEffect } from 'react';
@@ -11,16 +12,16 @@ import { chat, type ChatInput, type ChatOutput } from '@/ai/flows/chatbotFlow';
 import { useAppContext } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 
-interface Message {
+interface ChatMessage {
   id: string;
-  text: string;
-  sender: 'user' | 'bot';
+  role: 'user' | 'model';
+  parts: Array<{ text: string }>;
 }
 
 export default function ChatbotPage() {
   const { mode } = useAppContext();
   const [userInput, setUserInput] = useState('');
-  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -34,36 +35,77 @@ export default function ChatbotPage() {
     }
   }, [chatHistory]);
 
+  // Optional: Send an initial greeting from the bot
+  useEffect(() => {
+    // This can be a predefined message or a call to the flow with an initial empty prompt
+    // For simplicity, let's start with an empty history and let the prompt handle the first message.
+    /*
+    const fetchInitialBotMessage = async () => {
+      setIsLoading(true);
+      try {
+        const response = await chat({ message: "__INITIAL_GREETING__", history: [] }); // Or an empty message
+        setChatHistory([{
+          id: Date.now().toString() + '-bot-init',
+          role: 'model',
+          parts: [{ text: response.reply }]
+        }]);
+      } catch (error) {
+        console.error("Error getting initial bot greeting:", error);
+        setChatHistory([{
+          id: Date.now().toString() + '-error-init',
+          role: 'model',
+          parts: [{ text: 'Hi there! How can I help you find promo codes today?' }] // Fallback
+        }]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchInitialBotMessage();
+    */
+  }, []);
+
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!userInput.trim()) return;
 
-    const userMessage: Message = {
+    const userMessageToAdd: ChatMessage = {
       id: Date.now().toString() + '-user',
-      text: userInput,
-      sender: 'user',
+      role: 'user',
+      parts: [{ text: userInput }],
     };
-    setChatHistory((prev) => [...prev, userMessage]);
-    const currentInput = userInput;
+    
+    const currentInputForApi = userInput;
     setUserInput('');
     setIsLoading(true);
+    
+    // Add user message to history immediately for responsiveness
+    setChatHistory((prev) => [...prev, userMessageToAdd]);
 
     try {
-      const input: ChatInput = { message: currentInput };
-      const response: ChatOutput = await chat(input);
+      // Prepare history for the API call
+      // This uses the chatHistory state *before* the current userMessageToAdd was added by the setChatHistory call above.
+      // This is correct: we want the history up to the point *before* this new message for the API.
+      const historyForApi = chatHistory.map(msg => ({
+        role: msg.role,
+        parts: msg.parts,
+      }));
+      
+      const inputPayload: ChatInput = { message: currentInputForApi, history: historyForApi };
+      const response: ChatOutput = await chat(inputPayload);
 
-      const botMessage: Message = {
+      const botMessage: ChatMessage = {
         id: Date.now().toString() + '-bot',
-        text: response.reply,
-        sender: 'bot',
+        role: 'model',
+        parts: [{ text: response.reply }],
       };
       setChatHistory((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error getting chat response:", error);
-      const errorMessage: Message = {
+      const errorMessage: ChatMessage = {
         id: Date.now().toString() + '-error',
-        text: 'Sorry, I encountered an error. Please try again.',
-        sender: 'bot',
+        role: 'model',
+        parts: [{ text: 'Sorry, I encountered an error. Please try again.' }],
       };
       setChatHistory((prev) => [...prev, errorMessage]);
     } finally {
@@ -82,7 +124,7 @@ export default function ChatbotPage() {
             </CardTitle>
           </div>
           <CardDescription className={cn(`pt-2`, mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground')}>
-            Ask me anything about promo codes or our services!
+            Your smart assistant for finding the best promo codes!
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
@@ -93,20 +135,20 @@ export default function ChatbotPage() {
                   key={msg.id}
                   className={cn(
                     "flex items-start gap-3 p-3 rounded-lg shadow-sm max-w-[85%]",
-                    msg.sender === 'user' 
+                    msg.role === 'user' 
                       ? 'ml-auto bg-primary text-primary-foreground self-end' 
                       : 'mr-auto bg-muted text-muted-foreground self-start',
-                    mode === 'gaming' && msg.sender === 'user' ? 'bg-accent text-accent-foreground' : '',
-                    mode === 'gaming' && msg.sender === 'bot' ? 'bg-card-foreground/10 text-foreground' : ''
+                    mode === 'gaming' && msg.role === 'user' ? 'bg-accent text-accent-foreground' : '',
+                    mode === 'gaming' && msg.role === 'model' ? 'bg-card-foreground/10 text-foreground' : ''
                   )}
                 >
                   <Avatar className="h-8 w-8 border">
-                    <AvatarImage src={msg.sender === 'bot' ? "https://placehold.co/40x40.png" : undefined} alt={msg.sender} data-ai-hint={msg.sender === 'user' ? 'user avatar' : 'robot mascot'} />
-                    <AvatarFallback className={cn(msg.sender === 'user' ? 'bg-primary/20' : 'bg-muted-foreground/20')}>
-                      {msg.sender === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                    <AvatarImage src={msg.role === 'model' ? "https://placehold.co/40x40.png" : undefined} alt={msg.role} data-ai-hint={msg.role === 'user' ? 'user avatar' : 'robot mascot'} />
+                    <AvatarFallback className={cn(msg.role === 'user' ? 'bg-primary/20' : 'bg-muted-foreground/20')}>
+                      {msg.role === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 whitespace-pre-wrap py-1">{msg.text}</div>
+                  <div className="flex-1 whitespace-pre-wrap py-1">{msg.parts[0].text}</div>
                 </div>
               ))}
               {isLoading && (
@@ -115,7 +157,7 @@ export default function ChatbotPage() {
                     <AvatarImage src="https://placehold.co/40x40.png" alt="bot typing" data-ai-hint="robot mascot"/>
                     <AvatarFallback className={cn('bg-muted-foreground/20')}><Bot className="h-4 w-4" /></AvatarFallback>
                   </Avatar>
-                  <div className="animate-pulse py-1">Typing...</div>
+                  <div className="animate-pulse py-1">PromoBot is thinking...</div>
                 </div>
               )}
             </div>
@@ -126,7 +168,7 @@ export default function ChatbotPage() {
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Type your message..."
+                placeholder="Ask for promo codes, e.g., 'Nike shoes' or 'Steam game discount'"
                 className="flex-1 text-base"
                 disabled={isLoading}
                 aria-label="Chat message input"
@@ -142,3 +184,5 @@ export default function ChatbotPage() {
     </div>
   );
 }
+
+    
