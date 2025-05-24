@@ -6,14 +6,16 @@ import { getAuth, type Auth } from 'firebase/auth';
 // import { getFirestore, type Firestore } from 'firebase/firestore'; // Uncomment if you use Firestore
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // REPLACE THIS
-  authDomain: "YOUR_AUTH_DOMAIN", // REPLACE THIS
-  projectId: "YOUR_PROJECT_ID", // REPLACE THIS
-  storageBucket: "YOUR_STORAGE_BUCKET", // REPLACE THIS
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // REPLACE THIS
-  appId: "YOUR_APP_ID", // REPLACE THIS
-  // measurementId: "YOUR_MEASUREMENT_ID" // Optional: REPLACE THIS if you use Analytics
+  apiKey: "AIzaSyDDtgssOq6Jc9f4QyYSk26fs3HN2CPv2u0",
+  authDomain: "promopulse-tstsj.firebaseapp.com",
+  projectId: "promopulse-tstsj",
+  storageBucket: "promopulse-tstsj.firebasestorage.app",
+  messagingSenderId: "255108708296",
+  appId: "1:255108708296:web:fb99b31ff13b937b93f2fd"
 };
+ 
+ 
+  // measurementId: "YOUR_MEASUREMENT_ID" // Optional: REPLACE THIS if you use Analytics
 
 // Initialize Firebase
 let app: FirebaseApp;

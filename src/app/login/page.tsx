@@ -65,7 +65,7 @@ export default function LoginPage() {
   });
 
   const checkFirebaseConfig = () => {
-    if (!auth || !auth.app || !auth.app.options || auth.app.options.apiKey === "YOUR_API_KEY") {
+    if (!auth || !auth.app || !auth.app.options || auth.app.options.apiKey === "YOUR_API_KEY" || auth.app.options.apiKey === "") {
       toast({
         title: "Firebase Configuration Error",
         description: "Please ensure Firebase is configured with your project's credentials in src/lib/firebase/config.ts.",
@@ -131,11 +131,14 @@ export default function LoginPage() {
                 break;
             case 'auth/user-not-found':
             case 'auth/wrong-password':
-            case 'auth/invalid-credential': // More generic error for wrong email/password
+            case 'auth/invalid-credential': 
                  description = "Invalid email or password. Please try again.";
                  break;
             case 'auth/api-key-not-valid':
                 description = "Firebase API Key is not valid. Please check your Firebase project configuration in src/lib/firebase/config.ts.";
+                break;
+            case 'auth/configuration-not-found':
+                description = `The ${providerName} sign-in method is not enabled. Please enable it in your Firebase project's Authentication settings.`;
                 break;
             default:
                 description = error.message || description;
@@ -163,10 +166,6 @@ export default function LoginPage() {
           const newUserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
           // Update profile directly after creation
           await updateProfile(newUserCredential.user, { displayName: data.username });
-          // The onAuthStateChanged listener in AppContext should pick up the new user
-          // Forcing a re-fetch or passing the updated user might be needed if onAuthStateChanged is too slow
-          // However, handleFirebaseAuthSuccess will be called by onAuthStateChanged if successful
-          // For immediate feedback and redirection, we can call it here
            handleFirebaseAuthSuccess(newUserCredential.user, true, data.username);
         } catch (signUpError: any) {
           handleFirebaseAuthError(signUpError, "Email/Password (Sign-Up)");
@@ -225,7 +224,7 @@ export default function LoginPage() {
             <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>Welcome to PromoPulse</CardTitle>
             <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>
               Sign in or create an account to start saving!
-              (Dev Email for Dev Mode: virajdatla0204@gmail.com)
+              (Dev Username: therealdev0025 / Pwd: 123456789)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -354,5 +353,4 @@ export default function LoginPage() {
     </>
   );
 }
-
 
