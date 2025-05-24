@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Box, Gamepad2, Gift } from 'lucide-react';
+import { Box, Gamepad2, Gift, ShoppingCart } from 'lucide-react'; // Added ShoppingCart
 import { cn } from '@/lib/utils';
 
 // Data for Special Gaming Features
@@ -23,7 +23,7 @@ const gamingFeatures = [
   },
   {
     title: 'Gaming Offers',
-    description: 'Exclusive discounts on games and DLCs.',
+    description: 'Discounts on games and DLCs.',
     icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />,
     imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png",
     dataAiHint: "gaming deals sale",
@@ -37,7 +37,7 @@ const gamingFeatures = [
     imageUrl: "https://gamblemaniacs.com/admin/assets/images/07/07681a_promo-code.jpg",
     dataAiHint: "promo codes gaming",
     isExternalLink: false, 
-    href: "/game-codes" // Reverted link
+    href: "/game-codes"
   }
 ];
 
@@ -82,6 +82,20 @@ export default function HomePage() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="mt-6">
+           <Link
+              href="/ecommerce-codes"
+              className={cn(
+                buttonVariants({ variant: 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2 button-glow-normal"
+              )}
+            >
+              <ShoppingCart className="mr-2 h-6 w-6" /> 
+              <span>E-commerce Codes</span>
+            </Link>
+        </div>
+
         <div id="home-tabs-section">
           <HomeTabs />
         </div>

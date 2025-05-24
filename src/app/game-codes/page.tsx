@@ -4,13 +4,11 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift, ArrowLeft, Gamepad2 } from "lucide-react"; 
+import { Gift, ArrowLeft, Gamepad2, ShoppingCart } from "lucide-react"; 
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
 
-// Renamed component back to GameCodesPage if it was changed.
-// Assuming it was named BrowseCodesPage in the previous step based on typical actions.
 export default function GameCodesPage() { 
   const { mode } = useAppContext();
   return (
@@ -32,7 +30,7 @@ export default function GameCodesPage() {
             <div className="flex items-center gap-2">
               <Gift className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
               <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron text-primary-foreground' : 'text-primary'}`}>
-                Game Codes {/* Reverted title */}
+                Code Categories
               </CardTitle>
             </div>
             <Link href="/" passHref>
@@ -50,7 +48,7 @@ export default function GameCodesPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className={`text-lg ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>
-            Discover and manage your game codes here. Select a game category below.
+            Discover and manage your codes here. Select a category below.
           </p>
 
           <div className="my-6">
@@ -66,7 +64,18 @@ export default function GameCodesPage() {
           </div>
           
           <div className="mt-6 grid grid-cols-1 gap-4">
-            {/* E-commerce button removed */}
+            <Link
+              href="/ecommerce-codes"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
+              )}
+            >
+              <ShoppingCart className="mr-2 h-6 w-6" /> 
+              <span>E-commerce Codes</span>
+            </Link>
+
             <Link
               href="/roblox-codes"
               className={cn(
