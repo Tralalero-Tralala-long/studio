@@ -1,2 +1,6 @@
-// This file is intentionally left blank as it is being removed.
-// If this file still exists after the operation, please delete it manually.
+// This page was intentionally removed as part of a feature removal.
+// Returning null to prevent rendering errors if this route is accessed.
+
+export default function RemovedScanPage() {
+  return null;
+}
