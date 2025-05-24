@@ -3,7 +3,7 @@
 
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, ArrowLeft } from "lucide-react"; // Using Code icon, added ArrowLeft
+import { Code, ArrowLeft, Play } from "lucide-react"; // Added Play icon
 import Link from 'next/link';
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -36,12 +36,26 @@ export default function RobloxCodesPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className={`text-lg ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>
-            Manage and view your specific Roblox game codes here.
+            Select a game below to view its specific codes.
           </p>
           
-          {/* Placeholder for specific Roblox game code listings or sub-wallets */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link
+              href="/roblox-codes/blox-fruits"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <Play className="mr-2 h-5 w-5" /> 
+              <span>Blox Fruits Codes</span>
+            </Link>
+          </div>
+
+          {/* Placeholder for other Roblox game code categories if needed in the future */}
           <div className="mt-8 p-6 border border-dashed rounded-lg text-center text-muted-foreground">
-            Specific Roblox codes (e.g., for Blox Fruits, Anime Champions Simulator, etc.) will be displayed here.
+            More Roblox game categories will be listed here.
           </div>
         </CardContent>
       </Card>
