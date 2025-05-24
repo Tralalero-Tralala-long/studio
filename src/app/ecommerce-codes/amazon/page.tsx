@@ -15,9 +15,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialAmazonCodes: PromoExample[] = [
-  { id: "amz1", title: "Save $5 on Books", code: "BOOKDEAL5", expiry: "2024-11-30", platform: "Amazon", category: "books", description: "Get $5 off on book purchases over $25.", isUsed: false },
-  { id: "amz2", title: "10% Off Sitewide", code: "NOW", expiry: "N/A", platform: "Amazon", category: "sitewide_offer", description: "Get 10% off sitewide.", isUsed: false },
-  { id: "amz3", title: "Up to 70% Off Swarovski Jewellery", code: "N15", expiry: "N/A", platform: "Amazon", category: "jewellery", description: "Up to 70% off Swarovski Elements Jewellery including pendants and earrings.", isUsed: false },
+  { id: "amz1", title: "Save $5 on Books", code: "BOOKDEAL5", expiry: "2025-06-19", platform: "Amazon", category: "books", description: "Get $5 off on book purchases over $25.", isUsed: false },
+  { id: "amz2", title: "10% Off Sitewide", code: "NOW", expiry: "2025-05-28", platform: "Amazon", category: "sitewide_offer", description: "Get 10% off sitewide.", isUsed: false },
+  { id: "amz3", title: "Up to 70% Off Swarovski Jewellery", code: "N15", expiry: "2025-06-01", platform: "Amazon", category: "jewellery", description: "Up to 70% off Swarovski Elements Jewellery including pendants and earrings.", isUsed: false },
   { id: "amz4", title: "20% Off Grasim Brand Store", code: "B10", expiry: "N/A", platform: "Amazon", category: "fashion", description: "Get 20% off at the Grasim Brand Store, including shirts and trousers.", isUsed: false },
   { id: "amz5", title: "Additional 35% Off Shoes", code: "N15", expiry: "N/A", platform: "Amazon", category: "footwear", description: "Get an additional 35% off on shoes, including ASIAN Sneakers and Campus Shoes.", isUsed: false },
 ];
@@ -95,7 +95,14 @@ export default function AmazonCodesPage() {
               <div className="flex items-center gap-2">
                 <Store className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Amazon Promo Codes
+                  <a
+                    href="https://www.amazon.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    Amazon
+                  </a> Promo Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -203,6 +210,5 @@ export default function AmazonCodesPage() {
     </>
   );
 }
-
 
     
