@@ -11,6 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit'; // Genkit v1.x uses 'genkit' for z
 
+// Schema for the public 'chat' function and 'promoChatFlow' input
 const ChatInputSchema = z.object({
   message: z.string().describe('The user message to the chatbot.'),
   history: z
@@ -27,10 +28,27 @@ const ChatInputSchema = z.object({
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 
+// Schema for the output of the 'chat' function and 'promoChatFlow'
 const ChatOutputSchema = z.object({
   reply: z.string().describe("The chatbot's reply."),
 });
 export type ChatOutput = z.infer<typeof ChatOutputSchema>;
+
+// Internal schema for the chatPrompt, including boolean flags for Handlebars
+const InternalChatPromptInputSchema = z.object({
+  message: z.string().describe('The user message to the chatbot.'),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'model']), // Keep original role
+        parts: z.array(z.object({text: z.string()})),
+        isUser: z.boolean(), // True if role is 'user'
+        isModel: z.boolean(), // True if role is 'model'
+      })
+    )
+    .optional(),
+});
+
 
 // Wrapper function to be called by the UI
 export async function chat(input: ChatInput): Promise<ChatOutput> {
@@ -39,7 +57,7 @@ export async function chat(input: ChatInput): Promise<ChatOutput> {
 
 const chatPrompt = ai.definePrompt({
   name: 'promoChatbotPrompt',
-  input: {schema: ChatInputSchema},
+  input: {schema: InternalChatPromptInputSchema}, // Use internal schema with boolean flags
   output: {schema: ChatOutputSchema},
   prompt: `You are PromoBot, a friendly and highly efficient assistant for the PromoPulse website. Your primary goal is to help users find the most relevant promo codes for their online shopping and gaming needs.
 
@@ -64,8 +82,8 @@ Let's look at the conversation so far to understand the context.
 Chat History:
 {{#if history}}
   {{#each history}}
-    {{#if (eq role "user")}}User: {{parts.0.text}}{{/if}}
-    {{#if (eq role "model")}}Assistant: {{parts.0.text}}{{/if}}
+    {{#if isUser}}User: {{parts.0.text}}{{/if}}
+    {{#if isModel}}Assistant: {{parts.0.text}}{{/if}}
   {{/each}}
 {{else}}
 (No previous messages in this session)
@@ -78,11 +96,23 @@ Assistant:`,
 const promoChatFlow = ai.defineFlow(
   {
     name: 'promoChatFlow',
-    inputSchema: ChatInputSchema,
+    inputSchema: ChatInputSchema, // Public flow uses ChatInputSchema
     outputSchema: ChatOutputSchema,
   },
   async (input: ChatInput) => {
-    const {output} = await chatPrompt(input);
+    // Transform history for the prompt
+    const transformedHistory = input.history?.map(msg => ({
+      ...msg,
+      isUser: msg.role === 'user',
+      isModel: msg.role === 'model',
+    }));
+
+    const promptPayload = {
+      message: input.message,
+      history: transformedHistory,
+    };
+
+    const {output} = await chatPrompt(promptPayload); // Call prompt with transformed data
     if (!output) {
       return { reply: "I'm sorry, I couldn't generate a response at this moment. Please try again." };
     }
