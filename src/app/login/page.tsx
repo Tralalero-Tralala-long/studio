@@ -91,10 +91,6 @@ export default function LoginPage() {
 
   const buttonClass = mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal';
 
-  const appleLogoSrc = mode === 'gaming' 
-    ? "https://th.bing.com/th/id/OIP.Iun629RH0BnY4ZFySHZyzgHaJb?w=141&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" 
-    : "https://static.vecteezy.com/system/resources/previews/002/520/838/original/apple-logo-black-isolated-on-transparent-background-free-vector.jpg";
-
   return (
     <>
       <Image
@@ -218,14 +214,7 @@ export default function LoginPage() {
                   Google
                 </Button>
                  <Button variant="outline" className={`w-full ${buttonClass}`}>
-                  <Image 
-                    src={appleLogoSrc} 
-                    alt="Apple logo" 
-                    width={20} 
-                    height={20} 
-                    className={`mr-2 ${mode === 'gaming' ? '' : 'filter dark:invert'}`} // Basic inversion for dark mode if needed, adjust as per actual image
-                    data-ai-hint="apple logo"
-                  />
+                  {/* Apple logo removed, text only */}
                   Apple
                 </Button>
               </div>
