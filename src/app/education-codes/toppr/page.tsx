@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialTopprCodes: PromoExample[] = [
-  // Example: { id: "toppr1", title: "Free Trial", code: "TOPPRFREE", expiry: "2025-12-31", platform: "Toppr", category: "education_trial", description: "Get a 7-day free trial of Toppr premium.", isUsed: false },
+  { id: "toppr1", title: "10% Off All Packages", code: "TSHOP10", expiry: "2025-07-01", platform: "Toppr", category: "education_package", description: "Get 10% off on all Toppr packages.", isUsed: false },
+  { id: "toppr2", title: "12% Off Classes 5–12", code: "RSATHOME", expiry: "2025-07-01", platform: "Toppr", category: "education_class", description: "Get 12% off on classes for students in grades 5 to 12.", isUsed: false },
+  { id: "toppr3", title: "10% Off Advanced Packages", code: "TOAT10", expiry: "2025-07-01", platform: "Toppr", category: "education_package", description: "Get 10% off on Toppr advanced packages.", isUsed: false },
+  { id: "toppr4", title: "12% Off Toppr Packages", code: "TOPGRAB12", expiry: "2025-07-01", platform: "Toppr", category: "education_package", description: "Get 12% off on Toppr packages.", isUsed: false },
 ];
 
 export default function TopprCodesPage() {
@@ -193,3 +196,4 @@ export default function TopprCodesPage() {
     </>
   );
 }
+
