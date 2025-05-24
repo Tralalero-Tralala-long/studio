@@ -29,17 +29,7 @@ export default function EcommerceCodesPage() {
                 E-commerce Platforms
               </CardTitle>
             </div>
-            <Link href="/game-codes" passHref>
-              <Button
-                variant="outline"
-                className={cn(
-                  mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
-                )}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Code Categories
-              </Button>
-            </Link>
+            {/* Removed "Back to Code Categories" button */}
           </div>
           <CardDescription className={`${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'} pt-2`}>
             Select an e-commerce platform below to find promo codes.
