@@ -3,9 +3,10 @@
 
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button, buttonVariants } from "@/components/ui/button"; // Added buttonVariants
-import { Gift, ExternalLink } from "lucide-react"; // Added ExternalLink
-import { cn } from "@/lib/utils"; // Added cn
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Gift } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from 'next/link'; // Import Link
 
 export default function GameCodesPage() {
   const { mode } = useAppContext();
@@ -26,10 +27,8 @@ export default function GameCodesPage() {
           </p>
           
           <div className="mt-6">
-            <a
-              href="https://www.roblox.com/promocodes" // Placeholder URL for Roblox promo codes
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/roblox-codes" // Changed to internal link
               className={cn(
                 buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
@@ -41,8 +40,8 @@ export default function GameCodesPage() {
                 <path d="M12 12l6.23 3.37-1.22-7.06 5.22-4.73-7.2-.62L12 2.61V12z"/>
               </svg> 
               <span>Roblox Game Codes</span>
-              <ExternalLink className="h-5 w-5" />
-            </a>
+              {/* Removed ExternalLink icon */}
+            </Link>
           </div>
 
           {/* Placeholder for other game code lists, filtering, or search functionality */}
