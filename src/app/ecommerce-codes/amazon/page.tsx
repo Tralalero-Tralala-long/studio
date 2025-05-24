@@ -16,6 +16,10 @@ import { Label } from "@/components/ui/label";
 
 export const initialAmazonCodes: PromoExample[] = [
   { id: "amz1", title: "Save $5 on Books", code: "BOOKDEAL5", expiry: "2024-11-30", platform: "Amazon", category: "books", description: "Get $5 off on book purchases over $25.", isUsed: false },
+  { id: "amz2", title: "10% Off Sitewide", code: "NOW", expiry: "N/A", platform: "Amazon", category: "sitewide_offer", description: "Get 10% off sitewide.", isUsed: false },
+  { id: "amz3", title: "Up to 70% Off Swarovski Jewellery", code: "N15", expiry: "N/A", platform: "Amazon", category: "jewellery", description: "Up to 70% off Swarovski Elements Jewellery including pendants and earrings.", isUsed: false },
+  { id: "amz4", title: "20% Off Grasim Brand Store", code: "B10", expiry: "N/A", platform: "Amazon", category: "fashion", description: "Get 20% off at the Grasim Brand Store, including shirts and trousers.", isUsed: false },
+  { id: "amz5", title: "Additional 35% Off Shoes", code: "N15", expiry: "N/A", platform: "Amazon", category: "footwear", description: "Get an additional 35% off on shoes, including ASIAN Sneakers and Campus Shoes.", isUsed: false },
 ];
 
 export default function AmazonCodesPage() {
@@ -140,10 +144,16 @@ export default function AmazonCodesPage() {
                       item.isUsed ? 'line-through' : ''
                     )}>{item.code}</p>
                     <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>{item.description}</p>
-                    {item.expiry && item.expiry !== "Not specified" && (
+                    {item.expiry && item.expiry !== "Not specified" && item.expiry !== "N/A" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
                         <span>Expires: {item.expiry}</span>
+                      </div>
+                    )}
+                     {item.expiry === "N/A" && (
+                      <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
+                        <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+                        <span>Expires: Ongoing</span>
                       </div>
                     )}
                   </div>
@@ -193,3 +203,6 @@ export default function AmazonCodesPage() {
     </>
   );
 }
+
+
+    
