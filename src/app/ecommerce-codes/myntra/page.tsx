@@ -94,7 +94,14 @@ export default function MyntraCodesPage() {
               <div className="flex items-center gap-2">
                 <Store className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Myntra Promo Codes
+                  <a
+                    href="https://www.myntra.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    Myntra
+                  </a> Promo Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
