@@ -5,7 +5,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift } from 'lucide-react'; // Removed Code icon
+import { ShoppingCart, Truck, Gift } from 'lucide-react'; 
 
 interface PromoExample {
   id: number;
@@ -14,11 +14,11 @@ interface PromoExample {
   platform: string;
   expiry: string;
   description: string;
-  category?: string; // Kept for potential future use, but not driving sub-wallets anymore
+  category?: string; 
 }
 
 const promoExamples: PromoExample[] = [
-  { id: 1, title: "20% Off Your Next Order", code: "SAVE20", platform: "E-commerce", expiry: "2024-12-31", description: "Get 20% off on all items in our store." },
+  // { id: 1, title: "20% Off Your Next Order", code: "SAVE20", platform: "E-commerce", expiry: "2024-12-31", description: "Get 20% off on all items in our store." },
   { id: 2, title: "Free Delivery", code: "FREEDEL", platform: "Delivery", expiry: "2024-11-30", description: "Enjoy free delivery on orders over $25." },
   { id: 3, title: "$10 Referral Bonus", code: "REF10", platform: "Referral", expiry: "N/A", description: "Refer a friend and you both get $10." },
   // Roblox Codes - examples (These will no longer be displayed as the Roblox Codes tab is removed)
@@ -104,3 +104,4 @@ export default function HomeTabs() {
     </Tabs>
   );
 }
+
