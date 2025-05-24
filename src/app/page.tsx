@@ -5,10 +5,10 @@ import { useAppContext } from '@/contexts/AppContext';
 import HomeTabs from '@/components/home/HomeTabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Box, Gamepad2, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// Removed useState for initialGamingTab
 
 // Data for Special Gaming Features
 const gamingFeatures = [
@@ -36,22 +36,19 @@ const gamingFeatures = [
     icon: <Gift className="w-12 h-12 mx-auto mb-3 text-accent" />,
     imageUrl: "https://placehold.co/600x400.png",
     dataAiHint: "gift box code",
-    isExternalLink: true, // Reverted to true
-    href: "https://example.com/gamecodes" // Reverted to external link
-    // actionType removed
+    isExternalLink: false, 
+    href: "/game-codes" 
   }
 ];
 
 export default function HomePage() {
   const { mode } = useAppContext();
-  // Removed initialGamingTab state
 
   const handleGamingFeatureClick = (feature: typeof gamingFeatures[0]) => {
-    if (feature.isExternalLink && feature.href) { // Simplified to only handle external links
+    if (feature.isExternalLink && feature.href) { 
       window.open(feature.href, '_blank');
     }
-    // Removed logic for actionType === 'open_game_codes_tab'
-    // Removed scrollIntoView logic
+    // If not external and not handled by Link component below, this click does nothing for href="#"
   };
 
 
@@ -122,7 +119,7 @@ export default function HomePage() {
         </Card>
 
         <div id="home-tabs-section">
-          <HomeTabs /> {/* Removed initialTab and key props */}
+          <HomeTabs /> 
         </div>
 
         <div className="mt-10">
@@ -159,6 +156,13 @@ export default function HomePage() {
                     >
                       Explore
                     </a>
+                  ) : feature.href && feature.href !== "#" ? (
+                    <Link
+                      href={feature.href}
+                      className={cn(buttonVariants({ variant: 'outline' }), "w-full button-glow-gaming")}
+                    >
+                      Explore
+                    </Link>
                   ) : (
                     <Button
                       variant="outline"
