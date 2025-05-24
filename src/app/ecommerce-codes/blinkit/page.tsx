@@ -16,6 +16,10 @@ import { Label } from "@/components/ui/label";
 
 export const initialBlinkitCodes: PromoExample[] = [
   { id: "bk1", title: "Rs. 50 Off Groceries", code: "BLINK50", expiry: "2024-10-31", platform: "Blinkit", category: "grocery", description: "Get Rs. 50 off on grocery orders over Rs. 299.", isUsed: false },
+  { id: "bk2", title: "10% Off (Federal Bank)", code: "FEDERALCC100", expiry: "2025-05-31", platform: "Blinkit", category: "payment_offer", description: "10% Off up to ₹250 on orders above ₹750. Requires Federal Bank Credit Card.", isUsed: false },
+  { id: "bk3", title: "10% Off (Bank of Baroda)", code: "BOB10", expiry: "2025-05-31", platform: "Blinkit", category: "payment_offer", description: "10% Off up to ₹100 on orders above ₹750. Requires Bank of Baroda Credit Card.", isUsed: false },
+  { id: "bk4", title: "10% Off (HSBC)", code: "HSBC10", expiry: "2025-05-31", platform: "Blinkit", category: "payment_offer", description: "10% Off up to ₹100 on orders above ₹499. Requires HSBC Credit Card.", isUsed: false },
+  { id: "bk5", title: "10% Off (Axis Bank Neo)", code: "AXISNEO", expiry: "2025-05-31", platform: "Blinkit", category: "payment_offer", description: "10% Off up to ₹250 on orders above ₹750. Requires Axis Bank Neo Credit Card.", isUsed: false },
 ];
 
 export default function BlinkitCodesPage() {
@@ -193,3 +197,4 @@ export default function BlinkitCodesPage() {
     </>
   );
 }
+
