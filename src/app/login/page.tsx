@@ -64,12 +64,26 @@ export default function LoginPage() {
     },
   });
 
+  const checkFirebaseConfig = () => {
+    if (!auth || !auth.app || !auth.app.options || auth.app.options.apiKey === "YOUR_API_KEY") {
+      toast({
+        title: "Firebase Configuration Error",
+        description: "Please ensure Firebase is configured with your project's credentials in src/lib/firebase/config.ts.",
+        variant: "destructive",
+        duration: 10000,
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleFirebaseAuthSuccess = (firebaseUser: FirebaseUser, isNewUser: boolean = false, formUsername?: string) => {
     setUser(firebaseUser); // Store Firebase user object in context
     setIsAuthenticated(true);
     const displayName = formUsername || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User";
-    setUsername(displayName);
     setEmail(firebaseUser.email);
+    setUsername(displayName); // Set username in context after displayName is determined
+
 
     if (firebaseUser.email === "virajdatla0204@gmail.com") {
       setIsDeveloperMode(true);
@@ -85,9 +99,15 @@ export default function LoginPage() {
       });
     }
     
-    // Update Firebase profile if it's a new user with a form username
+    // Update Firebase profile if it's a new user with a form username and it's different from existing displayName
     if (isNewUser && formUsername && firebaseUser.displayName !== formUsername) {
       updateProfile(firebaseUser, { displayName: formUsername })
+        .then(() => {
+            // Potentially re-set username in context if displayName was updated async
+            if (auth.currentUser && auth.currentUser.displayName) {
+                setUsername(auth.currentUser.displayName);
+            }
+        })
         .catch(err => console.error("Error updating Firebase profile:", err));
     }
 
@@ -111,8 +131,12 @@ export default function LoginPage() {
                 break;
             case 'auth/user-not-found':
             case 'auth/wrong-password':
+            case 'auth/invalid-credential': // More generic error for wrong email/password
                  description = "Invalid email or password. Please try again.";
                  break;
+            case 'auth/api-key-not-valid':
+                description = "Firebase API Key is not valid. Please check your Firebase project configuration in src/lib/firebase/config.ts.";
+                break;
             default:
                 description = error.message || description;
         }
@@ -126,40 +150,38 @@ export default function LoginPage() {
 
 
   async function onSubmit(data: LoginFormValues) {
+    if (!checkFirebaseConfig()) return;
+
     try {
       // Try to sign in first
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-        handleFirebaseAuthSuccess(userCredential.user, false, data.username); // Pass username for potential display update
-      } catch (signInError: any) {
-        if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/wrong-password') {
-          // If user not found or wrong password, try to create a new user
-          try {
-            const newUserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-            await updateProfile(newUserCredential.user, { displayName: data.username });
-            // Re-fetch user to get updated profile
-            const updatedUser = auth.currentUser;
-             if (updatedUser) {
-                handleFirebaseAuthSuccess(updatedUser, true, data.username);
-            } else {
-                throw new Error("Failed to fetch updated user profile.");
-            }
-          } catch (signUpError: any) {
-            handleFirebaseAuthError(signUpError, "Email/Password (Sign-Up)");
-          }
-        } else {
-          // Other sign-in errors
-          handleFirebaseAuthError(signInError, "Email/Password (Sign-In)");
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      handleFirebaseAuthSuccess(userCredential.user, false, data.username);
+    } catch (signInError: any) {
+      if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/wrong-password' || signInError.code === 'auth/invalid-credential') {
+        // If user not found or wrong password, try to create a new user
+        try {
+          const newUserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+          // Update profile directly after creation
+          await updateProfile(newUserCredential.user, { displayName: data.username });
+          // The onAuthStateChanged listener in AppContext should pick up the new user
+          // Forcing a re-fetch or passing the updated user might be needed if onAuthStateChanged is too slow
+          // However, handleFirebaseAuthSuccess will be called by onAuthStateChanged if successful
+          // For immediate feedback and redirection, we can call it here
+           handleFirebaseAuthSuccess(newUserCredential.user, true, data.username);
+        } catch (signUpError: any) {
+          handleFirebaseAuthError(signUpError, "Email/Password (Sign-Up)");
         }
+      } else {
+        // Other sign-in errors
+        handleFirebaseAuthError(signInError, "Email/Password (Sign-In)");
       }
-    } catch (error) {
-      // Catch any unexpected errors from the nested try/catch blocks
-      handleFirebaseAuthError(error, "Authentication");
     }
   }
 
 
   const handleGoogleSignIn = async () => {
+    if (!checkFirebaseConfig()) return;
+
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -170,6 +192,8 @@ export default function LoginPage() {
   };
 
   const handleAppleSignIn = async () => {
+    if (!checkFirebaseConfig()) return;
+    
     const provider = new OAuthProvider('apple.com');
     provider.addScope('email');
     provider.addScope('name');
@@ -330,3 +354,5 @@ export default function LoginPage() {
     </>
   );
 }
+
+
