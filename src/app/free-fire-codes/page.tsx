@@ -4,13 +4,15 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays } from "lucide-react"; // Added PlusCircle, CalendarDays
+import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react"; // Added useState
-import AddCodeForm from "@/components/AddCodeForm"; // Added AddCodeForm
-import { format } from "date-fns"; // Added format
+import { useState } from "react";
+import AddCodeForm from "@/components/AddCodeForm";
+import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const initialFreeFireCodes: PromoExample[] = [
   // Placeholder - can be populated by developer mode
@@ -19,7 +21,7 @@ const initialFreeFireCodes: PromoExample[] = [
 export default function FreeFireCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
-  const [codes, setCodes] = useState<PromoExample[]>(initialFreeFireCodes);
+  const [codes, setCodes] = useState<PromoExample[]>(initialFreeFireCodes.map(c => ({...c, isUsed: c.isUsed || false })));
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
   const handleCopyCode = (code: string) => {
@@ -47,6 +49,7 @@ export default function FreeFireCodesPage() {
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
+      isUsed: false, // New codes are not used by default
     };
     setCodes(prevCodes => [...prevCodes, newPromo]);
     setIsAddCodeFormOpen(false);
@@ -54,6 +57,14 @@ export default function FreeFireCodesPage() {
       title: "Code Added!",
       description: `"${newPromo.title}" has been successfully added to Free Fire Codes.`,
     });
+  };
+
+  const handleToggleUsed = (itemId: string) => {
+    setCodes(prevCodes =>
+      prevCodes.map(code =>
+        code.id === itemId ? { ...code, isUsed: !code.isUsed } : code
+      )
+    );
   };
 
   return (
@@ -96,11 +107,23 @@ export default function FreeFireCodesPage() {
               codes.map((item) => (
                 <Card 
                   key={item.id} 
-                  className={`p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted'}`}
+                  className={cn(
+                    `p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`,
+                    mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted',
+                    item.isUsed ? 'opacity-60' : ''
+                  )}
                 >
                   <div className="flex-grow space-y-1">
-                    <h3 className={`text-lg font-semibold ${mode === 'gaming' ? 'text-accent-foreground font-rajdhani' : 'text-card-foreground'}`}>{item.title}</h3>
-                    <p className={`font-mono text-lg font-semibold ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`}>{item.code}</p>
+                    <h3 className={cn(
+                        `text-lg font-semibold`,
+                        mode === 'gaming' ? 'text-accent-foreground font-rajdhani' : 'text-card-foreground',
+                        item.isUsed ? 'line-through' : ''
+                      )}>{item.title}</h3>
+                    <p className={cn(
+                        `font-mono text-lg font-semibold`,
+                        mode === 'gaming' ? 'text-primary' : 'text-primary',
+                        item.isUsed ? 'line-through' : ''
+                      )}>{item.code}</p>
                     <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>{item.description}</p>
                      {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
@@ -109,17 +132,31 @@ export default function FreeFireCodesPage() {
                       </div>
                     )}
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleCopyCode(item.code)}
-                    className={cn(
-                      mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
-                      "w-full sm:w-auto mt-2 sm:mt-0 self-end sm:self-center" 
-                    )}
-                  >
-                    <Copy className="mr-2 h-4 w-4" /> Copy Code
-                  </Button>
+                  <div className="flex flex-col sm:flex-row items-center gap-3 self-end sm:self-center w-full sm:w-auto">
+                    <div className="flex items-center space-x-2 order-last sm:order-first mt-2 sm:mt-0">
+                      <Checkbox
+                        id={`used-${item.id}`}
+                        checked={item.isUsed}
+                        onCheckedChange={() => handleToggleUsed(item.id)}
+                        aria-labelledby={`label-used-${item.id}`}
+                      />
+                      <Label htmlFor={`used-${item.id}`} id={`label-used-${item.id}`} className="text-sm cursor-pointer">
+                        Mark as Used
+                      </Label>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleCopyCode(item.code)}
+                      disabled={item.isUsed}
+                      className={cn(
+                        mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
+                        "w-full sm:w-auto" 
+                      )}
+                    >
+                      <Copy className="mr-2 h-4 w-4" /> Copy Code
+                    </Button>
+                  </div>
                 </Card>
               ))
             ) : (

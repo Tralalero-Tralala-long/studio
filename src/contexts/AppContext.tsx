@@ -19,6 +19,7 @@ export interface PromoExample {
   description: string;
   category?: string;
   game?: string;
+  isUsed?: boolean; // Added for "mark as used" feature
 }
 
 interface AppContextProps {
@@ -37,7 +38,7 @@ interface AppContextProps {
   setEmail: (email: string | null) => void;
   signOut: () => Promise<void>;
   isDeveloperMode: boolean;
-  setIsDeveloperMode: (isDev: boolean) => void; // Now controlled by login logic
+  setIsDeveloperMode: (isDev: boolean) => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -94,13 +95,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const storedDealAlerts = localStorage.getItem('promoPulseDealAlerts');
     if (storedDealAlerts) setDealAlerts(JSON.parse(storedDealAlerts));
 
-    // Load developer mode state from localStorage on initial load if user might already be "authenticated" by Firebase
-    // This is mostly for consistency, the onAuthStateChanged will be the primary driver
     const storedIsDeveloperMode = localStorage.getItem('promoPulseIsDeveloperMode');
      if (storedIsDeveloperMode && auth.currentUser?.email === "virajdatla0204@gmail.com") {
       setIsDeveloperModeState(JSON.parse(storedIsDeveloperMode));
     } else if (storedIsDeveloperMode) {
-      // If there's a stored dev mode but current user isn't dev, clear it
        setIsDeveloperModeState(false);
        localStorage.setItem('promoPulseIsDeveloperMode', JSON.stringify(false));
     }
@@ -129,7 +127,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const handleSetIsAuthenticated = (isAuth: boolean) => {
     setIsAuthenticatedState(isAuth);
     localStorage.setItem('promoPulseIsAuthenticated', JSON.stringify(isAuth));
-    // Developer mode is now set based on Firebase user email in onAuthStateChanged
   };
 
   const handleSetUsername = (name: string | null) => {
@@ -152,7 +149,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const performSignOut = async () => {
     try {
       await firebaseSignOut(auth);
-      // onAuthStateChanged will handle clearing user, auth state, and dev mode
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
