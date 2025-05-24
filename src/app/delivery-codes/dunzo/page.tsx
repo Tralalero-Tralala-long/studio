@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialDunzoCodes: PromoExample[] = [
-  // Example: { id: "dz1", title: "20% Off Groceries", code: "DUNZODEAL", expiry: "2025-03-31", platform: "Dunzo", category: "grocery_delivery", description: "Get 20% off on grocery orders.", isUsed: false }
+  { id: "dz1", title: "Flat 50% Off First Order", code: "NEW50", expiry: "2025-06-30", platform: "Dunzo", category: "grocery_delivery", description: "Flat 50% off on first order above ₹99.", isUsed: false },
+  { id: "dz2", title: "Flat ₹75 Off Orders ₹499+", code: "NEW75", expiry: "2025-06-30", platform: "Dunzo", category: "grocery_delivery", description: "Flat ₹75 off on orders above ₹499.", isUsed: false },
+  { id: "dz3", title: "20% Off (Federal Bank)", code: "FEDERAL75", expiry: "2025-06-30", platform: "Dunzo", category: "payment_offer", description: "20% off up to ₹75 on orders above ₹349 with Federal Bank credit card.", isUsed: false },
+  { id: "dz4", title: "10% Off (ICICI Bank)", code: "ICICI100", expiry: "2025-06-30", platform: "Dunzo", category: "payment_offer", description: "10% off up to ₹100 on orders above ₹700 with ICICI Bank credit card.", isUsed: false },
 ];
 
 export default function DunzoCodesPage() {
@@ -143,7 +146,7 @@ export default function DunzoCodesPage() {
                      {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
@@ -193,3 +196,4 @@ export default function DunzoCodesPage() {
     </>
   );
 }
+
