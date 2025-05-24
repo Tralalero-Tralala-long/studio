@@ -4,7 +4,7 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift, ArrowLeft, Gamepad2, ShoppingCart } from "lucide-react"; 
+import { Gift, ArrowLeft, Gamepad2, ShoppingCart, Truck, School } from "lucide-react"; 
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
@@ -74,6 +74,30 @@ export default function GameCodesPage() {
             >
               <ShoppingCart className="mr-2 h-6 w-6" /> 
               <span>E-commerce Codes</span>
+            </Link>
+
+            <Link
+              href="/delivery-codes"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
+              )}
+            >
+              <Truck className="mr-2 h-6 w-6" /> 
+              <span>Delivery Codes</span>
+            </Link>
+
+            <Link
+              href="/education-codes"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
+              )}
+            >
+              <School className="mr-2 h-6 w-6" /> 
+              <span>Education Codes</span>
             </Link>
 
             <Link

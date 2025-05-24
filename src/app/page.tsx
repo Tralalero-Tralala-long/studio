@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Box, Gamepad2, Gift, ShoppingCart, ExternalLink } from 'lucide-react';
+import { Box, Gamepad2, Gift, ShoppingCart, ExternalLink, Truck, School } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Data for Special Gaming Features
@@ -83,7 +83,7 @@ export default function HomePage() {
           </CardContent>
         </Card>
 
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
            <Link
               href="/ecommerce-codes"
               className={cn(
@@ -94,14 +94,27 @@ export default function HomePage() {
               <ShoppingCart className="mr-2 h-6 w-6" /> 
               <span>E-commerce Codes</span>
             </Link>
+            <Link
+              href="/delivery-codes"
+              className={cn(
+                buttonVariants({ variant: 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2 button-glow-normal"
+              )}
+            >
+              <Truck className="mr-2 h-6 w-6" /> 
+              <span>Delivery Codes</span>
+            </Link>
+            <Link
+              href="/education-codes"
+              className={cn(
+                buttonVariants({ variant: 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2 button-glow-normal"
+              )}
+            >
+              <School className="mr-2 h-6 w-6" /> 
+              <span>Education Codes</span>
+            </Link>
         </div>
-
-        {/* Removed HomeTabs section for normal mode */}
-        {/* 
-        <div id="home-tabs-section">
-          <HomeTabs />
-        </div> 
-        */}
       </div>
     );
   } else { // mode === 'gaming'
