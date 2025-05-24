@@ -21,7 +21,7 @@ export default function RobloxCodesPage() {
                 Roblox Game Codes
               </CardTitle>
             </div>
-            <Link href="/browse-codes" passHref> {/* Updated back link */}
+            <Link href="/game-codes" passHref> {/* Reverted back link */}
               <Button 
                 variant="outline" 
                 className={cn(
@@ -29,7 +29,7 @@ export default function RobloxCodesPage() {
                 )}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to All Categories
+                Back to All Game Codes
               </Button>
             </Link>
           </div>

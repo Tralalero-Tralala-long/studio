@@ -100,7 +100,7 @@ export default function FortniteCodesPage() {
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Code
                   </Button>
                 )}
-                <Link href="/browse-codes" passHref> {/* Updated back link */}
+                <Link href="/game-codes" passHref> {/* Reverted back link */}
                   <Button 
                     variant="outline" 
                     className={cn(
@@ -108,7 +108,7 @@ export default function FortniteCodesPage() {
                     )}
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to All Categories
+                    Back to All Game Codes
                   </Button>
                 </Link>
               </div>
