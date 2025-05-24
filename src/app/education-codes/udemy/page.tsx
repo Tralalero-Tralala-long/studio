@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialUdemyCodes: PromoExample[] = [
-  // Example: { id: "udemy1", title: "90% Off Any Course", code: "UDEMYLEARN90", expiry: "2025-12-31", platform: "Udemy", category: "online_course", description: "Get 90% off any course on Udemy.", isUsed: false },
+  { id: "udemy1", title: "90% Off AWS Courses", code: "AWSOCT24", expiry: "2025-09-30", platform: "Udemy", category: "online_course", description: "Get 90% off on AWS courses.", isUsed: false },
+  { id: "udemy2", title: "Up to 97% Off Select Courses", code: "LETSLEARNNOW", expiry: "2026-02-28", platform: "Udemy", category: "online_course", description: "Up to 97% off on select courses.", isUsed: false },
+  { id: "udemy3", title: "95% Off Sitewide", code: "VVSVWY95", expiry: "Not specified", platform: "Udemy", category: "online_course", description: "Get 95% off sitewide (active).", isUsed: false },
+  { id: "udemy4", title: "Up to 97% Off Courses", code: "LETSLEARNNOW1", expiry: "Not specified", platform: "Udemy", category: "online_course", description: "Up to 97% off courses (active).", isUsed: false },
 ];
 
 export default function UdemyCodesPage() {
@@ -146,6 +149,12 @@ export default function UdemyCodesPage() {
                         <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
+                     {item.expiry === "Not specified" && (
+                        <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
+                            <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+                            <span>Expires: Ongoing</span>
+                        </div>
+                    )}
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-3 self-end sm:self-center w-full sm:w-auto">
                     <div className="flex items-center space-x-2 order-last sm:order-first mt-2 sm:mt-0">
@@ -193,3 +202,4 @@ export default function UdemyCodesPage() {
     </>
   );
 }
+
