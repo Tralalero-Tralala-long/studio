@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialByjusCodes: PromoExample[] = [
-  // Example: { id: "byjus1", title: "10% Off Maths Course", code: "BYJUSMATH10", expiry: "2025-12-31", platform: "BYJU'S", category: "education_course", description: "Get 10% off on the annual Maths subscription.", isUsed: false },
+  { id: "byjus1", title: "15% Off Any Course", code: "RF15", expiry: "2025-07-01", platform: "BYJU'S", category: "education_course", description: "Get 15% off on any course.", isUsed: false },
+  { id: "byjus2", title: "15% Off Classes/Mocks", code: "WELCOME15", expiry: "2025-07-01", platform: "BYJU'S", category: "education_course", description: "Get 15% off on classes or mock tests.", isUsed: false },
+  { id: "byjus3", title: "10% Off for New Users", code: "NEW10", expiry: "2025-07-01", platform: "BYJU'S", category: "education_course", description: "New users get 10% off their first purchase.", isUsed: false },
+  { id: "byjus4", title: "25% Off for New Users", code: "NEW25", expiry: "2025-07-01", platform: "BYJU'S", category: "education_course", description: "New users get 25% off their first purchase.", isUsed: false },
 ];
 
 export default function ByjusCodesPage() {
