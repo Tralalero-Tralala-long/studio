@@ -15,8 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialDeliveryCodes: PromoExample[] = [
-  { id: "del1", title: "Free Food Delivery", code: "EATFREE", expiry: "2024-12-31", platform: "Delivery", category: "food_delivery", description: "Get free delivery on your next food order over $20.", isUsed: false },
-  { id: "del2", title: "10% Off Groceries", code: "GROCERY10", expiry: "N/A", platform: "Delivery", category: "grocery_delivery", description: "10% off your first grocery delivery.", isUsed: false },
+  // Codes removed as per request
 ];
 
 export default function DeliveryCodesPage() {
