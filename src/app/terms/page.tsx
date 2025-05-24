@@ -4,9 +4,17 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function TermsPage() {
   const { mode } = useAppContext();
+  const [lastUpdated, setLastUpdated] = useState("");
+
+  useEffect(() => {
+    // Set the date only on the client-side after hydration
+    setLastUpdated(new Date().toLocaleDateString());
+  }, []);
+
   return (
     <div className="container mx-auto p-4 md:p-8">
       <Card className={`${mode === 'gaming' ? 'bg-card border-primary' : 'bg-card'}`}>
@@ -28,7 +36,9 @@ export default function TermsPage() {
           <p><strong>4. Promo Codes:</strong> While we strive to provide accurate and up-to-date promo codes, we do not guarantee their validity or availability. Promo codes are subject to the terms and conditions of the respective merchants.</p>
           <p><strong>5. Limitation of Liability:</strong> PromoPulse is provided "as is" without any warranties. We are not liable for any damages arising from your use of the service.</p>
           <p><strong>6. Changes to Terms:</strong> We reserve the right to modify these terms at any time. Your continued use of the service after changes constitutes acceptance of the new terms.</p>
-          <p className="mt-6 text-sm text-muted-foreground">Last Updated: {new Date().toLocaleDateString()}</p>
+          {lastUpdated && (
+            <p className="mt-6 text-sm text-muted-foreground">Last Updated: {lastUpdated}</p>
+          )}
         </CardContent>
       </Card>
     </div>
