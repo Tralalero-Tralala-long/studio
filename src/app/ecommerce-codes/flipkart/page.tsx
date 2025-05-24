@@ -54,7 +54,7 @@ export default function FlipkartCodesPage() {
       title: formData.title,
       code: formData.code,
       platform: "Flipkart",
-      category: "general_ecommerce", // Default category, can be more specific if form allows
+      category: "general_ecommerce", 
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
       isUsed: false,

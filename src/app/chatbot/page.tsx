@@ -12,13 +12,22 @@ import { chat, type ChatInput, type ChatOutput } from '@/ai/flows/chatbotFlow';
 import { useAppContext, type PromoExample } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 
-// Import initial data from other pages - THIS IS FOR DEMONSTRATION and not ideal for production
-// In a real app, this data should come from a central store or API
-import { initialPromoExamples as homeTabsPromoExamples } from '@/components/home/HomeTabs'; // Assuming initialPromoExamples is exported
-import { initialBloxFruitsCodes } from '../roblox-codes/blox-fruits/page'; // Assuming initialBloxFruitsCodes is exported
-import { initialFortniteCodes } from '../fortnite-codes/page'; // Assuming initialFortniteCodes is exported
-import { initialFreeFireCodes } from '../free-fire-codes/page'; // Assuming initialFreeFireCodes is exported
-import { initialBrawlStarsCodes } from '../brawl-stars-codes/page'; // Assuming initialBrawlStarsCodes is exported
+// Import initial data from other pages
+import { initialPromoExamples as homeTabsPromoExamples } from '@/components/home/HomeTabs';
+import { initialBloxFruitsCodes } from '../roblox-codes/blox-fruits/page';
+import { initialFortniteCodes } from '../fortnite-codes/page';
+import { initialFreeFireCodes } from '../free-fire-codes/page';
+import { initialBrawlStarsCodes } from '../brawl-stars-codes/page';
+import { initialMyntraCodes } from '../ecommerce-codes/myntra/page';
+import { initialFlipkartCodes } from '../ecommerce-codes/flipkart/page';
+import { initialAmazonCodes } from '../ecommerce-codes/amazon/page';
+import { initialBlinkitCodes } from '../ecommerce-codes/blinkit/page';
+import { initialZomatoCodes } from '../delivery-codes/zomato/page';
+import { initialSwiggyCodes } from '../delivery-codes/swiggy/page';
+import { initialDunzoCodes } from '../delivery-codes/dunzo/page';
+import { initialByjusCodes } from '../education-codes/byjus/page';
+import { initialTopprCodes } from '../education-codes/toppr/page';
+import { initialUdemyCodes } from '../education-codes/udemy/page';
 
 
 interface ChatMessage {
@@ -27,16 +36,24 @@ interface ChatMessage {
   parts: Array<{ text: string }>;
 }
 
-// Helper function to get initial codes - for demonstration
+// Helper function to get initial codes
 const getAllPromoCodes = (): PromoExample[] => {
-  // Ensure imported arrays are correctly typed and mapped if necessary
-  // This example assumes they are already PromoExample[] or compatible
   const allCodes: PromoExample[] = [
     ...homeTabsPromoExamples,
-    ...initialBloxFruitsCodes.map(c => ({...c, reward: c.reward || c.description })), // Map BloxFruits specific type if needed
+    ...initialBloxFruitsCodes.map(c => ({...c, reward: c.reward || c.description })),
     ...initialFortniteCodes,
     ...initialFreeFireCodes,
     ...initialBrawlStarsCodes,
+    ...initialMyntraCodes,
+    ...initialFlipkartCodes,
+    ...initialAmazonCodes,
+    ...initialBlinkitCodes,
+    ...initialZomatoCodes,
+    ...initialSwiggyCodes,
+    ...initialDunzoCodes,
+    ...initialByjusCodes,
+    ...initialTopprCodes,
+    ...initialUdemyCodes,
   ];
   // Remove duplicates by code, just in case
   const uniqueCodes = Array.from(new Map(allCodes.map(code => [code.code, code])).values());
@@ -53,7 +70,6 @@ export default function ChatbotPage() {
   const [availableCodes, setAvailableCodes] = useState<PromoExample[]>([]);
 
   useEffect(() => {
-    // Scroll to bottom when chatHistory changes
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
       if (viewport) {
@@ -63,7 +79,6 @@ export default function ChatbotPage() {
   }, [chatHistory]);
 
   useEffect(() => {
-    // Load available codes once on mount - for demonstration
     setAvailableCodes(getAllPromoCodes());
   }, []);
 
@@ -93,7 +108,7 @@ export default function ChatbotPage() {
       const inputPayload: ChatInput = { 
         message: currentInputForApi, 
         history: historyForApi,
-        availablePromoCodes: availableCodes // Pass the loaded codes
+        availablePromoCodes: availableCodes 
       };
       const response: ChatOutput = await chat(inputPayload);
 
