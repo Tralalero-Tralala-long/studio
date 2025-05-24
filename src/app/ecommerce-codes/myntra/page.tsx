@@ -4,7 +4,7 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Store, Copy, PlusCircle, CalendarDays, ArrowLeft, CheckSquare } from "lucide-react";
+import { Store, Copy, PlusCircle, CalendarDays, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
