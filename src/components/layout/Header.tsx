@@ -12,7 +12,14 @@ export default function Header() {
   const { mode, isAuthenticated } = useAppContext();
 
   const navLinkClass = `text-sm font-medium transition-colors hover:text-primary ${mode === 'gaming' ? 'text-primary-foreground hover:text-accent' : 'text-foreground'}`;
-  const profileLink = isAuthenticated ? "/profile" : "/login";
+  
+  let profileLinkPath = "/login";
+  let profileLinkText = "Login";
+  if (isAuthenticated) {
+    profileLinkPath = "/profile";
+    profileLinkText = "Profile";
+  }
+  
   const profileAriaLabel = isAuthenticated ? "Profile" : "Login or Sign Up";
 
   return (
@@ -29,14 +36,14 @@ export default function Header() {
           <Link href="/" className={navLinkClass}>
             <Home className="inline-block w-4 h-4 mr-1" /> Home
           </Link>
-          <Link href="/#scan" className={navLinkClass}> {/* Assuming Scan is a section on home page for now */}
+          <Link href="/scan" className={navLinkClass}> {/* Changed href */}
             <Scan className="inline-block w-4 h-4 mr-1" /> Scan
           </Link>
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
-          <Link href={profileLink} className={navLinkClass}>
-            <UserCircle className="inline-block w-4 h-4 mr-1" /> {isAuthenticated ? "Profile" : "Login"}
+          <Link href={profileLinkPath} className={navLinkClass}>
+            <UserCircle className="inline-block w-4 h-4 mr-1" /> {profileLinkText}
           </Link>
           <Link href="/top-contributors" className={navLinkClass}>
             <Users className="inline-block w-4 h-4 mr-1" /> Top Contributors
@@ -56,7 +63,7 @@ export default function Header() {
               <Search className="h-5 w-5" />
             </Button>
           </Link>
-          <Link href={profileLink}>
+          <Link href={profileLinkPath}>
             <Button 
               variant="outline" 
               size="icon" 

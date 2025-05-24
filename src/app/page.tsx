@@ -6,11 +6,11 @@ import HomeTabs from '@/components/home/HomeTabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Box, Gamepad2 } from 'lucide-react';
+import { Box, Gamepad2 } from 'lucide-react'; // Removed Search icon, PackageIcon
 
 // Data for Special Gaming Features
 const gamingFeatures = [
-  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest" },
+  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest gold" },
   { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png", dataAiHint: "gaming deals sale" },
 ];
 
@@ -49,17 +49,12 @@ export default function HomePage() {
         </Card>
         
         <HomeTabs />
-
-        <div className="mt-8 text-center">
-          <Button size="lg" className="button-glow-normal bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 font-bold">
-            <Search className="w-5 h-5 mr-2" /> Scan All Codes
-          </Button>
-        </div>
+        {/* "Scan All Codes" button removed from here */}
       </div>
     );
   } else { // mode === 'gaming'
     const heroTitle = "Level Up Your Savings!";
-    const heroDescription = "Discover exciting gaming offers, loot drops from major platforms like Steam and Epic Games Store, plus in-game codes for titles like Call of Duty, Fortnite, GTA, FIFA, Roblox, TDS, and more.";
+    const heroDescription = "Discover exciting gaming offers, loot drops from major platforms like Steam, Epic Games Store, Call of Duty, Fortnite, GTA, FIFA, plus in-game codes for titles like Roblox, TDS, and more.";
     return (
       <div className="w-full space-y-8">
         <Card className="shadow-xl bg-card text-card-foreground border-primary">
