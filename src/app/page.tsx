@@ -5,13 +5,39 @@ import { useAppContext } from '@/contexts/AppContext';
 import HomeTabs from '@/components/home/HomeTabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Box, Gamepad2 } from 'lucide-react'; // Removed Search icon, PackageIcon
+import { Button, buttonVariants } from '@/components/ui/button'; // Imported buttonVariants
+import { Box, Gamepad2, Gift } from 'lucide-react'; // Imported Gift
+import { cn } from '@/lib/utils'; // Imported cn
 
 // Data for Special Gaming Features
 const gamingFeatures = [
-  { title: 'Loot Drops', description: 'Discover daily loot drops and in-game items.', icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", dataAiHint: "treasure chest gold" },
-  { title: 'Gaming Offers', description: 'Exclusive discounts on games and DLCs.', icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png", dataAiHint: "gaming deals sale" },
+  { 
+    title: 'Loot Drops', 
+    description: 'Discover daily loot drops and in-game items.', 
+    icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, 
+    imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", 
+    dataAiHint: "treasure chest gold",
+    isExternalLink: false,
+    href: "#"
+  },
+  { 
+    title: 'Gaming Offers', 
+    description: 'Exclusive discounts on games and DLCs.', 
+    icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, 
+    imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png", 
+    dataAiHint: "gaming deals sale",
+    isExternalLink: false,
+    href: "#"
+  },
+  {
+    title: 'Game Code Box',
+    description: 'Unlock special game codes and bonuses here.',
+    icon: <Gift className="w-12 h-12 mx-auto mb-3 text-accent" />,
+    imageUrl: "https://placehold.co/600x400.png",
+    dataAiHint: "gift box code",
+    isExternalLink: true,
+    href: "https://example.com/gamecodes" // Placeholder URL
+  }
 ];
 
 export default function HomePage() {
@@ -49,7 +75,6 @@ export default function HomePage() {
         </Card>
         
         <HomeTabs />
-        {/* "Scan All Codes" button removed from here */}
       </div>
     );
   } else { // mode === 'gaming'
@@ -89,7 +114,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold mb-6 text-center font-orbitron text-primary">
             Special Gaming Features
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Changed to md:grid-cols-3 */}
             {gamingFeatures.map(feature => (
               <Card key={feature.title} className="text-center shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-card border-accent">
                 <CardHeader>
@@ -97,11 +122,33 @@ export default function HomePage() {
                   <CardTitle className="text-xl font-rajdhani text-accent">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Image src={feature.imageUrl} alt={feature.title} data-ai-hint={feature.dataAiHint} width={300} height={200} className="rounded-md mb-4 aspect-video object-cover" />
+                  <div className="w-full h-40 sm:h-48 md:h-52 relative mb-4"> {/* Added container for consistent image height */}
+                    <Image 
+                      src={feature.imageUrl} 
+                      alt={feature.title} 
+                      data-ai-hint={feature.dataAiHint} 
+                      layout="fill" // Use fill
+                      objectFit="cover" // Use cover
+                      className="rounded-md" 
+                    />
+                  </div>
                   <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="outline" className="w-full button-glow-gaming">Explore</Button>
+                  {feature.isExternalLink ? (
+                    <a
+                      href={feature.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(buttonVariants({ variant: 'outline' }), "w-full button-glow-gaming")}
+                    >
+                      Explore
+                    </a>
+                  ) : (
+                    <Button variant="outline" className="w-full button-glow-gaming">
+                      Explore
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}
