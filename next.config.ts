@@ -58,6 +58,12 @@ const nextConfig: NextConfig = {
         hostname: 'gamblemaniacs.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'preview.redd.it',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
