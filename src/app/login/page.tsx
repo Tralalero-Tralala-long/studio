@@ -22,7 +22,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone, BellOff } from 'lucide-react';
 import { useAppContext } from "@/contexts/AppContext";
 import { auth } from '@/lib/firebase/config'; 
-import { GoogleAuthProvider, OAuthProvider, signInWithPopup, type User } from 'firebase/auth';
+import { GoogleAuthProvider, OAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth';
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -34,11 +34,6 @@ const allowedEmailDomains = [
   "@bsnl.in", "@airtelmail.in", "@mail.com", "@tutanota.com", "@fastmail.com",
   "@yandex.com", "@yandex.ru"
 ];
-
-// Developer credentials
-const DEV_USERNAME = "therealdev0025";
-const DEV_PASSWORD = "123456789";
-
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." })
@@ -55,7 +50,7 @@ const loginFormSchema = z.object({
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
-  const { mode, setIsAuthenticated, setUsername, setEmail, setIsDeveloperMode } = useAppContext();
+  const { mode, setIsAuthenticated, setUsername, setEmail, setIsDeveloperMode, setUser } = useAppContext();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -69,63 +64,100 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(data: LoginFormValues) {
-    // Check for developer credentials
-    if (data.username === DEV_USERNAME && data.password === DEV_PASSWORD) {
-      setIsAuthenticated(true);
-      setUsername(data.username);
-      setEmail(data.email); // Devs can also have an email for notifications if they want
+  const handleFirebaseAuthSuccess = (firebaseUser: FirebaseUser, isNewUser: boolean = false, formUsername?: string) => {
+    setUser(firebaseUser); // Store Firebase user object in context
+    setIsAuthenticated(true);
+    const displayName = formUsername || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User";
+    setUsername(displayName);
+    setEmail(firebaseUser.email);
+
+    if (firebaseUser.email === "virajdatla0204@gmail.com") {
       setIsDeveloperMode(true);
       toast({
         title: "Developer Mode Activated",
-        description: "Welcome, Developer! Redirecting to homepage...",
+        description: `Welcome, Developer ${displayName}! Redirecting...`,
       });
-      router.push('/');
-      return;
+    } else {
+      setIsDeveloperMode(false);
+      toast({
+        title: isNewUser ? "Account Created!" : "Sign-In Successful!",
+        description: `Welcome, ${displayName}! Redirecting...`,
+      });
+    }
+    
+    // Update Firebase profile if it's a new user with a form username
+    if (isNewUser && formUsername && firebaseUser.displayName !== formUsername) {
+      updateProfile(firebaseUser, { displayName: formUsername })
+        .catch(err => console.error("Error updating Firebase profile:", err));
     }
 
-    // Placeholder for regular user sign-up/sign-in (actual email/password auth not fully implemented here)
-    // For Firebase email/password, you'd use createUserWithEmailAndPassword or signInWithEmailAndPassword
-    console.log("Form submitted (regular user placeholder):", data);
-    setIsAuthenticated(true);
-    setUsername(data.username);
-    setEmail(data.email);
-    setIsDeveloperMode(false); // Ensure developer mode is off for regular users
-    toast({
-      title: "Login Successful (Placeholder)",
-      description: "Redirecting to homepage...",
-    });
-    router.push('/');
-  }
-
-  const handleFirebaseAuthSuccess = (firebaseUser: User) => {
-    setIsAuthenticated(true);
-    setUsername(firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User");
-    setEmail(firebaseUser.email);
-    setIsDeveloperMode(false); // Ensure developer mode is off for OAuth users
-    toast({
-      title: "Sign-In Successful!",
-      description: `Welcome, ${firebaseUser.displayName || firebaseUser.email}!`,
-    });
     router.push('/');
   };
 
   const handleFirebaseAuthError = (error: any, providerName: string) => {
-    console.error(`${providerName} Sign-In Error:`, error);
+    console.error(`${providerName} Sign-In/Up Error:`, error);
     let description = "An unknown error occurred. Please try again.";
-    if (error.code === 'auth/popup-closed-by-user') {
-      description = "Sign-in popup was closed before completion.";
-    } else if (error.code === 'auth/cancelled-popup-request') {
-      description = "Sign-in was cancelled.";
-    } else if (error.message) {
-      description = error.message;
+    if (error.code) {
+        switch (error.code) {
+            case 'auth/popup-closed-by-user':
+            case 'auth/cancelled-popup-request':
+                description = "Sign-in process was cancelled.";
+                break;
+            case 'auth/email-already-in-use':
+                description = "This email is already in use. Try signing in or use a different email.";
+                break;
+            case 'auth/weak-password':
+                description = "Password is too weak. Please choose a stronger password.";
+                break;
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+                 description = "Invalid email or password. Please try again.";
+                 break;
+            default:
+                description = error.message || description;
+        }
     }
     toast({
-      title: `${providerName} Sign-In Failed`,
+      title: `${providerName} ${error.code === 'auth/email-already-in-use' ? 'Sign-Up' : 'Sign-In'} Failed`,
       description: description,
       variant: "destructive",
     });
   };
+
+
+  async function onSubmit(data: LoginFormValues) {
+    try {
+      // Try to sign in first
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+        handleFirebaseAuthSuccess(userCredential.user, false, data.username); // Pass username for potential display update
+      } catch (signInError: any) {
+        if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/wrong-password') {
+          // If user not found or wrong password, try to create a new user
+          try {
+            const newUserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+            await updateProfile(newUserCredential.user, { displayName: data.username });
+            // Re-fetch user to get updated profile
+            const updatedUser = auth.currentUser;
+             if (updatedUser) {
+                handleFirebaseAuthSuccess(updatedUser, true, data.username);
+            } else {
+                throw new Error("Failed to fetch updated user profile.");
+            }
+          } catch (signUpError: any) {
+            handleFirebaseAuthError(signUpError, "Email/Password (Sign-Up)");
+          }
+        } else {
+          // Other sign-in errors
+          handleFirebaseAuthError(signInError, "Email/Password (Sign-In)");
+        }
+      }
+    } catch (error) {
+      // Catch any unexpected errors from the nested try/catch blocks
+      handleFirebaseAuthError(error, "Authentication");
+    }
+  }
+
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -167,7 +199,10 @@ export default function LoginPage() {
           <CardHeader className="text-center">
             <Flame className={`mx-auto h-12 w-12 mb-4 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
             <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>Welcome to PromoPulse</CardTitle>
-            <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>Sign in or create an account to start saving! (Dev login: therealdev0025/123456789)</CardDescription>
+            <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>
+              Sign in or create an account to start saving!
+              (Dev Email for Dev Mode: virajdatla0204@gmail.com)
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -295,6 +330,3 @@ export default function LoginPage() {
     </>
   );
 }
-
-
-    
