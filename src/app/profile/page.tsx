@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
+import { auth } from '@/lib/firebase/config'; // Added Firebase auth import
 
 export default function ProfilePage() {
   const { mode, username, email, signOut, isAuthenticated } = useAppContext(); // Added isAuthenticated
