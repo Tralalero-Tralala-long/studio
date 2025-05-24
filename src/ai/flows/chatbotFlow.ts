@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit'; // Genkit v1.x uses 'genkit' for z
 
-export const ChatInputSchema = z.object({
+const ChatInputSchema = z.object({
   message: z.string().describe('The user message to the chatbot.'),
   history: z
     .array(
@@ -27,7 +27,7 @@ export const ChatInputSchema = z.object({
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 
-export const ChatOutputSchema = z.object({
+const ChatOutputSchema = z.object({
   reply: z.string().describe("The chatbot's reply."),
 });
 export type ChatOutput = z.infer<typeof ChatOutputSchema>;
