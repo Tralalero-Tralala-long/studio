@@ -5,7 +5,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+// Removed Button import as it's no longer used for "Update Profile"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
@@ -23,12 +23,7 @@ export default function ProfilePage() {
     setCurrentEmail(email || "promouser@example.com");
   }, [username, email]);
 
-  const handleUpdateProfile = () => {
-    // Here you would typically call an API to update the profile.
-    // For now, we can update the context if needed, though login page is the source.
-    console.log("Updated Profile:", { username: currentUsername, email: currentEmail });
-    alert("Profile update functionality is a placeholder.");
-  };
+  // Removed handleUpdateProfile function as the button is removed
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -60,6 +55,7 @@ export default function ProfilePage() {
               value={currentUsername} 
               onChange={(e) => setCurrentUsername(e.target.value)}
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
+              readOnly // If profile updates are removed, consider making fields read-only
             />
           </div>
           <div className="space-y-2">
@@ -70,17 +66,13 @@ export default function ProfilePage() {
               value={currentEmail} 
               onChange={(e) => setCurrentEmail(e.target.value)}
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
+              readOnly // If profile updates are removed, consider making fields read-only
             />
           </div>
           
           {/* More profile settings can be added here, e.g., change password, notification preferences */}
           
-          <Button 
-            onClick={handleUpdateProfile}
-            className={`${mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal'} w-full md:w-auto`}
-          >
-            Update Profile
-          </Button>
+          {/* Update Profile Button Removed */}
         </CardContent>
       </Card>
     </div>
