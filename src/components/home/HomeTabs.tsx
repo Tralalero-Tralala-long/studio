@@ -6,10 +6,10 @@ import { useAppContext, type PromoExample } from '@/contexts/AppContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift, PlusCircle, CheckSquare, Square } from 'lucide-react';
+import { ShoppingCart, Truck, Gift, PlusCircle, CheckSquare, Square, Code } from 'lucide-react'; // Keep Code for gaming mode if it was there
 import { useState, useEffect, useMemo } from 'react';
-import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
-import AddCodeForm from '@/components/AddCodeForm';
+import { cn, isCodeExpired } from "@/lib/utils";
+// AddCodeForm import is removed as it's no longer used directly in this component for normal mode tabs
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,8 +17,11 @@ import { Label } from "@/components/ui/label";
 
 
 const initialPromoExamples: PromoExample[] = [
+  // { id: "1", title: "20% Off Next Order", code: "SAVE20", platform: "E-commerce", expiry: "2024-12-31", description: "Get 20% off your next order on selected items.", category: "ecommerce_discount", isUsed: false },
   { id: "2", title: "Free Delivery", code: "FREEDEL", platform: "Delivery", expiry: "N/A", description: "Enjoy free delivery on orders over $25.", category: "delivery_discount", isUsed: false },
   { id: "3", title: "$10 Referral Bonus", code: "REF10", platform: "Referral", expiry: "N/A", description: "Refer a friend and you both get $10.", category: "referral_bonus", isUsed: false },
+  // Example Roblox code, platform will be 'Game Codes' or similar if gaming tabs are present
+  // { id: "7", title: "Roblox TDS Gems", code: "GEMSRFUN", platform: "Game Codes", game: "Tower Defense Simulator", expiry: "N/A", description: "Get 500 Gems in Tower Defense Simulator.", category: "game_code", isUsed: false },
 ];
 
 interface PromoCardDisplayProps extends PromoExample {
@@ -59,8 +62,8 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
       <CardFooter className="flex-col items-start space-y-3">
         <div className="flex items-center space-x-2">
           <Checkbox
-            id={`used-${id}-${platform.replace(/\s+/g, '-')}`} // Ensure ID is valid
-            checked={isUsed}
+            id={`used-${id}-${platform.replace(/\s+/g, '-')}`}
+            checked={isUsed || false}
             onCheckedChange={() => onToggleUsed(id)}
             aria-labelledby={`label-used-${id}-${platform.replace(/\s+/g, '-')}`}
           />
@@ -82,17 +85,14 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
 }
 
 export default function HomeTabs() {
-  const { mode, isDeveloperMode } = useAppContext();
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const { mode, isDeveloperMode } = useAppContext(); // isDeveloperMode can still be used for other purposes if needed
   
   const [promoExamples, setPromoExamples] = useState<PromoExample[]>(
     initialPromoExamples
       .filter(p => !isCodeExpired(p.expiry))
       .map(p => ({...p, isUsed: p.isUsed || false}))
   );
-  const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
-  const [currentPlatformForForm, setCurrentPlatformForForm] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
 
 
   const normalTabs = [
@@ -101,8 +101,9 @@ export default function HomeTabs() {
     { value: 'referral', label: 'Referral', icon: <Gift className="w-4 h-4 mr-2" /> },
   ];
 
+  // Gaming tabs are intentionally empty or managed as per other requirements
   const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = [
-    // Gaming tabs are intentionally empty here
+    // { value: 'game_codes', label: 'Roblox Codes', icon: <Code className="w-4 h-4 mr-2" /> },
   ];
 
   const tabsToDisplay = useMemo(() => (mode === 'normal' ? normalTabs : gamingTabs), [mode]);
@@ -126,52 +127,25 @@ export default function HomeTabs() {
     );
   };
 
-  const getPromosForTab = (tabValue: string) => {
+  const getPromosForTab = (tabValue: string | undefined) => {
+    if (!tabValue) return [];
+    
     const tabDetails = tabsToDisplay.find(t => t.value.toLowerCase() === tabValue.toLowerCase());
-    const platformToFilter = tabDetails ? tabDetails.label : tabValue; // Use label for matching platform
+    // Fallback to tabValue if tabDetails is not found, for more robust matching against platform
+    const platformToFilter = tabDetails ? tabDetails.label : tabValue; 
   
-    return promoExamples.filter(p => 
-        p.platform.toLowerCase() === platformToFilter.toLowerCase()
-    );
-  };
-  
-
-  const handleOpenAddCodeForm = (platform: string) => {
-    setCurrentPlatformForForm(platform);
-    setIsAddCodeFormOpen(true);
-  };
-
-  const handleAddCodeSubmit = (formData: { title: string; code: string; expiry?: Date; description: string }) => {
-    if (!currentPlatformForForm) return;
-
-    const newPromo: PromoExample = {
-      id: Date.now().toString(),
-      title: formData.title,
-      code: formData.code,
-      platform: currentPlatformForForm, 
-      expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
-      description: formData.description,
-      category: mode === 'gaming' ? 'game_code' : `${currentPlatformForForm.toLowerCase().replace(/\s+/g, '_')}_discount`,
-      isUsed: false, 
-    };
-
-    // Check if the new code is expired before adding. Unlikely for new codes but good practice.
-    if (isCodeExpired(newPromo.expiry)) {
-        toast({
-            title: "Expired Code",
-            description: "This code is already expired and will not be added.",
-            variant: "destructive",
-        });
-        setIsAddCodeFormOpen(false);
-        return;
+    if (mode === 'normal') {
+      return promoExamples.filter(p => 
+        p.platform.toLowerCase() === platformToFilter.toLowerCase() && !isCodeExpired(p.expiry)
+      );
     }
-
-    setPromoExamples(prevPromos => [...prevPromos, newPromo]);
-    setIsAddCodeFormOpen(false);
-    toast({
-      title: "Code Added!",
-      description: `"${newPromo.title}" has been successfully added to ${currentPlatformForForm}.`,
-    });
+    // For gaming mode, if it were to have its own local codes handled here:
+    // else if (mode === 'gaming') {
+    //   return promoExamples.filter(p => 
+    //     p.category === 'game_code' && p.platform.toLowerCase() === platformToFilter.toLowerCase() && !isCodeExpired(p.expiry)
+    //   );
+    // }
+    return []; // Default to empty if mode isn't handled or no specific filtering logic is present
   };
   
   if (mode === 'gaming' && tabsToDisplay.length === 0) {
@@ -202,17 +176,7 @@ export default function HomeTabs() {
           const promosForThisTab = getPromosForTab(tab.value);
           return (
             <TabsContent key={tab.value} value={tab.value}>
-              {isDeveloperMode && currentActiveTabValue === tab.value && mode === 'normal' && (
-                <div className="flex justify-end mb-4">
-                  <Button 
-                    variant="outline" 
-                    className={cn(mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal')}
-                    onClick={() => handleOpenAddCodeForm(tab.label)}
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Code to {tab.label}
-                  </Button>
-                </div>
-              )}
+              {/* "Add Code" button for normal mode developer is removed from here */}
               {promosForThisTab.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {promosForThisTab.map(promo => (
@@ -228,14 +192,8 @@ export default function HomeTabs() {
           );
         })}
       </Tabs>
-      {isDeveloperMode && currentPlatformForForm && (
-        <AddCodeForm
-          isOpen={isAddCodeFormOpen}
-          setIsOpen={setIsAddCodeFormOpen}
-          onSubmitCode={handleAddCodeSubmit}
-          formTitle={`Add Code to ${currentPlatformForForm}`}
-        />
-      )}
+      {/* The AddCodeForm dialog instance for normal mode developer is removed from here */}
     </>
   );
 }
+
