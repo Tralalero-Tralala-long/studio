@@ -4,9 +4,9 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift } from "lucide-react";
+import { Gift, ArrowLeft } from "lucide-react"; // Added ArrowLeft
 import { cn } from "@/lib/utils";
-import Link from 'next/link'; // Import Link
+import Link from 'next/link';
 
 export default function GameCodesPage() {
   const { mode } = useAppContext();
@@ -14,11 +14,24 @@ export default function GameCodesPage() {
     <div className="container mx-auto p-4 md:p-8">
       <Card className={`${mode === 'gaming' ? 'bg-card border-primary' : 'bg-card'}`}>
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Gift className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
-            <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-              Game Codes
-            </CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Gift className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
+              <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
+                Game Codes
+              </CardTitle>
+            </div>
+            <Link href="/" passHref>
+              <Button 
+                variant="outline" 
+                className={cn(
+                  mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
+                )}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -28,7 +41,7 @@ export default function GameCodesPage() {
           
           <div className="mt-6">
             <Link
-              href="/roblox-codes" // Changed to internal link
+              href="/roblox-codes"
               className={cn(
                 buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
@@ -40,7 +53,6 @@ export default function GameCodesPage() {
                 <path d="M12 12l6.23 3.37-1.22-7.06 5.22-4.73-7.2-.62L12 2.61V12z"/>
               </svg> 
               <span>Roblox Game Codes</span>
-              {/* Removed ExternalLink icon */}
             </Link>
           </div>
 
