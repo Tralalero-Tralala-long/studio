@@ -59,7 +59,7 @@ const loginFormSchema = z.object({
       message: "Please use an email from a supported provider (e.g., Gmail, Outlook, Yahoo, etc.)."
     }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  username: z.string().min(3, { message: "Username must be at least 3 characters." }).optional(),
+  username: z.string().min(3, { message: "Username must be at least 3 characters." }),
   notifications: z.enum(["none", "phone", "email", "both"], {
     required_error: "You need to select a notification type.",
   }),
@@ -117,7 +117,7 @@ export default function LoginPage() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username (Optional)</FormLabel>
+                      <FormLabel>Username</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
