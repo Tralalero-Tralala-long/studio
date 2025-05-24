@@ -10,23 +10,43 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
-  const { mode, username, email, signOut } = useAppContext();
+  const { mode, username, email, signOut, isAuthenticated } = useAppContext(); // Added isAuthenticated
   const router = useRouter();
+  const { toast } = useToast();
   
-  const [currentUsername, setCurrentUsername] = useState(username || "PromoUser123");
-  const [currentEmail, setCurrentEmail] = useState(email || "promouser@example.com");
+  // Local state for inputs, primarily for display. Direct editing not fully supported without backend.
+  const [currentUsername, setCurrentUsername] = useState(username || "");
+  const [currentEmail, setCurrentEmail] = useState(email || "");
 
   useEffect(() => {
-    setCurrentUsername(username || "PromoUser123");
-    setCurrentEmail(email || "promouser@example.com");
-  }, [username, email]);
+    // If not authenticated, redirect to login. This is an extra layer of protection.
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    setCurrentUsername(username || "User");
+    setCurrentEmail(email || "user@example.com");
+  }, [username, email, isAuthenticated, router]);
 
-  const handleSignOutClick = () => {
-    signOut();
-    router.push('/login');
+
+  const handleSignOutClick = async () => {
+    await signOut();
+    // The AppContext's onAuthStateChanged listener should handle redirecting
+    // or clearing user data. If direct redirect is needed after sign out:
+    router.push('/login'); 
   };
+
+  // If not authenticated and useEffect hasn't redirected yet, show loading or nothing
+  if (!isAuthenticated) {
+      return (
+        <div className="container mx-auto p-4 md:p-8 text-center">
+          <p>Loading profile or redirecting...</p>
+        </div>
+      );
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -42,12 +62,13 @@ export default function ProfilePage() {
         <CardContent className="space-y-6">
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="person avatar"/>
+              {/* Placeholder for user's actual avatar if available from Firebase (user.photoURL) */}
+              <AvatarImage src={auth.currentUser?.photoURL || "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="person avatar"/>
               <AvatarFallback>{currentUsername ? currentUsername.substring(0, 2).toUpperCase() : "UP"}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className={`text-xl font-semibold ${mode === 'gaming' ? 'font-rajdhani' : ''}`}>{currentUsername || "Not set"}</h3>
-              <p className="text-sm text-muted-foreground">{currentEmail || "Not set"}</p>
+              <h3 className={`text-xl font-semibold ${mode === 'gaming' ? 'font-rajdhani' : ''}`}>{currentUsername}</h3>
+              <p className="text-sm text-muted-foreground">{currentEmail}</p>
             </div>
           </div>
 
@@ -56,7 +77,7 @@ export default function ProfilePage() {
             <Input 
               id="username" 
               value={currentUsername} 
-              onChange={(e) => setCurrentUsername(e.target.value)}
+              // onChange={(e) => setCurrentUsername(e.target.value)} // Not for direct update without backend
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
               readOnly
             />
@@ -67,7 +88,7 @@ export default function ProfilePage() {
               id="email" 
               type="email" 
               value={currentEmail} 
-              onChange={(e) => setCurrentEmail(e.target.value)}
+              // onChange={(e) => setCurrentEmail(e.target.value)} // Not for direct update without backend
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
               readOnly
             />

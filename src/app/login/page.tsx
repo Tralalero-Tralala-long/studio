@@ -21,6 +21,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone, BellOff } from 'lucide-react';
 import { useAppContext } from "@/contexts/AppContext";
+import { auth } from '@/lib/firebase/config'; // Firebase auth instance
+import { GoogleAuthProvider, OAuthProvider, signInWithPopup, type User } from 'firebase/auth';
+import { useToast } from "@/hooks/use-toast";
+
 
 const allowedEmailDomains = [
   "@gmail.com",
@@ -70,6 +74,7 @@ type LoginFormValues = z.infer<typeof loginFormSchema>;
 export default function LoginPage() {
   const { mode, setIsAuthenticated, setUsername, setEmail } = useAppContext();
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -81,13 +86,75 @@ export default function LoginPage() {
     },
   });
 
+  // Placeholder for form submission - actual email/password auth not implemented here
   function onSubmit(data: LoginFormValues) {
-    console.log(data);
+    console.log("Form submitted (placeholder):", data);
+    // This is where you would typically call Firebase email/password sign-up or sign-in
+    // For now, we'll just set the context as if login was successful for demo purposes
+    // if you were to implement email/password auth.
     setIsAuthenticated(true);
     setUsername(data.username || null);
     setEmail(data.email);
+    toast({
+      title: "Login Successful (Placeholder)",
+      description: "Redirecting to homepage...",
+    });
     router.push('/');
   }
+
+  const handleFirebaseAuthSuccess = (firebaseUser: User) => {
+    setIsAuthenticated(true);
+    setUsername(firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User");
+    setEmail(firebaseUser.email);
+    toast({
+      title: "Sign-In Successful!",
+      description: `Welcome, ${firebaseUser.displayName || firebaseUser.email}!`,
+    });
+    router.push('/');
+  };
+
+  const handleFirebaseAuthError = (error: any, providerName: string) => {
+    console.error(`${providerName} Sign-In Error:`, error);
+    let description = "An unknown error occurred. Please try again.";
+    if (error.code === 'auth/popup-closed-by-user') {
+      description = "Sign-in popup was closed before completion.";
+    } else if (error.code === 'auth/cancelled-popup-request') {
+      description = "Sign-in was cancelled.";
+    } else if (error.message) {
+      description = error.message;
+    }
+    toast({
+      title: `${providerName} Sign-In Failed`,
+      description: description,
+      variant: "destructive",
+    });
+  };
+
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      handleFirebaseAuthSuccess(result.user);
+    } catch (error) {
+      handleFirebaseAuthError(error, "Google");
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    const provider = new OAuthProvider('apple.com');
+    // Optional: Add scopes like 'email' and 'name'
+    provider.addScope('email');
+    provider.addScope('name');
+    // Optional: Localize the Apple Sign In button
+    // provider.setCustomParameters({ locale: 'en' });
+    try {
+      const result = await signInWithPopup(auth, provider);
+      handleFirebaseAuthSuccess(result.user);
+    } catch (error) {
+      handleFirebaseAuthError(error, "Apple");
+    }
+  };
+
 
   const buttonClass = mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal';
 
@@ -209,11 +276,11 @@ export default function LoginPage() {
                 </div>
               </div>
               <div className="mt-6 grid grid-cols-2 gap-4">
-                <Button variant="outline" className={`w-full ${buttonClass}`}>
+                <Button variant="outline" className={`w-full ${buttonClass}`} onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.85l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
                   Google
                 </Button>
-                 <Button variant="outline" className={`w-full ${buttonClass}`}>
+                 <Button variant="outline" className={`w-full ${buttonClass}`} onClick={handleAppleSignIn}>
                   <Image
                     src="https://th.bing.com/th/id/R.4e94e3f54fbb6f6f80763b9bd5fdb903?rik=%2b7FChRw20j9Agw&riu=http%3a%2f%2fwww.pngmart.com%2ffiles%2f1%2fApple-Logo-Transparent-PNG.png&ehk=sMvjGoUnOoGys47uqPXJ9Aliq5BQYZASmMcUKWYiRTg%3d&risl=&pid=ImgRaw&r=0"
                     alt="Apple logo"
