@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Box, Gamepad2, Gift, ShoppingCart, ExternalLink, Truck, School } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRef } from 'react';
 
 // Data for Special Gaming Features
 const gamingFeatures = [
@@ -37,22 +38,26 @@ const gamingFeatures = [
     imageUrl: "https://gamblemaniacs.com/admin/assets/images/07/07681a_promo-code.jpg",
     dataAiHint: "promo codes gaming",
     isExternalLink: false, 
-    href: "/game-codes"
+    href: "/game-codes" 
   }
 ];
 
 export default function HomePage() {
   const { mode } = useAppContext();
+  const homeTabsRef = useRef<HTMLDivElement>(null);
+
 
   const handleGamingFeatureClick = (feature: typeof gamingFeatures[0]) => {
     if (feature.isExternalLink && feature.href) { 
       window.open(feature.href, '_blank');
+    } else if (feature.href === "/game-codes") {
+        // No specific action needed here if it's an internal link handled by Next.js Link component
     }
     // If not external and not handled by Link component below, this click does nothing for href="#"
   };
 
 
-  if (mode === 'normal') {
+  if (mode === 'shopping') { // Changed 'normal' to 'shopping'
     const heroTitle = "Find Amazing Deals!";
     const heroDescription = "Scan for the latest promo codes from your favorite e-commerce and delivery platforms.";
     return (
@@ -115,6 +120,10 @@ export default function HomePage() {
               <span>Education Codes</span>
             </Link>
         </div>
+        {/* HomeTabs is removed from normal mode as per previous request */}
+        {/* <div id="home-tabs-section" ref={homeTabsRef}> */}
+        {/*  <HomeTabs /> */}
+        {/* </div> */}
       </div>
     );
   } else { // mode === 'gaming'
@@ -133,7 +142,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center gap-4">
             <p className="flex-1 text-base font-rajdhani">
-              PromoPulse helps you unlock savings effortlessly. Switch to Normal Mode for everyday shopping deals. Enable Deal Alerts to never miss out! Find codes for Steam, Epic Games Store, Call of Duty, Fortnite, GTA, FIFA, Roblox, and many more.
+              PromoPulse helps you unlock savings effortlessly. Switch to Shopping Mode for everyday shopping deals. Enable Deal Alerts to never miss out! Find codes for Steam, Epic Games Store, Call of Duty, Fortnite, GTA, FIFA, Roblox, and many more.
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
               <Image
@@ -147,11 +156,6 @@ export default function HomePage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* HomeTabs section for gaming mode is removed as per previous request to remove Roblox wallet */}
-        {/* <div id="home-tabs-section"> */}
-        {/*   <HomeTabs />  */}
-        {/* </div> */}
 
         <div className="mt-10">
           <h2 className="text-2xl font-bold mb-6 text-center font-orbitron text-primary">
@@ -208,6 +212,10 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+         {/* HomeTabs is not rendered in gaming mode as per previous request */}
+        {/* <div id="home-tabs-section-gaming" ref={homeTabsRef}> */}
+        {/*   <HomeTabs /> */}
+        {/* </div> */}
       </div>
     );
   }

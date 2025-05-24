@@ -7,7 +7,7 @@ import { auth } from '@/lib/firebase/config'; // Firebase auth instance
 import { signOut as firebaseSignOut, type User as FirebaseUser } from 'firebase/auth'; // Renamed User to FirebaseUser
 import { useToast } from '@/hooks/use-toast';
 
-export type Mode = 'normal' | 'gaming';
+export type Mode = 'shopping' | 'gaming'; // Changed 'normal' to 'shopping'
 
 // Defined here as it's used by the AddCodeForm and pages
 export interface PromoExample {
@@ -29,12 +29,12 @@ interface AppContextProps {
   setDealAlerts: (enabled: boolean) => void;
   toggleMode: () => void;
   isAuthenticated: boolean;
-  setIsAuthenticated: (isAuth: boolean) => void; // Kept for Firebase auth state
-  user: FirebaseUser | null; // Store the Firebase user object
-  setUser: (user: FirebaseUser | null) => void; // To set the user from Firebase
-  username: string | null; // Derived from user or set
+  setIsAuthenticated: (isAuth: boolean) => void; 
+  user: FirebaseUser | null; 
+  setUser: (user: FirebaseUser | null) => void; 
+  username: string | null; 
   setUsername: (name: string | null) => void;
-  email: string | null; // Derived from user or set
+  email: string | null; 
   setEmail: (email: string | null) => void;
   signOut: () => Promise<void>;
   isDeveloperMode: boolean;
@@ -44,10 +44,10 @@ interface AppContextProps {
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<Mode>('normal');
+  const [mode, setModeState] = useState<Mode>('shopping'); // Default to 'shopping'
   const [dealAlerts, setDealAlerts] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticatedState] = useState<boolean>(false);
-  const [user, setUserState] = useState<FirebaseUser | null>(null); // Firebase user state
+  const [user, setUserState] = useState<FirebaseUser | null>(null); 
   const [username, setUsernameState] = useState<string | null>(null);
   const [email, setEmailState] = useState<string | null>(null);
   const [isDeveloperMode, setIsDeveloperModeState] = useState<boolean>(false);
@@ -90,7 +90,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
 
     const storedMode = localStorage.getItem('promoPulseMode') as Mode | null;
-    if (storedMode) setModeState(storedMode);
+    if (storedMode) {
+        setModeState(storedMode);
+        // Ensure class is applied correctly on initial load based on stored mode
+        if (storedMode === 'gaming') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    } else {
+        // Default to shopping mode if nothing is stored
+        if (mode === 'gaming') { // current state default is shopping
+             document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }
     
     const storedDealAlerts = localStorage.getItem('promoPulseDealAlerts');
     if (storedDealAlerts) setDealAlerts(JSON.parse(storedDealAlerts));
@@ -117,7 +132,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
   
-  const toggleMode = () => setMode(mode === 'normal' ? 'gaming' : 'normal');
+  const toggleMode = () => setMode(mode === 'shopping' ? 'gaming' : 'shopping'); // Updated logic
 
   const handleSetDealAlerts = (enabled: boolean) => {
     setDealAlerts(enabled);
@@ -149,6 +164,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const performSignOut = async () => {
     try {
       await firebaseSignOut(auth);
+      // State will be cleared by onAuthStateChanged listener
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
@@ -180,7 +196,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     signOut: performSignOut,
     isDeveloperMode,
     setIsDeveloperMode: handleSetIsDeveloperMode,
-  }), [mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode, toast]);
+  }), [mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode, toast]); // toast added to dependencies
 
   return (
     <AppContext.Provider value={contextValue}>

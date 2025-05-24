@@ -12,24 +12,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (mode === 'gaming') {
       document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('font-geist-sans');
-      // You can choose Orbitron or Rajdhani as the primary gaming font.
-      // Here, we're adding both classes and letting CSS specificity or direct application decide.
-      // Or, apply one specifically: document.body.classList.add('font-orbitron');
-      document.body.classList.add('font-orbitron'); 
       document.body.classList.remove('font-geist-sans');
-
-    } else {
+      document.body.classList.add('font-orbitron'); 
+    } else { // mode === 'shopping'
       document.documentElement.classList.remove('dark');
       document.body.classList.remove('font-orbitron');
-      document.body.classList.remove('font-rajdhani');
+      document.body.classList.remove('font-rajdhani'); // Ensure Rajdhani is also removed if it was applied
       document.body.classList.add('font-geist-sans');
     }
-    // Ensure body always has a font family
-    if (!document.body.style.fontFamily) {
-         document.body.style.fontFamily = mode === 'gaming' ? 'var(--font-orbitron)' : 'var(--font-geist-sans)';
-    }
-
+    // Ensure body always has a font family set via style as a fallback or explicit override
+    document.body.style.fontFamily = mode === 'gaming' ? 'var(--font-orbitron)' : 'var(--font-geist-sans)';
 
   }, [mode]);
 

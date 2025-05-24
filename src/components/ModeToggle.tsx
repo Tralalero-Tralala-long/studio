@@ -18,9 +18,9 @@ export default function ModeToggle() {
             size="icon" 
             onClick={toggleMode}
             className={mode === 'gaming' ? 'button-glow-gaming border-primary hover:border-accent' : 'button-glow-normal'}
-            aria-label={`Switch to ${mode === 'normal' ? 'Gaming' : 'Normal'} mode`}
+            aria-label={`Switch to ${mode === 'shopping' ? 'Gaming' : 'Shopping'} mode`}
           >
-            {mode === 'normal' ? (
+            {mode === 'shopping' ? ( // icon for current mode
               <Gamepad2 className="h-[1.2rem] w-[1.2rem]" /> 
             ) : (
               <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
@@ -28,7 +28,7 @@ export default function ModeToggle() {
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Switch to {mode === 'normal' ? 'Gaming' : 'Normal'} Mode</p>
+          <p>Switch to {mode === 'shopping' ? 'Gaming' : 'Shopping'} Mode</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
