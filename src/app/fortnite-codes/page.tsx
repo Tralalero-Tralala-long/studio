@@ -18,8 +18,7 @@ interface FortniteCode {
 
 // Placeholder codes - replace with actual Fortnite codes
 const fortniteCodes: FortniteCode[] = [
-  { id: "fn1", code: "VBUCKMASTER", reward: "100 V-Bucks" },
-  { id: "fn2", code: "SKINGIFT", reward: "Random Skin Item" },
+  // Codes removed as per request
 ];
 
 export default function FortniteCodesPage() {
