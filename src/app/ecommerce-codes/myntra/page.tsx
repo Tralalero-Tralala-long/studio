@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialMyntraCodes: PromoExample[] = [
-  { id: "myntra1", title: "FLAT 200 OFF", code: "MYNTRA200", expiry: "2024-12-31", platform: "Myntra", category: "fashion", description: "Get flat Rs. 200 off on orders above Rs. 999.", isUsed: false },
+  { id: "myntra1", title: "FLAT ₹500 OFF", code: "MYNTRA500", expiry: "2025-07-31", platform: "Myntra", category: "fashion", description: "Flat ₹500 off on minimum purchase ₹2,999.", isUsed: false },
+  { id: "myntra2", title: "FLAT ₹300 OFF + Free Shipping", code: "MYNTRA300", expiry: "2025-05-31", platform: "Myntra", category: "fashion", description: "Flat ₹300 off + Free Shipping on minimum purchase ₹1,099.", isUsed: false },
+  { id: "myntra3", title: "₹300 OFF + Up to 50% Off", code: "FLAT300", expiry: "2025-05-31", platform: "Myntra", category: "fashion", description: "₹300 off + up to 50% off on minimum purchase ₹999.", isUsed: false },
+  { id: "myntra4", title: "30% OFF", code: "WED30PERCENTOFF", expiry: "2025-05-31", platform: "Myntra", category: "fashion", description: "30% off.", isUsed: false },
 ];
 
 export default function MyntraCodesPage() {
