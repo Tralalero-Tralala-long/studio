@@ -6,7 +6,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Scan, Ticket, UserCircle, Users, Search } from 'lucide-react';
+import { Flame, Home, Ticket, UserCircle, Users, Search } from 'lucide-react'; // Removed Scan icon
 
 export default function Header() {
   const { mode, isAuthenticated } = useAppContext();
@@ -36,9 +36,7 @@ export default function Header() {
           <Link href="/" className={navLinkClass}>
             <Home className="inline-block w-4 h-4 mr-1" /> Home
           </Link>
-          <Link href="/scan" className={navLinkClass}> {/* Changed href */}
-            <Scan className="inline-block w-4 h-4 mr-1" /> Scan
-          </Link>
+          {/* Scan link removed */}
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
