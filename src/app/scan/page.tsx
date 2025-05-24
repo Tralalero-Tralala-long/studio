@@ -51,27 +51,28 @@ export default function ScanPage() {
               </div>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
-              <p className={`mb-4 text-sm ${mode === 'gaming' ? 'font-rajdhani text-muted-foreground' : 'text-muted-foreground'}`}>
-                Place your QR code image (e.g., 'qr-code.png') in the 'public/images/' folder of your project.
-                Then, update the 'src' below to '/images/qr-code.png'.
+              <p className={`mb-4 text-sm text-center ${mode === 'gaming' ? 'font-rajdhani text-muted-foreground' : 'text-muted-foreground'}`}>
+                To display your QR code: <br />
+                1. Save your QR image (e.g., `APP of group 1.png`) into the `public/images/` folder in your project. <br />
+                2. Edit this file (`src/app/scan/page.tsx`) and change the `src` of the Image component below from its current placeholder to your image's path (e.g., `"/images/APP of group 1.png"`).
               </p>
-              <div className="w-48 h-48 md:w-64 md:h-64 relative bg-muted rounded-md flex items-center justify-center">
+              <div className="w-64 h-64 relative bg-muted rounded-md flex items-center justify-center">
                 {/* 
-                  TODO: Replace the src below with your actual QR code image path 
-                  e.g., /images/your-qr-code-filename.png 
-                  Ensure the image is in your project's 'public/images/' folder.
+                  USER ACTION REQUIRED: 
+                  1. Place your QR code image (e.g., APP of group 1.png) in your project's 'public/images/' folder.
+                  2. Replace the src below with the path to your image, e.g., "/images/APP of group 1.png".
                 */}
                 <Image
                   src="https://placehold.co/256x256.png" 
-                  alt="QR Code Placeholder - Replace with your QR code"
+                  alt="QR Code Placeholder - Replace with your QR code by editing src/app/scan/page.tsx"
                   data-ai-hint="QR code scan"
-                  width={256}
-                  height={256}
+                  width={256} // Ensures 256x256 space
+                  height={256} // Ensures 256x256 space
                   className="rounded-md object-contain"
                 />
               </div>
               <p className={`mt-4 text-xs ${mode === 'gaming' ? 'font-rajdhani text-muted-foreground' : 'text-muted-foreground'}`}>
-                (Example QR code shown)
+                (Example QR code shown above)
               </p>
             </CardContent>
           </Card>
