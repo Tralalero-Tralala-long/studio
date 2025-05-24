@@ -5,7 +5,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift, Code } from 'lucide-react';
+import { ShoppingCart, Truck, Gift } from 'lucide-react'; // Removed Code icon
 
 interface PromoExample {
   id: number;
@@ -21,7 +21,7 @@ const promoExamples: PromoExample[] = [
   { id: 1, title: "20% Off Your Next Order", code: "SAVE20", platform: "E-commerce", expiry: "2024-12-31", description: "Get 20% off on all items in our store." },
   { id: 2, title: "Free Delivery", code: "FREEDEL", platform: "Delivery", expiry: "2024-11-30", description: "Enjoy free delivery on orders over $25." },
   { id: 3, title: "$10 Referral Bonus", code: "REF10", platform: "Referral", expiry: "N/A", description: "Refer a friend and you both get $10." },
-  // Roblox Codes - examples
+  // Roblox Codes - examples (These will no longer be displayed as the Roblox Codes tab is removed)
   { id: 7, title: "Free Roblox Gems", code: "ROBLOXGEM", platform: "Roblox Codes", expiry: "2025-01-01", description: "Get 100 free gems for your Roblox account!", category: "game_code" },
   { id: 8, title: "Roblox Bonus Coins", code: "ROBLOXCOIN", platform: "Roblox Codes", expiry: "2025-01-15", description: "Bonus coins for your Roblox adventures.", category: "game_code" },
   { id: 9, title: "Exclusive Roblox Item", code: "ROBLOXITEM", platform: "Roblox Codes", expiry: "2024-12-20", description: "Unlock an exclusive item in Roblox.", category: "game_code" },
@@ -59,55 +59,48 @@ export default function HomeTabs() {
     { value: 'referral', label: 'Referral', icon: <Gift className="w-4 h-4 mr-2" /> },
   ];
 
-  const gamingTabs = [
-    { value: 'roblox', label: 'Roblox Codes', icon: <Code className="w-4 h-4 mr-2" /> },
-  ];
+  const gamingTabs: Array<{ value: string; label: string; icon: JSX.Element }> = []; // Roblox wallet removed
 
-  const tabs = mode === 'normal' ? normalTabs : gamingTabs;
+  const tabsToDisplay = mode === 'normal' ? normalTabs : gamingTabs;
   
-  const currentPromos = mode === 'normal' 
-    ? promoExamples.filter(p => ['E-commerce', 'Delivery', 'Referral'].includes(p.platform))
-    : promoExamples.filter(p => p.platform === "Roblox Codes");
+  // Filter promos for the current active tab
+  const getPromosForTab = (tabLabel: string) => {
+    return promoExamples.filter(p => p.platform === tabLabel);
+  };
+
+  // If no tabs are configured for the current mode, render nothing for this component.
+  if (tabsToDisplay.length === 0) {
+    return null; 
+  }
 
   return (
-    <Tabs defaultValue={tabs[0].value} className="w-full">
-      <TabsList className={`grid w-full grid-cols-${tabs.length} mb-6 ${mode === 'gaming' ? 'bg-muted' : 'bg-muted'}`}>
-        {tabs.map(tab => (
+    <Tabs defaultValue={tabsToDisplay[0].value} className="w-full">
+      <TabsList className={`grid w-full grid-cols-${tabsToDisplay.length} mb-6 ${mode === 'gaming' ? 'bg-muted' : 'bg-muted'}`}>
+        {tabsToDisplay.map(tab => (
           <TabsTrigger key={tab.value} value={tab.value} className={`flex items-center justify-center data-[state=active]:${mode === 'gaming' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-primary text-primary-foreground shadow-md'} py-3`}>
             {tab.icon} {tab.label}
           </TabsTrigger>
         ))}
       </TabsList>
 
-      {mode === 'normal' && normalTabs.map(tab => (
-        <TabsContent key={tab.value} value={tab.value}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentPromos.filter(p => p.platform.toLowerCase().includes(tab.label.toLowerCase().replace(/\s+/g, '').replace('-', ''))).map(promo => (
-              <PromoCard key={promo.id} {...promo} mode={mode} />
-            ))}
-            {currentPromos.filter(p => p.platform.toLowerCase().includes(tab.label.toLowerCase().replace(/\s+/g, '').replace('-', ''))).length === 0 && (
-              <p className="col-span-full text-center text-muted-foreground">No {tab.label} promos found currently. Check back later!</p>
+      {tabsToDisplay.map(tab => {
+        const promosForThisTab = getPromosForTab(tab.label); // Assuming tab.label matches platform name
+        return (
+            <TabsContent key={tab.value} value={tab.value}>
+            {promosForThisTab.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {promosForThisTab.map(promo => (
+                    <PromoCard key={promo.id} {...promo} mode={mode} />
+                ))}
+                </div>
+            ) : (
+                <p className="col-span-full text-center text-muted-foreground">
+                No {tab.label} promos found currently. Check back later!
+                </p>
             )}
-          </div>
-        </TabsContent>
-      ))}
-
-      {mode === 'gaming' && gamingTabs.map(tab => (
-        <TabsContent key={tab.value} value={tab.value}>
-           {currentPromos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentPromos.map(promo => ( // Directly map all currentPromos (which are already filtered for "Roblox Codes")
-                <PromoCard key={promo.id} {...promo} mode={mode} />
-              ))}
-            </div>
-          ) : (
-            <p className="col-span-full text-center text-muted-foreground">
-              No {tab.label} found currently. Check back later!
-            </p>
-          )}
-        </TabsContent>
-      ))}
+            </TabsContent>
+        );
+      })}
     </Tabs>
   );
 }
-
