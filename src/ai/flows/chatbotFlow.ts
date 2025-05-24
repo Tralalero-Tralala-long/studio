@@ -11,6 +11,20 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit'; // Genkit v1.x uses 'genkit' for z
 
+// Schema for individual promo codes, mirroring PromoExample type
+const PromoExampleSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  code: z.string(),
+  platform: z.string(),
+  expiry: z.string(),
+  description: z.string(),
+  category: z.string().optional(),
+  game: z.string().optional(),
+  reward: z.string().optional(),
+  isUsed: z.boolean().optional(),
+});
+
 // Schema for the public 'chat' function and 'promoChatFlow' input
 const ChatInputSchema = z.object({
   message: z.string().describe('The user message to the chatbot.'),
@@ -25,6 +39,7 @@ const ChatInputSchema = z.object({
     .describe(
       'The history of the conversation. Model messages are from the assistant, user messages are from the user.'
     ),
+  availablePromoCodes: z.array(PromoExampleSchema).optional().describe('A list of currently available promo codes for the chatbot to reference.'),
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 
@@ -34,7 +49,7 @@ const ChatOutputSchema = z.object({
 });
 export type ChatOutput = z.infer<typeof ChatOutputSchema>;
 
-// Internal schema for the chatPrompt, including boolean flags for Handlebars
+// Internal schema for the chatPrompt, including boolean flags for Handlebars and promo codes
 const InternalChatPromptInputSchema = z.object({
   message: z.string().describe('The user message to the chatbot.'),
   history: z
@@ -47,6 +62,7 @@ const InternalChatPromptInputSchema = z.object({
       })
     )
     .optional(),
+  availablePromoCodes: z.array(PromoExampleSchema).optional(),
 });
 
 
@@ -57,7 +73,7 @@ export async function chat(input: ChatInput): Promise<ChatOutput> {
 
 const chatPrompt = ai.definePrompt({
   name: 'promoChatbotPrompt',
-  input: {schema: InternalChatPromptInputSchema}, // Use internal schema with boolean flags
+  input: {schema: InternalChatPromptInputSchema}, // Use internal schema
   output: {schema: ChatOutputSchema},
   prompt: `You are PromoBot, a friendly and highly efficient assistant for the PromoPulse website. Your primary goal is to help users find the most relevant promo codes for their online shopping and gaming needs.
 
@@ -73,9 +89,23 @@ Conversation Flow:
     - "Are you a student, or do you have any premium memberships we should know about?"
    Do NOT ask all these questions at once. Pick the most relevant ones based on the conversation.
 3. Once you have a good understanding of the user's needs (usually after 2-3 questions from you, or if the user provides a lot of detail), try to suggest promo codes.
-4. When suggesting codes, act as if you have searched a comprehensive database. Provide the code itself, a brief description of the discount, any known requirements (like minimum purchase, card eligibility, new user only), and an expiry date if applicable. If you don't have a specific code for a very niche request, you can suggest general saving tips or guide them to check relevant categories on the PromoPulse app (e.g., "You might find great deals on our Roblox codes page!").
+4. When suggesting codes, if availablePromoCodes list is provided, prioritize finding matching codes from that list. Provide the code itself, a brief description of the discount, any known requirements (like minimum purchase, card eligibility, new user only), and an expiry date if applicable.
+5. If no specific codes are provided in availablePromoCodes or no good match is found, you can suggest general saving tips or guide them to check relevant categories on the PromoPulse app (e.g., "You might find great deals on our Roblox codes page!"). Base your suggestions on the information the user provides and your general knowledge of how promo codes work. Try to make the codes and conditions sound plausible.
 
-Important: You don't have direct access to a live database of promo codes for this conversation. Base your suggestions on the information the user provides and your general knowledge of how promo codes work. If the user asks for a code for "X," and you think a common type of code for "X" is "SAVE20 for 20% off," you can suggest that, and mention common conditions. Try to make the codes and conditions sound plausible.
+{{#if availablePromoCodes}}
+Here is a list of currently available promo codes you can use to help the user. Prioritize these when making suggestions:
+{{#each availablePromoCodes}}
+- Code: {{{code}}} (Title: {{{title}}})
+  Description: {{{description}}}
+  Platform/Game: {{{platform}}}{{#if game}} (Game: {{game}}){{/if}}
+  Expires: {{{expiry}}}
+  {{#if category}}Category: {{{category}}}{{/if}}
+  {{#if reward}}Reward: {{{reward}}}{{/if}}
+  {{#if isUsed}}(Note: This code might have been marked as used by a user. Advise them to check its validity.){{/if}}
+{{/each}}
+{{else}}
+(No specific list of promo codes was provided for this session. Rely on your general knowledge and the user's input to suggest plausible codes and common conditions.)
+{{/if}}
 
 Let's look at the conversation so far to understand the context.
 
@@ -110,6 +140,7 @@ const promoChatFlow = ai.defineFlow(
     const promptPayload = {
       message: input.message,
       history: transformedHistory,
+      availablePromoCodes: input.availablePromoCodes, // Pass promo codes to the prompt
     };
 
     const {output} = await chatPrompt(promptPayload); // Call prompt with transformed data

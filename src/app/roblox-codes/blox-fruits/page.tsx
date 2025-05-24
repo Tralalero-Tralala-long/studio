@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Copy, Gift, CalendarDays, PlusCircle, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
+import { cn, isCodeExpired } from "@/lib/utils"; 
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -14,7 +14,8 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-const initialBloxFruitsCodes: PromoExample[] = [
+// Export initial codes for chatbot access
+export const initialBloxFruitsCodes: PromoExample[] = [
   { id: "bf1", title: "2x XP Boost", code: "NOMOREHACK", reward: "20 minutes of 2x Experience", expiry: "June 9, 2025", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "Get 20 minutes of 2x Experience in Blox Fruits.", isUsed: false },
   { id: "bf2", title: "Another XP Boost", code: "BANEXPLOIT", reward: "20 minutes of 2x Experience", expiry: "April 2, 2025", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "Enjoy another 20 minutes of 2x Experience.", isUsed: false },
   { id: "bf3", title: "Fruit Finder", code: "EARN_FRUITS", reward: "20 minutes of 2x Experience", expiry: "June 19, 2025", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "This code also grants 20 minutes of 2x Experience.", isUsed: false },
@@ -23,7 +24,7 @@ const initialBloxFruitsCodes: PromoExample[] = [
 ];
 
 interface BloxFruitCodeDisplayItem extends PromoExample {
-  reward: string; 
+  // reward is already optional in PromoExample, so this interface isn't strictly necessary unless adding more BloxFruit specific fields
 }
 
 
@@ -63,7 +64,7 @@ export default function BloxFruitsCodesPage() {
       category: "game_code",    
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      reward: formData.description, 
+      reward: formData.description, // Using description as reward for simplicity if not specified
       isUsed: false, 
     };
 
@@ -151,12 +152,14 @@ export default function BloxFruitsCodesPage() {
                         mode === 'gaming' ? 'text-primary' : 'text-primary',
                         item.isUsed ? 'line-through' : ''
                       )}>{item.code}</p>
-                    <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>{item.reward}</p>
-                     <p className={`text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'} italic`}>Details: {item.description}</p>
-                    <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
-                      <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                      <span>Expires: {item.expiry}</span>
-                    </div>
+                    {item.reward && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
+                    <p className={`text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'} italic`}>Details: {item.description}</p>
+                    {item.expiry && item.expiry !== "Not specified" && (
+                      <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
+                        <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+                        <span>Expires: {item.expiry}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-3 self-end sm:self-center w-full sm:w-auto">
                     <div className="flex items-center space-x-2 order-last sm:order-first mt-2 sm:mt-0">

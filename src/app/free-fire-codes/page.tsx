@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
+import { cn, isCodeExpired } from "@/lib/utils"; 
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -14,7 +14,8 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-const initialFreeFireCodes: PromoExample[] = [
+// Export initial codes for chatbot access
+export const initialFreeFireCodes: PromoExample[] = [
   // Placeholder - can be populated by developer mode
   // Example: { id: "ff1", title: "Diamond Bundle", code: "FREEFIREMAX", expiry: "2024-11-30", platform: "Free Fire (Garena)", category: "game_code", description: "Get 500 Diamonds.", isUsed: false }
 ];

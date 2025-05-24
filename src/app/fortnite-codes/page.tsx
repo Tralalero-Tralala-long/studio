@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
+import { cn, isCodeExpired } from "@/lib/utils"; 
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -14,7 +14,8 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-const initialFortniteCodes: PromoExample[] = [
+// Export initial codes for chatbot access
+export const initialFortniteCodes: PromoExample[] = [
   // Codes removed as per request, can be added by dev
   // Example: { id: "fn1", title: "V-Bucks Pack", code: "FORTNITE2024", expiry: "2024-12-31", platform: "Fortnite", category: "game_code", description: "Get 1000 V-Bucks.", isUsed: false }
 ];

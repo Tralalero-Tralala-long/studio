@@ -6,22 +6,17 @@ import { useAppContext, type PromoExample } from '@/contexts/AppContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift, PlusCircle, CheckSquare, Square, Code } from 'lucide-react'; // Keep Code for gaming mode if it was there
+import { ShoppingCart, Truck, Gift, CheckSquare, Square } from 'lucide-react'; 
 import { useState, useEffect, useMemo } from 'react';
 import { cn, isCodeExpired } from "@/lib/utils";
-// AddCodeForm import is removed as it's no longer used directly in this component for normal mode tabs
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 
-const initialPromoExamples: PromoExample[] = [
-  // { id: "1", title: "20% Off Next Order", code: "SAVE20", platform: "E-commerce", expiry: "2024-12-31", description: "Get 20% off your next order on selected items.", category: "ecommerce_discount", isUsed: false },
+export const initialPromoExamples: PromoExample[] = [ // Exported for chatbot access
   { id: "2", title: "Free Delivery", code: "FREEDEL", platform: "Delivery", expiry: "N/A", description: "Enjoy free delivery on orders over $25.", category: "delivery_discount", isUsed: false },
   { id: "3", title: "$10 Referral Bonus", code: "REF10", platform: "Referral", expiry: "N/A", description: "Refer a friend and you both get $10.", category: "referral_bonus", isUsed: false },
-  // Example Roblox code, platform will be 'Game Codes' or similar if gaming tabs are present
-  // { id: "7", title: "Roblox TDS Gems", code: "GEMSRFUN", platform: "Game Codes", game: "Tower Defense Simulator", expiry: "N/A", description: "Get 500 Gems in Tower Defense Simulator.", category: "game_code", isUsed: false },
 ];
 
 interface PromoCardDisplayProps extends PromoExample {
@@ -85,11 +80,10 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
 }
 
 export default function HomeTabs() {
-  const { mode, isDeveloperMode } = useAppContext(); // isDeveloperMode can still be used for other purposes if needed
+  const { mode } = useAppContext(); 
   
   const [promoExamples, setPromoExamples] = useState<PromoExample[]>(
-    initialPromoExamples
-      .filter(p => !isCodeExpired(p.expiry))
+    initialPromoExamples // No longer filtering here, will filter in getPromosForTab
       .map(p => ({...p, isUsed: p.isUsed || false}))
   );
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -101,10 +95,7 @@ export default function HomeTabs() {
     { value: 'referral', label: 'Referral', icon: <Gift className="w-4 h-4 mr-2" /> },
   ];
 
-  // Gaming tabs are intentionally empty or managed as per other requirements
-  const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = [
-    // { value: 'game_codes', label: 'Roblox Codes', icon: <Code className="w-4 h-4 mr-2" /> },
-  ];
+  const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = []; // Empty for now
 
   const tabsToDisplay = useMemo(() => (mode === 'normal' ? normalTabs : gamingTabs), [mode]);
 
@@ -131,32 +122,19 @@ export default function HomeTabs() {
     if (!tabValue) return [];
     
     const tabDetails = tabsToDisplay.find(t => t.value.toLowerCase() === tabValue.toLowerCase());
-    // Fallback to tabValue if tabDetails is not found, for more robust matching against platform
     const platformToFilter = tabDetails ? tabDetails.label : tabValue; 
   
     if (mode === 'normal') {
+      // Filter non-expired codes here
       return promoExamples.filter(p => 
         p.platform.toLowerCase() === platformToFilter.toLowerCase() && !isCodeExpired(p.expiry)
       );
     }
-    // For gaming mode, if it were to have its own local codes handled here:
-    // else if (mode === 'gaming') {
-    //   return promoExamples.filter(p => 
-    //     p.category === 'game_code' && p.platform.toLowerCase() === platformToFilter.toLowerCase() && !isCodeExpired(p.expiry)
-    //   );
-    // }
-    return []; // Default to empty if mode isn't handled or no specific filtering logic is present
+    return []; 
   };
   
-  if (mode === 'gaming' && tabsToDisplay.length === 0) {
+  if ((mode === 'gaming' && tabsToDisplay.length === 0) || (mode === 'normal' && tabsToDisplay.length === 0)) {
      return null; 
-  }
-  if (mode === 'normal' && tabsToDisplay.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground py-8">
-        No promo categories available for this mode currently.
-      </div>
-    );
   }
   
   const currentActiveTabValue = activeTab || (tabsToDisplay.length > 0 ? tabsToDisplay[0].value : undefined);
@@ -176,7 +154,6 @@ export default function HomeTabs() {
           const promosForThisTab = getPromosForTab(tab.value);
           return (
             <TabsContent key={tab.value} value={tab.value}>
-              {/* "Add Code" button for normal mode developer is removed from here */}
               {promosForThisTab.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {promosForThisTab.map(promo => (
@@ -192,8 +169,6 @@ export default function HomeTabs() {
           );
         })}
       </Tabs>
-      {/* The AddCodeForm dialog instance for normal mode developer is removed from here */}
     </>
   );
 }
-

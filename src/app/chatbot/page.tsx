@@ -9,8 +9,17 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Bot, User, Send } from 'lucide-react';
 import { chat, type ChatInput, type ChatOutput } from '@/ai/flows/chatbotFlow';
-import { useAppContext } from '@/contexts/AppContext';
+import { useAppContext, type PromoExample } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
+
+// Import initial data from other pages - THIS IS FOR DEMONSTRATION and not ideal for production
+// In a real app, this data should come from a central store or API
+import { initialPromoExamples as homeTabsPromoExamples } from '@/components/home/HomeTabs'; // Assuming initialPromoExamples is exported
+import { initialBloxFruitsCodes } from '../roblox-codes/blox-fruits/page'; // Assuming initialBloxFruitsCodes is exported
+import { initialFortniteCodes } from '../fortnite-codes/page'; // Assuming initialFortniteCodes is exported
+import { initialFreeFireCodes } from '../free-fire-codes/page'; // Assuming initialFreeFireCodes is exported
+import { initialBrawlStarsCodes } from '../brawl-stars-codes/page'; // Assuming initialBrawlStarsCodes is exported
+
 
 interface ChatMessage {
   id: string;
@@ -18,12 +27,30 @@ interface ChatMessage {
   parts: Array<{ text: string }>;
 }
 
+// Helper function to get initial codes - for demonstration
+const getAllPromoCodes = (): PromoExample[] => {
+  // Ensure imported arrays are correctly typed and mapped if necessary
+  // This example assumes they are already PromoExample[] or compatible
+  const allCodes: PromoExample[] = [
+    ...homeTabsPromoExamples,
+    ...initialBloxFruitsCodes.map(c => ({...c, reward: c.reward || c.description })), // Map BloxFruits specific type if needed
+    ...initialFortniteCodes,
+    ...initialFreeFireCodes,
+    ...initialBrawlStarsCodes,
+  ];
+  // Remove duplicates by code, just in case
+  const uniqueCodes = Array.from(new Map(allCodes.map(code => [code.code, code])).values());
+  return uniqueCodes;
+};
+
+
 export default function ChatbotPage() {
   const { mode } = useAppContext();
   const [userInput, setUserInput] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [availableCodes, setAvailableCodes] = useState<PromoExample[]>([]);
 
   useEffect(() => {
     // Scroll to bottom when chatHistory changes
@@ -35,33 +62,9 @@ export default function ChatbotPage() {
     }
   }, [chatHistory]);
 
-  // Optional: Send an initial greeting from the bot
   useEffect(() => {
-    // This can be a predefined message or a call to the flow with an initial empty prompt
-    // For simplicity, let's start with an empty history and let the prompt handle the first message.
-    /*
-    const fetchInitialBotMessage = async () => {
-      setIsLoading(true);
-      try {
-        const response = await chat({ message: "__INITIAL_GREETING__", history: [] }); // Or an empty message
-        setChatHistory([{
-          id: Date.now().toString() + '-bot-init',
-          role: 'model',
-          parts: [{ text: response.reply }]
-        }]);
-      } catch (error) {
-        console.error("Error getting initial bot greeting:", error);
-        setChatHistory([{
-          id: Date.now().toString() + '-error-init',
-          role: 'model',
-          parts: [{ text: 'Hi there! How can I help you find promo codes today?' }] // Fallback
-        }]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchInitialBotMessage();
-    */
+    // Load available codes once on mount - for demonstration
+    setAvailableCodes(getAllPromoCodes());
   }, []);
 
 
@@ -79,19 +82,19 @@ export default function ChatbotPage() {
     setUserInput('');
     setIsLoading(true);
     
-    // Add user message to history immediately for responsiveness
     setChatHistory((prev) => [...prev, userMessageToAdd]);
 
     try {
-      // Prepare history for the API call
-      // This uses the chatHistory state *before* the current userMessageToAdd was added by the setChatHistory call above.
-      // This is correct: we want the history up to the point *before* this new message for the API.
       const historyForApi = chatHistory.map(msg => ({
         role: msg.role,
         parts: msg.parts,
       }));
       
-      const inputPayload: ChatInput = { message: currentInputForApi, history: historyForApi };
+      const inputPayload: ChatInput = { 
+        message: currentInputForApi, 
+        history: historyForApi,
+        availablePromoCodes: availableCodes // Pass the loaded codes
+      };
       const response: ChatOutput = await chat(inputPayload);
 
       const botMessage: ChatMessage = {
@@ -124,7 +127,7 @@ export default function ChatbotPage() {
             </CardTitle>
           </div>
           <CardDescription className={cn(`pt-2`, mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground')}>
-            Your smart assistant for finding the best promo codes!
+            Your smart assistant for finding the best promo codes! Ask me anything.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
@@ -184,5 +187,3 @@ export default function ChatbotPage() {
     </div>
   );
 }
-
-    
