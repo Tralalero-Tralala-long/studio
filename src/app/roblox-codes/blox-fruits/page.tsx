@@ -4,7 +4,7 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Copy, Gift } from "lucide-react";
+import { ArrowLeft, Copy, Gift, CalendarDays } from "lucide-react"; // Added CalendarDays
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -13,13 +13,14 @@ interface BloxFruitCode {
   code: string;
   reward: string;
   id: string;
+  expiry: string; // Added expiry date
 }
 
 const bloxFruitsCodes: BloxFruitCode[] = [
-  { id: "bf1", code: "NOMOREHACK", reward: "20 minutes of 2x Experience" },
-  { id: "bf2", code: "BANEXPLOIT", reward: "20 minutes of 2x Experience" },
-  { id: "bf3", code: "EARN_FRUITS", reward: "20 minutes of 2x Experience" },
-  { id: "bf4", code: "FIGHT4FRUIT", reward: "20 minutes of 2x Experience" },
+  { id: "bf1", code: "NOMOREHACK", reward: "20 minutes of 2x Experience", expiry: "June 9, 2025" },
+  { id: "bf2", code: "BANEXPLOIT", reward: "20 minutes of 2x Experience", expiry: "April 2, 2025" },
+  { id: "bf3", code: "EARN_FRUITS", reward: "20 minutes of 2x Experience", expiry: "June 19, 2025" },
+  { id: "bf4", code: "FIGHT4FRUIT", reward: "20 minutes of 2x Experience", expiry: "July 2, 2025" },
 ];
 
 export default function BloxFruitsCodesPage() {
@@ -66,7 +67,7 @@ export default function BloxFruitsCodesPage() {
             </Link>
           </div>
           <CardDescription className={`${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'} pt-2`}>
-            Active codes for Blox Fruits. Redeem them in-game for rewards!
+            Active codes for Blox Fruits. Redeem them in-game for rewards! Make sure to use them before they expire.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -74,11 +75,15 @@ export default function BloxFruitsCodesPage() {
             bloxFruitsCodes.map((item) => (
               <Card 
                 key={item.id} 
-                className={`p-4 flex flex-col sm:flex-row justify-between items-center gap-4 ${mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted'}`}
+                className={`p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted'}`}
               >
-                <div className="flex-grow">
+                <div className="flex-grow space-y-1">
                   <p className={`font-mono text-lg font-semibold ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`}>{item.code}</p>
                   <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>{item.reward}</p>
+                  <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
+                    <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+                    <span>Expires: {item.expiry}</span>
+                  </div>
                 </div>
                 <Button 
                   variant="outline" 
@@ -86,7 +91,7 @@ export default function BloxFruitsCodesPage() {
                   onClick={() => handleCopyCode(item.code)}
                   className={cn(
                     mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
-                    "w-full sm:w-auto" 
+                    "w-full sm:w-auto mt-2 sm:mt-0 self-end sm:self-center" 
                   )}
                 >
                   <Copy className="mr-2 h-4 w-4" /> Copy Code
@@ -103,4 +108,3 @@ export default function BloxFruitsCodesPage() {
     </div>
   );
 }
-
