@@ -22,7 +22,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone, BellOff } from 'lucide-react';
 import { useAppContext } from "@/contexts/AppContext";
 import { auth } from '@/lib/firebase/config'; 
-import { GoogleAuthProvider, OAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth'; // Removed OAuthProvider
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -190,20 +190,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleAppleSignIn = async () => {
-    if (!checkFirebaseConfig()) return;
-    
-    const provider = new OAuthProvider('apple.com');
-    provider.addScope('email');
-    provider.addScope('name');
-    try {
-      const result = await signInWithPopup(auth, provider);
-      handleFirebaseAuthSuccess(result.user);
-    } catch (error) {
-      handleFirebaseAuthError(error, "Apple");
-    }
-  };
-
+  // Removed handleAppleSignIn function
 
   const buttonClass = mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal';
 
@@ -327,21 +314,12 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-6 grid grid-cols-1 gap-4"> {/* Changed to grid-cols-1 */}
                 <Button variant="outline" className={`w-full ${buttonClass}`} onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.85l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
                   Google
                 </Button>
-                 <Button variant="outline" className={`w-full ${buttonClass}`} onClick={handleAppleSignIn}>
-                  <Image
-                    src="https://th.bing.com/th/id/R.4e94e3f54fbb6f6f80763b9bd5fdb903?rik=%2b7FChRw20j9Agw&riu=http%3a%2f%2fwww.pngmart.com%2ffiles%2f1%2fApple-Logo-Transparent-PNG.png&ehk=sMvjGoUnOoGys47uqPXJ9Aliq5BQYZASmMcUKWYiRTg%3d&risl=&pid=ImgRaw&r=0"
-                    alt="Apple logo"
-                    width={20}
-                    height={20}
-                    className="mr-2 h-5 w-5"
-                  />
-                  Apple
-                </Button>
+                {/* Apple Sign-In Button Removed */}
               </div>
             </div>
           </CardContent>
@@ -354,3 +332,5 @@ export default function LoginPage() {
   );
 }
 
+
+    
