@@ -3,7 +3,9 @@
 
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gift } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button"; // Added buttonVariants
+import { Gift, ExternalLink } from "lucide-react"; // Added ExternalLink
+import { cn } from "@/lib/utils"; // Added cn
 
 export default function GameCodesPage() {
   const { mode } = useAppContext();
@@ -18,13 +20,34 @@ export default function GameCodesPage() {
             </CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <p className={`text-lg ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>
             Discover and manage your game codes here. Keep an eye out for new additions!
           </p>
-          {/* Placeholder for game code list, filtering, or search functionality */}
-          <div className="mt-6 p-6 border border-dashed rounded-lg text-center text-muted-foreground">
-            Game codes will be listed here. This section can be used to display various game codes, perhaps with search and filter options in the future.
+          
+          <div className="mt-6">
+            <a
+              href="https://www.roblox.com/promocodes" // Placeholder URL for Roblox promo codes
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                <path d="M12.22 18.04L5.99 21.41l1.22-7.06-5.22-4.73 7.2-.62L12 2.61l3.01 6.39 7.2.62-5.22 4.73 1.22 7.06-6.23-3.37Z"/><path d="M12.22 18.04L12 12l.22 6.04z"/>
+                <path d="M12 12l6.23 3.37-1.22-7.06 5.22-4.73-7.2-.62L12 2.61V12z"/>
+              </svg> 
+              <span>Roblox Game Codes</span>
+              <ExternalLink className="h-5 w-5" />
+            </a>
+          </div>
+
+          {/* Placeholder for other game code lists, filtering, or search functionality */}
+          <div className="mt-8 p-6 border border-dashed rounded-lg text-center text-muted-foreground">
+            Additional game codes or features will be listed here.
           </div>
         </CardContent>
       </Card>
