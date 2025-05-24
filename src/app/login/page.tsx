@@ -35,9 +35,9 @@ const allowedEmailDomains = [
   "@yandex.com", "@yandex.ru"
 ];
 
-// Placeholder developer credentials (replace with a secure method in production)
-const DEV_USERNAME = "devuser";
-const DEV_PASSWORD = "devpass";
+// Developer credentials
+const DEV_USERNAME = "therealdev0025";
+const DEV_PASSWORD = "123456789";
 
 
 const loginFormSchema = z.object({
@@ -167,7 +167,7 @@ export default function LoginPage() {
           <CardHeader className="text-center">
             <Flame className={`mx-auto h-12 w-12 mb-4 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
             <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>Welcome to PromoPulse</CardTitle>
-            <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>Sign in or create an account to start saving! (Dev login: devuser/devpass)</CardDescription>
+            <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>Sign in or create an account to start saving! (Dev login: therealdev0025/123456789)</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -295,3 +295,6 @@ export default function LoginPage() {
     </>
   );
 }
+
+
+    
