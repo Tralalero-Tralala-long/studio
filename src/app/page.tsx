@@ -87,7 +87,7 @@ export default function HomePage() {
            <Link
               href="/ecommerce-codes"
               className={cn(
-                buttonVariants({ variant: 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2 button-glow-normal"
               )}
             >
@@ -97,7 +97,7 @@ export default function HomePage() {
             <Link
               href="/delivery-codes"
               className={cn(
-                buttonVariants({ variant: 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2 button-glow-normal"
               )}
             >
@@ -107,7 +107,7 @@ export default function HomePage() {
             <Link
               href="/education-codes"
               className={cn(
-                buttonVariants({ variant: 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2 button-glow-normal"
               )}
             >
@@ -148,9 +148,10 @@ export default function HomePage() {
           </CardContent>
         </Card>
 
-        <div id="home-tabs-section">
-          <HomeTabs /> 
-        </div>
+        {/* HomeTabs section for gaming mode is removed as per previous request to remove Roblox wallet */}
+        {/* <div id="home-tabs-section"> */}
+        {/*   <HomeTabs />  */}
+        {/* </div> */}
 
         <div className="mt-10">
           <h2 className="text-2xl font-bold mb-6 text-center font-orbitron text-primary">

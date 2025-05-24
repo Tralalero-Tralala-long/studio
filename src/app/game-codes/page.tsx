@@ -67,7 +67,7 @@ export default function GameCodesPage() {
             <Link
               href="/ecommerce-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
@@ -79,7 +79,7 @@ export default function GameCodesPage() {
             <Link
               href="/delivery-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
@@ -91,7 +91,7 @@ export default function GameCodesPage() {
             <Link
               href="/education-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
@@ -103,7 +103,7 @@ export default function GameCodesPage() {
             <Link
               href="/roblox-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
@@ -118,7 +118,7 @@ export default function GameCodesPage() {
             <Link
               href="/fortnite-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
@@ -130,7 +130,7 @@ export default function GameCodesPage() {
             <Link
               href="/free-fire-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
@@ -142,7 +142,7 @@ export default function GameCodesPage() {
             <Link
               href="/brawl-stars-codes"
               className={cn(
-                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
               )}
