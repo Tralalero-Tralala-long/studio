@@ -34,8 +34,8 @@ const gamingFeatures = [
     title: 'Game Codes',
     description: 'Unlock special game codes and bonuses here.',
     icon: <Gift className="w-12 h-12 mx-auto mb-3 text-accent" />,
-    imageUrl: "https://placehold.co/600x400.png",
-    dataAiHint: "gift box code",
+    imageUrl: "https://gamblemaniacs.com/admin/assets/images/07/07681a_promo-code.jpg",
+    dataAiHint: "promo codes gaming",
     isExternalLink: false, 
     href: "/game-codes" 
   }
