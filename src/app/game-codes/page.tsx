@@ -52,7 +52,7 @@ export default function GameCodesPage() {
             />
           </div>
           
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mt-6 grid grid-cols-1 gap-4"> {/* Removed md:grid-cols-2 */}
             <Link
               href="/roblox-codes"
               className={cn(
