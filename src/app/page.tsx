@@ -8,40 +8,58 @@ import Image from 'next/image';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Box, Gamepad2, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useState } from 'react'; // Added useState
 
 // Data for Special Gaming Features
 const gamingFeatures = [
-  { 
-    title: 'Loot Drops', 
-    description: 'Discover daily loot drops and in-game items.', 
-    icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />, 
-    imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain", 
+  {
+    title: 'Loot Drops',
+    description: 'Discover daily loot drops and in-game items.',
+    icon: <Box className="w-12 h-12 mx-auto mb-3 text-accent" />,
+    imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain",
     dataAiHint: "treasure chest gold",
     isExternalLink: false,
     href: "#"
   },
-  { 
-    title: 'Gaming Offers', 
-    description: 'Exclusive discounts on games and DLCs.', 
-    icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />, 
-    imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png", 
+  {
+    title: 'Gaming Offers',
+    description: 'Exclusive discounts on games and DLCs.',
+    icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />,
+    imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png",
     dataAiHint: "gaming deals sale",
     isExternalLink: false,
     href: "#"
   },
   {
-    title: 'Game Codes', // Changed from "Game Code Box"
+    title: 'Game Codes',
     description: 'Unlock special game codes and bonuses here.',
     icon: <Gift className="w-12 h-12 mx-auto mb-3 text-accent" />,
     imageUrl: "https://placehold.co/600x400.png",
     dataAiHint: "gift box code",
-    isExternalLink: true,
-    href: "https://example.com/gamecodes" 
+    isExternalLink: false, // Changed from true
+    actionType: 'open_game_codes_tab', // Added an action type
+    // href is no longer used for external link
   }
 ];
 
 export default function HomePage() {
   const { mode } = useAppContext();
+  const [initialGamingTab, setInitialGamingTab] = useState<string | undefined>(undefined);
+
+  const handleGamingFeatureClick = (feature: typeof gamingFeatures[0]) => {
+    if (feature.actionType === 'open_game_codes_tab') {
+      setInitialGamingTab('game_codes'); // Unique identifier for the tab
+      // Optionally, scroll to HomeTabs component here
+      const homeTabsElement = document.getElementById('home-tabs-section');
+      if (homeTabsElement) {
+        homeTabsElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (feature.isExternalLink && feature.href) {
+      window.open(feature.href, '_blank');
+    }
+    // Handle other internal actions if any
+  };
+
 
   if (mode === 'normal') {
     const heroTitle = "Find Amazing Deals!";
@@ -62,7 +80,7 @@ export default function HomePage() {
               PromoPulse helps you unlock savings effortlessly. Switch to Gaming Mode for exciting offers on games and platforms. Enable Deal Alerts to never miss out!
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
-              <Image 
+              <Image
                 src="https://img.freepik.com/premium-vector/using-promo-code-online-shopping-checkout_773186-1109.jpg"
                 alt="Illustration of online shopping with promo codes"
                 data-ai-hint="online shopping promo code"
@@ -73,8 +91,9 @@ export default function HomePage() {
             </div>
           </CardContent>
         </Card>
-        
-        <HomeTabs />
+        <div id="home-tabs-section">
+          <HomeTabs />
+        </div>
       </div>
     );
   } else { // mode === 'gaming'
@@ -96,7 +115,7 @@ export default function HomePage() {
               PromoPulse helps you unlock savings effortlessly. Switch to Normal Mode for everyday shopping deals. Enable Deal Alerts to never miss out! Find codes for Steam, Epic Games Store, Call of Duty, Fortnite, GTA, FIFA, Roblox, and many more.
             </p>
             <div className="flex-shrink-0 w-full md:w-1/3 h-48 md:h-64 relative">
-              <Image 
+              <Image
                 src="https://dex-bin.bnbstatic.com/static/dapp-uploads/rkBBOwV3vR6x1WykzTYpI"
                 alt="Abstract gaming graphic with controller and neon lights for platforms like Steam, Epic Games, Call of Duty, Fortnite, GTA, FIFA"
                 data-ai-hint="gaming console"
@@ -107,8 +126,10 @@ export default function HomePage() {
             </div>
           </CardContent>
         </Card>
-        
-        <HomeTabs />
+
+        <div id="home-tabs-section">
+          <HomeTabs initialTab={initialGamingTab} key={initialGamingTab} /> {/* Pass initialTab and key */}
+        </div>
 
         <div className="mt-10">
           <h2 className="text-2xl font-bold mb-6 text-center font-orbitron text-primary">
@@ -123,32 +144,25 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="w-full h-40 sm:h-48 md:h-52 relative mb-4">
-                    <Image 
-                      src={feature.imageUrl} 
-                      alt={feature.title} 
-                      data-ai-hint={feature.dataAiHint} 
+                    <Image
+                      src={feature.imageUrl}
+                      alt={feature.title}
+                      data-ai-hint={feature.dataAiHint}
                       layout="fill"
                       objectFit="cover"
-                      className="rounded-md" 
+                      className="rounded-md"
                     />
                   </div>
                   <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
                 <CardFooter>
-                  {feature.isExternalLink ? (
-                    <a
-                      href={feature.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(buttonVariants({ variant: 'outline' }), "w-full button-glow-gaming")}
-                    >
-                      Explore
-                    </a>
-                  ) : (
-                    <Button variant="outline" className="w-full button-glow-gaming">
-                      Explore
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    className="w-full button-glow-gaming"
+                    onClick={() => handleGamingFeatureClick(feature)}
+                  >
+                    Explore
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
