@@ -4,7 +4,7 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift, ArrowLeft, ExternalLink, Gamepad2 } from "lucide-react"; // Added Gamepad2
+import { Gift, ArrowLeft, ExternalLink, Gamepad2 } from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import Image from 'next/image';
@@ -52,7 +52,7 @@ export default function GameCodesPage() {
             />
           </div>
           
-          <div className="mt-6 grid grid-cols-1 gap-4">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link
               href="/roblox-codes"
               className={cn(
@@ -78,6 +78,30 @@ export default function GameCodesPage() {
             >
               <Gamepad2 className="mr-2 h-6 w-6" /> 
               <span>Fortnite Game Codes</span>
+            </Link>
+
+            <Link
+              href="/free-fire-codes"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <Gamepad2 className="mr-2 h-6 w-6" /> {/* Using Gamepad2 for consistency */}
+              <span>Free Fire (Garena) Codes</span>
+            </Link>
+
+            <Link
+              href="/brawl-stars-codes"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <Gamepad2 className="mr-2 h-6 w-6" /> {/* Using Gamepad2 for consistency */}
+              <span>Brawl Stars Codes</span>
             </Link>
           </div>
 
