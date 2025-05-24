@@ -214,7 +214,13 @@ export default function LoginPage() {
                   Google
                 </Button>
                  <Button variant="outline" className={`w-full ${buttonClass}`}>
-                  {/* Apple logo removed, text only */}
+                  <Image
+                    src="https://th.bing.com/th/id/R.4e94e3f54fbb6f6f80763b9bd5fdb903?rik=%2b7FChRw20j9Agw&riu=http%3a%2f%2fwww.pngmart.com%2ffiles%2f1%2fApple-Logo-Transparent-PNG.png&ehk=sMvjGoUnOoGys47uqPXJ9Aliq5BQYZASmMcUKWYiRTg%3d&risl=&pid=ImgRaw&r=0"
+                    alt="Apple logo"
+                    width={20}
+                    height={20}
+                    className="mr-2 h-5 w-5"
+                  />
                   Apple
                 </Button>
               </div>
