@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -16,12 +16,17 @@ import { Label } from "@/components/ui/label";
 
 const initialFreeFireCodes: PromoExample[] = [
   // Placeholder - can be populated by developer mode
+  // Example: { id: "ff1", title: "Diamond Bundle", code: "FREEFIREMAX", expiry: "2024-11-30", platform: "Free Fire (Garena)", category: "game_code", description: "Get 500 Diamonds.", isUsed: false }
 ];
 
 export default function FreeFireCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
-  const [codes, setCodes] = useState<PromoExample[]>(initialFreeFireCodes.map(c => ({...c, isUsed: c.isUsed || false })));
+  const [codes, setCodes] = useState<PromoExample[]>(
+    initialFreeFireCodes
+      .filter(c => !isCodeExpired(c.expiry))
+      .map(c => ({...c, isUsed: c.isUsed || false }))
+  );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
   const handleCopyCode = (code: string) => {
@@ -49,8 +54,19 @@ export default function FreeFireCodesPage() {
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      isUsed: false, // New codes are not used by default
+      isUsed: false, 
     };
+
+    if (isCodeExpired(newPromo.expiry)) {
+        toast({
+            title: "Expired Code",
+            description: "This code is already expired and will not be added.",
+            variant: "destructive",
+        });
+        setIsAddCodeFormOpen(false);
+        return;
+    }
+
     setCodes(prevCodes => [...prevCodes, newPromo]);
     setIsAddCodeFormOpen(false);
     toast({

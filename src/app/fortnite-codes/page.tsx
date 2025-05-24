@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -16,12 +16,17 @@ import { Label } from "@/components/ui/label";
 
 const initialFortniteCodes: PromoExample[] = [
   // Codes removed as per request, can be added by dev
+  // Example: { id: "fn1", title: "V-Bucks Pack", code: "FORTNITE2024", expiry: "2024-12-31", platform: "Fortnite", category: "game_code", description: "Get 1000 V-Bucks.", isUsed: false }
 ];
 
 export default function FortniteCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
-  const [codes, setCodes] = useState<PromoExample[]>(initialFortniteCodes.map(c => ({...c, isUsed: c.isUsed || false })));
+  const [codes, setCodes] = useState<PromoExample[]>(
+    initialFortniteCodes
+      .filter(c => !isCodeExpired(c.expiry))
+      .map(c => ({...c, isUsed: c.isUsed || false }))
+  );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
 
@@ -50,8 +55,19 @@ export default function FortniteCodesPage() {
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      isUsed: false, // New codes are not used by default
+      isUsed: false, 
     };
+
+    if (isCodeExpired(newPromo.expiry)) {
+        toast({
+            title: "Expired Code",
+            description: "This code is already expired and will not be added.",
+            variant: "destructive",
+        });
+        setIsAddCodeFormOpen(false);
+        return;
+    }
+
     setCodes(prevCodes => [...prevCodes, newPromo]);
     setIsAddCodeFormOpen(false);
     toast({

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Copy, Gift, CalendarDays, PlusCircle, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -19,6 +19,7 @@ const initialBloxFruitsCodes: PromoExample[] = [
   { id: "bf2", title: "Another XP Boost", code: "BANEXPLOIT", reward: "20 minutes of 2x Experience", expiry: "April 2, 2025", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "Enjoy another 20 minutes of 2x Experience.", isUsed: false },
   { id: "bf3", title: "Fruit Finder", code: "EARN_FRUITS", reward: "20 minutes of 2x Experience", expiry: "June 19, 2025", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "This code also grants 20 minutes of 2x Experience.", isUsed: false },
   { id: "bf4", title: "Battle XP", code: "FIGHT4FRUIT", reward: "20 minutes of 2x Experience", expiry: "July 2, 2025", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "One more code for 20 minutes of 2x Experience!", isUsed: false },
+  { id: "bf_expired", title: "Old XP Boost", code: "EXPIREDCODE", reward: "20 minutes of 2x Experience", expiry: "January 1, 2020", platform: "Roblox Codes", game: "Blox Fruits", category: "game_code", description: "This is an example of an expired code.", isUsed: false },
 ];
 
 interface BloxFruitCodeDisplayItem extends PromoExample {
@@ -29,7 +30,11 @@ interface BloxFruitCodeDisplayItem extends PromoExample {
 export default function BloxFruitsCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
-  const [codes, setCodes] = useState<BloxFruitCodeDisplayItem[]>(initialBloxFruitsCodes.map(c => ({...c, reward: c.description, isUsed: c.isUsed || false })));
+  const [codes, setCodes] = useState<BloxFruitCodeDisplayItem[]>(
+    initialBloxFruitsCodes
+      .filter(c => !isCodeExpired(c.expiry))
+      .map(c => ({...c, reward: c.reward || c.description, isUsed: c.isUsed || false }))
+  );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
   const handleCopyCode = (code: string) => {
@@ -59,8 +64,19 @@ export default function BloxFruitsCodesPage() {
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
       reward: formData.description, 
-      isUsed: false, // New codes are not used by default
+      isUsed: false, 
     };
+
+    if (isCodeExpired(newPromo.expiry)) {
+        toast({
+            title: "Expired Code",
+            description: "This code is already expired and will not be added.",
+            variant: "destructive",
+        });
+        setIsAddCodeFormOpen(false);
+        return;
+    }
+
     setCodes(prevCodes => [...prevCodes, newPromo]);
     setIsAddCodeFormOpen(false);
     toast({

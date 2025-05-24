@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Truck, Gift, PlusCircle, CheckSquare, Square } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
-import { cn } from "@/lib/utils";
+import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
 import AddCodeForm from '@/components/AddCodeForm';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -59,12 +59,12 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
       <CardFooter className="flex-col items-start space-y-3">
         <div className="flex items-center space-x-2">
           <Checkbox
-            id={`used-${id}-${platform}`}
+            id={`used-${id}-${platform.replace(/\s+/g, '-')}`} // Ensure ID is valid
             checked={isUsed}
             onCheckedChange={() => onToggleUsed(id)}
-            aria-labelledby={`label-used-${id}-${platform}`}
+            aria-labelledby={`label-used-${id}-${platform.replace(/\s+/g, '-')}`}
           />
-          <Label htmlFor={`used-${id}-${platform}`} id={`label-used-${id}-${platform}`} className="text-sm cursor-pointer">
+          <Label htmlFor={`used-${id}-${platform.replace(/\s+/g, '-')}`} id={`label-used-${id}-${platform.replace(/\s+/g, '-')}`} className="text-sm cursor-pointer">
             Mark as Used
           </Label>
         </div>
@@ -85,7 +85,12 @@ export default function HomeTabs() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
-  const [promoExamples, setPromoExamples] = useState<PromoExample[]>(initialPromoExamples.map(p => ({...p, isUsed: p.isUsed || false})));
+  
+  const [promoExamples, setPromoExamples] = useState<PromoExample[]>(
+    initialPromoExamples
+      .filter(p => !isCodeExpired(p.expiry))
+      .map(p => ({...p, isUsed: p.isUsed || false}))
+  );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
   const [currentPlatformForForm, setCurrentPlatformForForm] = useState<string | undefined>(undefined);
 
@@ -122,11 +127,14 @@ export default function HomeTabs() {
   };
 
   const getPromosForTab = (tabValue: string) => {
-    const tabLabel = tabsToDisplay.find(t => t.value === tabValue)?.label.toLowerCase() || tabValue.toLowerCase();
+    const tabDetails = tabsToDisplay.find(t => t.value.toLowerCase() === tabValue.toLowerCase());
+    const platformToFilter = tabDetails ? tabDetails.label : tabValue; // Use label for matching platform
+  
     return promoExamples.filter(p => 
-        p.platform.toLowerCase() === tabLabel
+        p.platform.toLowerCase() === platformToFilter.toLowerCase()
     );
   };
+  
 
   const handleOpenAddCodeForm = (platform: string) => {
     setCurrentPlatformForForm(platform);
@@ -143,9 +151,21 @@ export default function HomeTabs() {
       platform: currentPlatformForForm, 
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      category: mode === 'gaming' ? 'game_code' : `${currentPlatformForForm.toLowerCase().replace(' ', '_')}_discount`,
-      isUsed: false, // New codes are not used by default
+      category: mode === 'gaming' ? 'game_code' : `${currentPlatformForForm.toLowerCase().replace(/\s+/g, '_')}_discount`,
+      isUsed: false, 
     };
+
+    // Check if the new code is expired before adding. Unlikely for new codes but good practice.
+    if (isCodeExpired(newPromo.expiry)) {
+        toast({
+            title: "Expired Code",
+            description: "This code is already expired and will not be added.",
+            variant: "destructive",
+        });
+        setIsAddCodeFormOpen(false);
+        return;
+    }
+
     setPromoExamples(prevPromos => [...prevPromos, newPromo]);
     setIsAddCodeFormOpen(false);
     toast({
@@ -155,7 +175,6 @@ export default function HomeTabs() {
   };
   
   if (mode === 'gaming' && tabsToDisplay.length === 0) {
-     // No tabs for gaming mode currently, this section remains empty or shows a specific message if needed
      return null; 
   }
   if (mode === 'normal' && tabsToDisplay.length === 0) {

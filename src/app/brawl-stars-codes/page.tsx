@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Square } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, isCodeExpired } from "@/lib/utils"; // Added isCodeExpired
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -16,12 +16,17 @@ import { Label } from "@/components/ui/label";
 
 const initialBrawlStarsCodes: PromoExample[] = [
   // Placeholder - can be populated by developer mode
+  // Example: { id: "bs1", title: "Gem Pack", code: "BRAWLNOW", expiry: "2025-01-15", platform: "Brawl Stars", category: "game_code", description: "Get 100 Gems.", isUsed: false }
 ];
 
 export default function BrawlStarsCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
   const { toast } = useToast();
-  const [codes, setCodes] = useState<PromoExample[]>(initialBrawlStarsCodes.map(c => ({...c, isUsed: c.isUsed || false })));
+  const [codes, setCodes] = useState<PromoExample[]>(
+    initialBrawlStarsCodes
+      .filter(c => !isCodeExpired(c.expiry))
+      .map(c => ({...c, isUsed: c.isUsed || false }))
+  );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
 
@@ -50,8 +55,19 @@ export default function BrawlStarsCodesPage() {
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      isUsed: false, // New codes are not used by default
+      isUsed: false, 
     };
+
+    if (isCodeExpired(newPromo.expiry)) {
+        toast({
+            title: "Expired Code",
+            description: "This code is already expired and will not be added.",
+            variant: "destructive",
+        });
+        setIsAddCodeFormOpen(false);
+        return;
+    }
+    
     setCodes(prevCodes => [...prevCodes, newPromo]);
     setIsAddCodeFormOpen(false);
     toast({
