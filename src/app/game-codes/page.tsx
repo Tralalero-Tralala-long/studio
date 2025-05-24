@@ -4,9 +4,10 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift, ArrowLeft } from "lucide-react"; // Added ArrowLeft
+import { Gift, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function GameCodesPage() {
   const { mode } = useAppContext();
@@ -36,8 +37,20 @@ export default function GameCodesPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <p className={`text-lg ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>
-            Discover and manage your game codes here. Keep an eye out for new additions!
+            Discover and manage your game codes here. Keep an eye out for new additions! Select a category below to find specific codes.
           </p>
+
+          <div className="my-6">
+            <Image 
+              src="https://gamblemaniacs.com/admin/assets/images/07/07681a_promo-code.jpg"
+              alt="Game promo codes concept"
+              data-ai-hint="promo codes gaming"
+              width={600}
+              height={400}
+              className="rounded-lg shadow-md mx-auto"
+              style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
+            />
+          </div>
           
           <div className="mt-6">
             <Link
