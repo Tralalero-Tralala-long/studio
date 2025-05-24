@@ -21,41 +21,24 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone, BellOff } from 'lucide-react';
 import { useAppContext } from "@/contexts/AppContext";
-import { auth } from '@/lib/firebase/config'; // Firebase auth instance
+import { auth } from '@/lib/firebase/config'; 
 import { GoogleAuthProvider, OAuthProvider, signInWithPopup, type User } from 'firebase/auth';
 import { useToast } from "@/hooks/use-toast";
 
 
 const allowedEmailDomains = [
-  "@gmail.com",
-  "@yahoo.com",
-  "@yahoo.co.in",
-  "@ymail.com",
-  "@rocketmail.com",
-  "@outlook.com",
-  "@outlook.in",
-  "@live.com",
-  "@hotmail.com",
-  "@msn.com",
-  "@icloud.com",
-  "@me.com",
-  "@mac.com",
-  "@aol.com",
-  "@zoho.com",
-  "@zohomail.com",
-  "@protonmail.com",
-  "@gmx.com",
-  "@gmx.net",
-  "@rediffmail.com",
-  "@sify.com",
-  "@bsnl.in",
-  "@airtelmail.in",
-  "@mail.com",
-  "@tutanota.com",
-  "@fastmail.com",
-  "@yandex.com",
-  "@yandex.ru"
+  "@gmail.com", "@yahoo.com", "@yahoo.co.in", "@ymail.com", "@rocketmail.com",
+  "@outlook.com", "@outlook.in", "@live.com", "@hotmail.com", "@msn.com",
+  "@icloud.com", "@me.com", "@mac.com", "@aol.com", "@zoho.com", "@zohomail.com",
+  "@protonmail.com", "@gmx.com", "@gmx.net", "@rediffmail.com", "@sify.com",
+  "@bsnl.in", "@airtelmail.in", "@mail.com", "@tutanota.com", "@fastmail.com",
+  "@yandex.com", "@yandex.ru"
 ];
+
+// Placeholder developer credentials (replace with a secure method in production)
+const DEV_USERNAME = "devuser";
+const DEV_PASSWORD = "devpass";
+
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." })
@@ -72,7 +55,7 @@ const loginFormSchema = z.object({
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
-  const { mode, setIsAuthenticated, setUsername, setEmail } = useAppContext();
+  const { mode, setIsAuthenticated, setUsername, setEmail, setIsDeveloperMode } = useAppContext();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -86,15 +69,28 @@ export default function LoginPage() {
     },
   });
 
-  // Placeholder for form submission - actual email/password auth not implemented here
   function onSubmit(data: LoginFormValues) {
-    console.log("Form submitted (placeholder):", data);
-    // This is where you would typically call Firebase email/password sign-up or sign-in
-    // For now, we'll just set the context as if login was successful for demo purposes
-    // if you were to implement email/password auth.
+    // Check for developer credentials
+    if (data.username === DEV_USERNAME && data.password === DEV_PASSWORD) {
+      setIsAuthenticated(true);
+      setUsername(data.username);
+      setEmail(data.email); // Devs can also have an email for notifications if they want
+      setIsDeveloperMode(true);
+      toast({
+        title: "Developer Mode Activated",
+        description: "Welcome, Developer! Redirecting to homepage...",
+      });
+      router.push('/');
+      return;
+    }
+
+    // Placeholder for regular user sign-up/sign-in (actual email/password auth not fully implemented here)
+    // For Firebase email/password, you'd use createUserWithEmailAndPassword or signInWithEmailAndPassword
+    console.log("Form submitted (regular user placeholder):", data);
     setIsAuthenticated(true);
-    setUsername(data.username || null);
+    setUsername(data.username);
     setEmail(data.email);
+    setIsDeveloperMode(false); // Ensure developer mode is off for regular users
     toast({
       title: "Login Successful (Placeholder)",
       description: "Redirecting to homepage...",
@@ -106,6 +102,7 @@ export default function LoginPage() {
     setIsAuthenticated(true);
     setUsername(firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User");
     setEmail(firebaseUser.email);
+    setIsDeveloperMode(false); // Ensure developer mode is off for OAuth users
     toast({
       title: "Sign-In Successful!",
       description: `Welcome, ${firebaseUser.displayName || firebaseUser.email}!`,
@@ -142,11 +139,8 @@ export default function LoginPage() {
 
   const handleAppleSignIn = async () => {
     const provider = new OAuthProvider('apple.com');
-    // Optional: Add scopes like 'email' and 'name'
     provider.addScope('email');
     provider.addScope('name');
-    // Optional: Localize the Apple Sign In button
-    // provider.setCustomParameters({ locale: 'en' });
     try {
       const result = await signInWithPopup(auth, provider);
       handleFirebaseAuthSuccess(result.user);
@@ -173,7 +167,7 @@ export default function LoginPage() {
           <CardHeader className="text-center">
             <Flame className={`mx-auto h-12 w-12 mb-4 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
             <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>Welcome to PromoPulse</CardTitle>
-            <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>Sign in or create an account to start saving!</CardDescription>
+            <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>Sign in or create an account to start saving! (Dev login: devuser/devpass)</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>

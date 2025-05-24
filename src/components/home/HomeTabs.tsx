@@ -1,37 +1,16 @@
 
 "use client";
 
-import { useAppContext } from '@/contexts/AppContext';
+import Link from "next/link";
+import { useAppContext, type PromoExample } from '@/contexts/AppContext'; // Import PromoExample from AppContext
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift } from 'lucide-react'; // Gift icon is still used for Referral
-import { useState, useEffect } from 'react';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { ShoppingCart, Truck, Gift, Code, PlusCircle } from 'lucide-react'; // Added Code, PlusCircle
+import { useState, useEffect, useMemo } from 'react';
+import { cn } from "@/lib/utils";
 
-interface PromoExample {
-  id: number;
-  title: string;
-  code: string;
-  platform: string;
-  expiry: string;
-  description: string;
-  category?: string;
-}
-
-const promoExamples: PromoExample[] = [
-  { id: 2, title: "Free Delivery", code: "FREEDEL", platform: "Delivery", expiry: "2024-11-30", description: "Enjoy free delivery on orders over $25." },
-  { id: 3, title: "$10 Referral Bonus", code: "REF10", platform: "Referral", expiry: "N/A", description: "Refer a friend and you both get $10." },
-  // Roblox Codes - examples (These will not be displayed as gamingTabs is empty)
-  { id: 7, title: "Free Roblox Gems", code: "ROBLOXGEM", platform: "Roblox Codes", expiry: "2025-01-01", description: "Get 100 free gems for your Roblox account!", category: "game_code" },
-  { id: 8, title: "Roblox Bonus Coins", code: "ROBLOXCOIN", platform: "Roblox Codes", expiry: "2025-01-15", description: "Bonus coins for your Roblox adventures.", category: "game_code" },
-  { id: 9, title: "Exclusive Roblox Item", code: "ROBLOXITEM", platform: "Roblox Codes", expiry: "2024-12-20", description: "Unlock an exclusive item in Roblox.", category: "game_code" },
-  { id: 10, title: "Roblox XP Boost", code: "ROBLOOSTXP", platform: "Roblox Codes", expiry: "2025-02-01", description: "Get an XP boost in Roblox.", category: "game_code" },
-  { id: 11, title: "Limited Roblox Avatar Outfit", code: "AVATARSTYLE", platform: "Roblox Codes", expiry: "2025-02-10", description: "Get a limited time avatar outfit for Roblox.", category: "game_code" },
-  { id: 12, title: "Generic Roblox Code", code: "ROBLOXGENERAL", platform: "Roblox Codes", expiry: "2024-12-31", description: "A general promo code for Roblox.", category: "game_code" },
-  // Removed Game Codes examples (IDs 13, 14, 15)
-];
-
-function PromoCard({ title, code, platform, expiry, description, mode }: { title: string, code: string, platform: string, expiry: string, description: string, mode: 'normal' | 'gaming' }) {
+function PromoCard({ title, code, platform, expiry, description, mode }: PromoExample & { mode: 'normal' | 'gaming' }) {
   return (
     <Card className={`w-full shadow-lg hover:shadow-xl transition-shadow duration-300 ${mode === 'gaming' ? 'bg-card border-accent text-card-foreground' : ''}`}>
       <CardHeader>
@@ -51,12 +30,8 @@ function PromoCard({ title, code, platform, expiry, description, mode }: { title
   );
 }
 
-interface HomeTabsProps {
-  // initialTab prop removed
-}
-
-export default function HomeTabs({ /* initialTab removed */ }: HomeTabsProps) {
-  const { mode } = useAppContext();
+export default function HomeTabs() {
+  const { mode, promoExamples, isDeveloperMode } = useAppContext(); // Get promoExamples and isDeveloperMode from context
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
 
   const normalTabs = [
@@ -65,45 +40,57 @@ export default function HomeTabs({ /* initialTab removed */ }: HomeTabsProps) {
     { value: 'referral', label: 'Referral', icon: <Gift className="w-4 h-4 mr-2" /> },
   ];
 
-  const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = []; // Reverted to empty
+  const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = [
+     // Keeping gamingTabs empty as per previous request, will be managed by other components or pages.
+  ];
 
-  const tabsToDisplay = mode === 'normal' ? normalTabs : gamingTabs;
+  const tabsToDisplay = useMemo(() => (mode === 'normal' ? normalTabs : gamingTabs), [mode]);
 
   useEffect(() => {
-    // This useEffect handles setting the active tab when the mode changes or tabsToDisplay changes.
-    // It no longer depends on an initialTab prop.
     if (tabsToDisplay.length > 0) {
-      // If current activeTab is not in the new tabsToDisplay (e.g. mode changed), set to first available tab.
-      // Or if activeTab is not set at all, default to the first tab.
       if (!tabsToDisplay.some(tab => tab.value === activeTab) || !activeTab) {
         setActiveTab(tabsToDisplay[0].value);
       }
     } else {
-      // If there are no tabs to display (e.g., gaming mode with empty gamingTabs), clear activeTab.
       setActiveTab(undefined);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, tabsToDisplay]); // Removed initialTab from dependencies. ActiveTab is managed internally.
+  }, [mode, tabsToDisplay, activeTab]);
 
 
-  const getPromosForTab = (tabLabel: string) => {
-    return promoExamples.filter(p => p.platform.toLowerCase() === tabLabel.toLowerCase().replace('_', ' '));
+  const getPromosForTab = (tabValue: string) => {
+    const tabLabel = tabsToDisplay.find(t => t.value === tabValue)?.label || tabValue;
+    return promoExamples.filter(p => 
+        p.platform.toLowerCase() === tabLabel.toLowerCase() || 
+        (p.game && p.game.toLowerCase() === tabLabel.toLowerCase())
+    );
   };
   
-  if (tabsToDisplay.length === 0) {
+  if (tabsToDisplay.length === 0 && mode === 'gaming') {
     return (
+      <div className="text-center text-muted-foreground py-8">
+        {isDeveloperMode && (
+          <Link href={`/add-code?mode=${mode}&platform=Game%20Codes`} passHref>
+             <Button variant="outline" className={cn(mode === 'gaming' ? 'button-glow-gaming mb-4' : 'button-glow-normal mb-4')}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add New Game Code
+            </Button>
+          </Link>
+        )}
+        <p>No specific game promo categories are active here. Check individual game pages or features.</p>
+      </div>
+    );
+  }
+  if (tabsToDisplay.length === 0) {
+     return (
       <div className="text-center text-muted-foreground py-8">
         No promo categories available for this mode currently.
       </div>
     );
   }
   
-  // Ensure activeTab has a valid default if it's still undefined after useEffect
-  const currentActiveTab = activeTab || (tabsToDisplay.length > 0 ? tabsToDisplay[0].value : undefined);
-
+  const currentActiveTabValue = activeTab || (tabsToDisplay.length > 0 ? tabsToDisplay[0].value : undefined);
 
   return (
-    <Tabs value={currentActiveTab} onValueChange={setActiveTab} className="w-full">
+    <Tabs value={currentActiveTabValue} onValueChange={setActiveTab} className="w-full">
       <TabsList className={`grid w-full grid-cols-${tabsToDisplay.length || 1} mb-6 ${mode === 'gaming' ? 'bg-muted' : 'bg-muted'}`}>
         {tabsToDisplay.map(tab => (
           <TabsTrigger key={tab.value} value={tab.value} className={`flex items-center justify-center data-[state=active]:${mode === 'gaming' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-primary text-primary-foreground shadow-md'} py-3`}>
@@ -113,12 +100,18 @@ export default function HomeTabs({ /* initialTab removed */ }: HomeTabsProps) {
       </TabsList>
 
       {tabsToDisplay.map(tab => {
-        // Ensure promosForThisTab is only calculated if currentActiveTab matches tab.value,
-        // or simply render all TabContent and let Tabs component handle visibility.
-        // The latter is simpler and how Tabs usually work.
-        const promosForThisTab = getPromosForTab(tab.label);
+        const promosForThisTab = getPromosForTab(tab.value);
         return (
           <TabsContent key={tab.value} value={tab.value}>
+            {isDeveloperMode && currentActiveTabValue === tab.value && (
+              <div className="flex justify-end mb-4">
+                <Link href={`/add-code?platform=${encodeURIComponent(tab.label)}&mode=${mode}`} passHref>
+                  <Button variant="outline" className={cn(mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal')}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add New Code to {tab.label}
+                  </Button>
+                </Link>
+              </div>
+            )}
             {promosForThisTab.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {promosForThisTab.map(promo => (
