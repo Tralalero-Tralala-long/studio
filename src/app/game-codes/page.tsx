@@ -4,27 +4,31 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift, ArrowLeft, ExternalLink, Gamepad2 } from "lucide-react"; 
-import { cn } from "@/lib/utils";
+import { Gift, ArrowLeft, Code as RobloxIcon, Gamepad2 } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { cn } from "@/lib/utils";
 
 export default function GameCodesPage() {
   const { mode } = useAppContext();
   return (
-    <div className="container mx-auto p-4 md:p-8 relative min-h-[calc(100vh-var(--header-height,theme(spacing.32)))] flex flex-col justify-center">
+    // Revised root div: relative, w-full, flex-1 (to fill space in AppShell's main), and centers content
+    <div className="relative w-full flex-1 flex flex-col items-center justify-center">
+      {/* Background Image */}
       <Image
         src="https://preview.redd.it/all-162-games-i-played-and-completed-only-singleplayer-v0-2xqy5aadytka1.jpg?width=1280&crop=smart&auto=webp&s=17d2c8a43bb5adcb11f3ace8c6b8f29e2c425d03"
         alt="Gaming collage background"
         data-ai-hint="gaming collage games"
         layout="fill"
         objectFit="cover"
-        className="absolute inset-0 -z-20"
-        priority // Preload the background image
+        className="absolute inset-0 -z-20 opacity-80" // Added opacity here for subtle shading too
+        priority 
       />
-      <div className="absolute inset-0 bg-black/70 -z-10"></div> {/* Dark overlay */}
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/60 -z-10"></div> {/* Adjusted overlay opacity */}
       
-      <Card className={`${mode === 'gaming' ? 'bg-card/80 border-primary backdrop-blur-sm' : 'bg-card/90 backdrop-blur-sm'} shadow-xl`}>
+      {/* Ensure card is not full width by default, mx-auto will help if parent is wider than card content needs */}
+      <Card className={`w-full max-w-2xl ${mode === 'gaming' ? 'bg-card/70 border-primary backdrop-blur-md' : 'bg-card/80 backdrop-blur-md'} shadow-xl my-8`}>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
