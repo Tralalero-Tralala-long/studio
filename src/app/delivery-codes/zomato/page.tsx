@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialZomatoCodes: PromoExample[] = [
-  // Example: { id: "zm1", title: "50% Off Food", code: "ZOMATO50", expiry: "2025-01-15", platform: "Zomato", category: "food_delivery", description: "Get 50% off on your next order.", isUsed: false }
+  { id: "zm1", title: "₹175 Off on Orders ₹549+", code: "LOVECRICKET175", expiry: "2025-05-31", platform: "Zomato", category: "food_delivery", description: "Get ₹175 off on orders above ₹549.", isUsed: false },
+  { id: "zm2", title: "50% Off on Orders ₹159+", code: "ZOMATO50", expiry: "2025-05-31", platform: "Zomato", category: "food_delivery", description: "Get 50% off on orders above ₹159.", isUsed: false },
+  { id: "zm3", title: "₹120 Off (No Min. Order)", code: "ZOMLEGENDS", expiry: "2025-05-31", platform: "Zomato", category: "food_delivery", description: "Get ₹120 off, no minimum order value required.", isUsed: false },
+  { id: "zm4", title: "30% Off Khichdi (Orders ₹50+)", code: "KHICHDI", expiry: "2025-05-31", platform: "Zomato", category: "food_delivery", description: "Get 30% off on Khichdi orders above ₹50.", isUsed: false },
 ];
 
 export default function ZomatoCodesPage() {
@@ -143,7 +146,7 @@ export default function ZomatoCodesPage() {
                      {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
