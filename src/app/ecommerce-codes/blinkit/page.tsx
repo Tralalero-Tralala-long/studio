@@ -95,7 +95,14 @@ export default function BlinkitCodesPage() {
               <div className="flex items-center gap-2">
                 <Store className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Blinkit Promo Codes
+                  <a
+                    href="https://www.blinkit.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    Blinkit
+                  </a> Promo Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -197,4 +204,3 @@ export default function BlinkitCodesPage() {
     </>
   );
 }
-

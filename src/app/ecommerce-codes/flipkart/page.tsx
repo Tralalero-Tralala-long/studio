@@ -95,7 +95,14 @@ export default function FlipkartCodesPage() {
               <div className="flex items-center gap-2">
                 <Store className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Flipkart Promo Codes
+                  <a
+                    href="https://www.flipkart.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    Flipkart
+                  </a> Promo Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
