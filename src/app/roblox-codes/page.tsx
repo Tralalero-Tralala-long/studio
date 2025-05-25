@@ -44,7 +44,7 @@ export default function RobloxCodesPage() {
               href="/roblox-codes/blox-fruits"
               className={cn(
                 buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                "w-full text-base py-6 flex items-center justify-center gap-2", // Changed text-lg to text-base
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
               )}
             >
@@ -55,7 +55,7 @@ export default function RobloxCodesPage() {
               href="/roblox-codes/blade-ball"
               className={cn(
                 buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                "w-full text-base py-6 flex items-center justify-center gap-2", // Changed text-lg to text-base
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
               )}
             >
@@ -66,7 +66,7 @@ export default function RobloxCodesPage() {
               href="/roblox-codes/arm-wrestle-simulator"
               className={cn(
                 buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                "w-full text-base py-6 flex items-center justify-center gap-2", // Changed text-lg to text-base
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
               )}
             >
@@ -77,7 +77,7 @@ export default function RobloxCodesPage() {
               href="/roblox-codes/rivals"
               className={cn(
                 buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                "w-full text-base py-6 flex items-center justify-center gap-2", // Changed text-lg to text-base
                 mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
               )}
             >
