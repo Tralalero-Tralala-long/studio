@@ -21,7 +21,7 @@ export default function RobloxCodesPage() {
                 Roblox Game Codes
               </CardTitle>
             </div>
-            <Link href="/game-codes" passHref> {/* Reverted back link */}
+            <Link href="/game-codes" passHref>
               <Button 
                 variant="outline" 
                 className={cn(
@@ -50,6 +50,39 @@ export default function RobloxCodesPage() {
             >
               <Play className="mr-2 h-5 w-5" /> 
               <span>Blox Fruits Codes</span>
+            </Link>
+            <Link
+              href="/roblox-codes/blade-ball"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <Play className="mr-2 h-5 w-5" /> 
+              <span>Blade Ball Codes</span>
+            </Link>
+            <Link
+              href="/roblox-codes/arm-wrestle-simulator"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <Play className="mr-2 h-5 w-5" /> 
+              <span>Arm Wrestle Simulator Codes</span>
+            </Link>
+            <Link
+              href="/roblox-codes/rivals"
+              className={cn(
+                buttonVariants({ variant: mode === 'gaming' ? 'outline' : 'default', size: 'lg' }),
+                "w-full text-lg py-6 flex items-center justify-center gap-2",
+                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+              )}
+            >
+              <Play className="mr-2 h-5 w-5" /> 
+              <span>Rivals Codes</span>
             </Link>
           </div>
 
