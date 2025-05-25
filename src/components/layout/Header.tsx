@@ -1,11 +1,13 @@
+
 "use client";
 
 import Link from 'next/link';
 import { useAppContext } from '@/contexts/AppContext';
 import ModeToggle from '@/components/ModeToggle';
 import DealAlertsToggle from '@/components/DealAlertsToggle';
+import MobileModeToggle from '@/components/MobileModeToggle'; // Import the new toggle
 import { Button } from '@/components/ui/button';
-import { Flame, Home, Ticket, UserCircle, Users, Search, MessageCircle } from 'lucide-react'; // Added MessageCircle
+import { Flame, Home, Ticket, UserCircle, Users, Search, MessageCircle, ScanLine, Code } from 'lucide-react';
 
 export default function Header() {
   const { mode, isAuthenticated } = useAppContext();
@@ -35,23 +37,24 @@ export default function Header() {
           <Link href="/" className={navLinkClass}>
             <Home className="inline-block w-4 h-4 mr-1" /> Home
           </Link>
+          <Link href="/game-codes" className={navLinkClass}>
+            <Code className="inline-block w-4 h-4 mr-1" /> Code Categories
+          </Link>
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
           <Link href="/chatbot" className={navLinkClass}>
             <MessageCircle className="inline-block w-4 h-4 mr-1" /> Chatbot
           </Link>
-          <Link href={profileLinkPath} className={navLinkClass}>
-            <UserCircle className="inline-block w-4 h-4 mr-1" /> {profileLinkText}
-          </Link>
           <Link href="/top-contributors" className={navLinkClass}>
             <Users className="inline-block w-4 h-4 mr-1" /> Top Contributors
           </Link>
         </nav>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <DealAlertsToggle />
           <ModeToggle />
+          <MobileModeToggle /> {/* Add the new toggle here */}
           <Link href="/search">
             <Button
               variant="outline"
@@ -87,13 +90,4 @@ export default function Header() {
       </div>
     </header>
   );
-}
-
-// Placeholder pages for navigation items (can be removed if actual pages exist and are preferred)
-export function MyCouponsPage() {
-  return <div className="container mx-auto p-4"><h1 className="text-2xl font-bold">My Coupons</h1><p>Your saved coupons will appear here.</p></div>;
-}
-
-export function ProfilePage() { // This export can be removed if src/app/profile/page.tsx is the single source of truth
-  return <div className="container mx-auto p-4"><h1 className="text-2xl font-bold">Profile</h1><p>User profile settings will be here.</p></div>;
 }

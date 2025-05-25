@@ -28,12 +28,12 @@ body {
 
     --primary-hsl: 210 100% 50%;
     --primary: hsl(var(--primary-hsl)); /* #007AFF - vibrant blue */
-    --primary-foreground: 240 10% 3.9%; /* CHANGED: Dark text for light mode primary buttons */
+    --primary-foreground: 240 10% 3.9%;
 
     --neon-green-accent-hsl: 105 100% 54%; /* #39FF14 */
-    --secondary-hsl: var(--neon-green-accent-hsl); /* Use Neon Green for secondary */
+    --secondary-hsl: var(--neon-green-accent-hsl); 
     --secondary: hsl(var(--secondary-hsl));
-    --secondary-foreground: 240 10% 3.9%; /* Dark foreground for contrast on neon green */
+    --secondary-foreground: 240 10% 3.9%; 
 
     --muted: 207 67% 95%; /* #EBF4FA */
     --muted-foreground: 240 3.8% 46.1%;
@@ -42,16 +42,16 @@ body {
     --accent: hsl(var(--accent-hsl)); /* #663399 - lively indigo */
     --accent-foreground: 270 40% 98%;
     
-    --neon-green-accent: hsl(var(--neon-green-accent-hsl)); /* Exposed for direct use if needed */
+    --neon-green-accent: hsl(var(--neon-green-accent-hsl));
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 210 100% 50%; /* Primary blue */
+    --ring: 210 100% 50%; 
 
-    --radius: 0.75rem; /* Rounded feel */
+    --radius: 0.75rem; 
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -61,8 +61,8 @@ body {
   }
 
   .dark {
-    --background: 0 0% 3.9%; /* Black */
-    --foreground: 0 0% 98%; /* White */
+    --background: 0 0% 3.9%; 
+    --foreground: 0 0% 98%; 
 
     --card: 0 0% 7%;
     --card-foreground: 0 0% 98%;
@@ -72,9 +72,9 @@ body {
 
     --primary-hsl: 347 100% 51%;
     --primary: hsl(var(--primary-hsl)); /* #FF073A - Neon Red */
-    --primary-foreground: 347 40% 98%; /* White text for dark mode primary buttons */
+    --primary-foreground: 347 40% 98%; 
 
-    --secondary: 0 0% 14.9%; /* Default dark secondary, not neon green */
+    --secondary: 0 0% 14.9%; 
     --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 14.9%;
@@ -89,7 +89,7 @@ body {
 
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
-    --ring: 347 100% 51%; /* Neon Red */
+    --ring: 347 100% 51%; 
 
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -129,6 +129,54 @@ body {
   .button-glow-gaming:focus,
   .button-glow-gaming:active {
     animation: pulse-gaming-active 1.5s infinite ease-in-out;
+  }
+
+  /* Styles for Mobile View Compactness */
+  .mobile-view-active body {
+    font-size: 0.925rem; /* Slightly smaller base font */
+  }
+
+  .mobile-view-active .card { /* Example: Target Card component for reduced padding */
+     /* Default ShadCN card padding is p-6. Let's make it smaller. */
+  }
+  .mobile-view-active .card-header { /* CardHeader is p-6 */
+    padding: 1rem; /* Equivalent to p-4 */
+  }
+   .mobile-view-active .card-content { /* CardContent is p-6 pt-0 */
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem; 
+    padding-top: 0; /* Keep pt-0 if desired */
+  }
+  .mobile-view-active .card-footer { /* CardFooter is p-6 pt-0 */
+    padding: 1rem;
+    padding-top: 0;
+  }
+
+  .mobile-view-active .container { /* Reduce container padding */
+    @apply px-2 sm:px-3;
+  }
+  
+  /* Example: Make promo code cards more compact */
+  .mobile-view-active .promo-code-card .card-header {
+    padding: 0.75rem; /* p-3 */
+  }
+  .mobile-view-active .promo-code-card .card-content {
+    padding: 0.75rem; /* p-3 */
+    padding-top: 0;
+  }
+   .mobile-view-active .promo-code-card .card-footer {
+    padding: 0.75rem; /* p-3 */
+    padding-top: 0;
+  }
+  .mobile-view-active .promo-code-card .text-lg { /* Target larger text in cards */
+    font-size: 0.95rem; /* Reduce font size */
+  }
+  .mobile-view-active .promo-code-card .text-sm {
+    font-size: 0.8rem;
+  }
+   .mobile-view-active .promo-code-card .text-xs {
+    font-size: 0.7rem;
   }
 }
 

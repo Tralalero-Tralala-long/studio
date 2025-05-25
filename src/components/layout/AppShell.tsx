@@ -7,7 +7,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import Header from '@/components/layout/Header';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { mode } = useAppContext();
+  const { mode, isMobileViewActive } = useAppContext();
   const [currentYear, setCurrentYear] = useState<string>('');
   const [isMounted, setIsMounted] = useState(false);
 
@@ -17,21 +17,28 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isMounted) { // Only apply body style changes after mount to avoid server/client mismatch
+    if (isMounted) { 
       if (mode === 'gaming') {
         document.documentElement.classList.add('dark');
         document.body.classList.remove('font-geist-sans');
         document.body.classList.add('font-orbitron');
         document.body.style.fontFamily = 'var(--font-orbitron)';
-      } else { // mode === 'shopping'
+      } else { 
         document.documentElement.classList.remove('dark');
         document.body.classList.remove('font-orbitron');
         document.body.classList.remove('font-rajdhani');
         document.body.classList.add('font-geist-sans');
         document.body.style.fontFamily = 'var(--font-geist-sans)';
       }
+
+      // Apply/remove global class for mobile view compactness
+      if (isMobileViewActive) {
+        document.documentElement.classList.add('mobile-view-active');
+      } else {
+        document.documentElement.classList.remove('mobile-view-active');
+      }
     }
-  }, [mode, isMounted]);
+  }, [mode, isMounted, isMobileViewActive]);
 
   return (
     <div className={`min-h-screen flex flex-col ${isMounted && (mode === 'gaming' ? 'font-orbitron' : 'font-geist-sans')}`}>

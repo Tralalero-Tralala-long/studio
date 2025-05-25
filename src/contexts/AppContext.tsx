@@ -3,24 +3,27 @@
 
 import type React from 'react';
 import { createContext, useContext, useState, useMemo, useEffect }from 'react';
-import { auth } from '@/lib/firebase/config'; // Firebase auth instance
-import { signOut as firebaseSignOut, type User as FirebaseUser } from 'firebase/auth'; // Renamed User to FirebaseUser
+import { auth } from '@/lib/firebase/config';
+import { signOut as firebaseSignOut, type User as FirebaseUser } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile'; // For auto-detection
 
-export type Mode = 'shopping' | 'gaming'; // Changed 'normal' to 'shopping'
+export type Mode = 'shopping' | 'gaming';
 
-// Defined here as it's used by the AddCodeForm and pages
 export interface PromoExample {
   id: string;
   title: string;
   code: string;
   platform: string;
-  expiry: string; // Formatted date string or "Not specified"
+  expiry: string; 
   description: string;
   category?: string;
   game?: string;
-  isUsed?: boolean; // Added for "mark as used" feature
+  reward?: string;
+  isUsed?: boolean;
 }
+
+export type ManualMobileModeOverride = 'auto' | 'on' | 'off';
 
 interface AppContextProps {
   mode: Mode;
@@ -39,12 +42,15 @@ interface AppContextProps {
   signOut: () => Promise<void>;
   isDeveloperMode: boolean;
   setIsDeveloperMode: (isDev: boolean) => void;
+  manualMobileModeOverride: ManualMobileModeOverride;
+  setManualMobileModeOverride: (override: ManualMobileModeOverride) => void;
+  isMobileViewActive: boolean;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<Mode>('shopping'); // Default to 'shopping'
+  const [mode, setModeState] = useState<Mode>('shopping');
   const [dealAlerts, setDealAlerts] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticatedState] = useState<boolean>(false);
   const [user, setUserState] = useState<FirebaseUser | null>(null); 
@@ -52,6 +58,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [email, setEmailState] = useState<string | null>(null);
   const [isDeveloperMode, setIsDeveloperModeState] = useState<boolean>(false);
   const { toast } = useToast();
+
+  const isActuallyMobile = useIsMobile(); // Hook for viewport-based mobile detection
+  const [manualMobileModeOverride, setManualMobileModeOverrideState] = useState<ManualMobileModeOverride>('auto');
+  const [isMobileViewActive, setIsMobileViewActive] = useState<boolean>(false);
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
@@ -63,7 +74,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setUsernameState(displayName);
         setEmailState(userEmail);
 
-        // Developer mode check
         if (userEmail === "virajdatla0204@gmail.com") {
           setIsDeveloperModeState(true);
           localStorage.setItem('promoPulseIsDeveloperMode', JSON.stringify(true));
@@ -92,15 +102,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const storedMode = localStorage.getItem('promoPulseMode') as Mode | null;
     if (storedMode) {
         setModeState(storedMode);
-        // Ensure class is applied correctly on initial load based on stored mode
         if (storedMode === 'gaming') {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
     } else {
-        // Default to shopping mode if nothing is stored
-        if (mode === 'gaming') { // current state default is shopping
+        if (mode === 'gaming') { 
              document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
@@ -118,9 +126,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
        localStorage.setItem('promoPulseIsDeveloperMode', JSON.stringify(false));
     }
 
+    const storedManualMobileOverride = localStorage.getItem('promoPulseManualMobileOverride') as ManualMobileModeOverride | null;
+    if (storedManualMobileOverride) {
+      setManualMobileModeOverrideState(storedManualMobileOverride);
+    }
 
     return () => unsubscribe();
   }, []);
+
+
+  useEffect(() => {
+    if (manualMobileModeOverride === 'on') {
+      setIsMobileViewActive(true);
+    } else if (manualMobileModeOverride === 'off') {
+      setIsMobileViewActive(false);
+    } else { // 'auto'
+      setIsMobileViewActive(isActuallyMobile === undefined ? false : isActuallyMobile); // Default to false if isActuallyMobile is undefined initially
+    }
+  }, [manualMobileModeOverride, isActuallyMobile]);
+
 
   const setMode = (newMode: Mode) => {
     setModeState(newMode);
@@ -132,7 +156,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
   
-  const toggleMode = () => setMode(mode === 'shopping' ? 'gaming' : 'shopping'); // Updated logic
+  const toggleMode = () => setMode(mode === 'shopping' ? 'gaming' : 'shopping');
 
   const handleSetDealAlerts = (enabled: boolean) => {
     setDealAlerts(enabled);
@@ -164,7 +188,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const performSignOut = async () => {
     try {
       await firebaseSignOut(auth);
-      // State will be cleared by onAuthStateChanged listener
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
@@ -177,6 +200,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
     }
+  };
+
+  const handleSetManualMobileModeOverride = (override: ManualMobileModeOverride) => {
+    setManualMobileModeOverrideState(override);
+    localStorage.setItem('promoPulseManualMobileOverride', override);
   };
 
   const contextValue = useMemo(() => ({
@@ -196,7 +224,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     signOut: performSignOut,
     isDeveloperMode,
     setIsDeveloperMode: handleSetIsDeveloperMode,
-  }), [mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode, toast]); // toast added to dependencies
+    manualMobileModeOverride,
+    setManualMobileModeOverride: handleSetManualMobileModeOverride,
+    isMobileViewActive,
+  }), [mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode, toast, manualMobileModeOverride, isMobileViewActive]);
 
   return (
     <AppContext.Provider value={contextValue}>
