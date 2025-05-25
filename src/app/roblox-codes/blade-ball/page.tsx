@@ -15,7 +15,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialBladeBallCodes: PromoExample[] = [
-  // Example: { id: "bb1", title: "Free Spin", code: "BLADESPIN", reward: "Get one free spin.", expiry: "2025-12-31", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Grants a free spin in Blade Ball.", isUsed: false },
+  { id: "bb1", title: "Sparkler Sword (NEW)", code: "5BVISITS", reward: "Sparkler Sword (NEW)", expiry: "2025-07-23", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Get a Sparkler Sword (NEW).", isUsed: false },
+  { id: "bb2", title: "Free Spin", code: "RAMADAN", reward: "Free Spin", expiry: "2025-06-22", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Get a Free Spin.", isUsed: false },
+  { id: "bb3", title: "Free Candy", code: "SPOOKYSEASON", reward: "Free Candy", expiry: "2025-06-05", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Get Free Candy.", isUsed: false },
+  { id: "bb4", title: "Bubble Wand Sword", code: "4BVISITS", reward: "Bubble Wand Sword", expiry: "2025-05-27", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Get a Bubble Wand Sword.", isUsed: false },
+  { id: "bb5", title: "Free Spin", code: "SHARKATTACK", reward: "Free Spin", expiry: "2025-06-30", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Get a Free Spin.", isUsed: false },
+  { id: "bb6", title: "Free Spin", code: "SUMMERWHEEL", reward: "Free Spin", expiry: "2025-06-01", platform: "Roblox Codes", game: "Blade Ball", category: "game_code", description: "Get a Free Spin.", isUsed: false },
 ];
 
 export default function BladeBallCodesPage() {
@@ -25,6 +30,15 @@ export default function BladeBallCodesPage() {
     initialBladeBallCodes
       .filter(c => !isCodeExpired(c.expiry))
       .map(c => ({...c, reward: c.reward || c.description, isUsed: c.isUsed || false }))
+      .sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          return new Date(b.expiry).getTime() - new Date(a.expiry).getTime();
+        } catch (e) {
+          return 0;
+        }
+      })
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
@@ -68,7 +82,15 @@ export default function BladeBallCodesPage() {
         return;
     }
 
-    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => new Date(b.expiry).getTime() - new Date(a.expiry).getTime()));
+    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          return new Date(b.expiry).getTime() - new Date(a.expiry).getTime();
+        } catch (e) {
+          return 0;
+        }
+      }));
     setIsAddCodeFormOpen(false);
     toast({
       title: "Code Added!",
@@ -93,7 +115,9 @@ export default function BladeBallCodesPage() {
               <div className="flex items-center gap-2">
                 <Play className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Blade Ball Codes
+                  <a href="https://www.roblox.com/games/13772394625/Blade-Ball" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    Blade Ball
+                  </a> Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -141,12 +165,12 @@ export default function BladeBallCodesPage() {
                         mode === 'gaming' ? 'text-primary' : 'text-primary',
                         item.isUsed ? 'line-through' : ''
                       )}>{item.code}</p>
-                    {item.reward && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
+                    {item.reward && item.reward !== item.description && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
                     <p className={`text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'} italic`}>Details: {item.description}</p>
                     {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
