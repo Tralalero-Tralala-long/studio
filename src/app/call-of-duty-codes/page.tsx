@@ -10,13 +10,27 @@ import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialCallOfDutyCodes: PromoExample[] = [
-  // Example: { id: "cod1", title: "Double XP Token", code: "COD2XP", expiry: "2025-01-15", platform: "Call of Duty", category: "game_code", description: "Get a 30 min Double XP token.", isUsed: false }
+  { id: "cod1", title: "ELEVATE-themed Weapon", code: "CUKQZBZBTMS", expiry: "2025-06-05", platform: "Call of Duty", category: "game_code", description: "Get 1x ELEVATE-themed Weapon.", isUsed: false },
+  { id: "cod2", title: "Epic Merc Combat Rig", code: "CTULZBZBXP", expiry: "2025-06-05", platform: "Call of Duty", category: "game_code", description: "Get 1x Epic Merc Combat Rig.", isUsed: false },
+  { id: "cod3", title: "Epic Charm – Nova Break", code: "CTUKZBZVHVS", expiry: "2025-07-07", platform: "Call of Duty", category: "game_code", description: "Get 1x Epic Charm – Nova Break.", isUsed: false },
+  { id: "cod4", title: "Gold Crate Coupons", code: "CTUJURZBZJ6P", expiry: "2025-06-05", platform: "Call of Duty", category: "game_code", description: "Get 3x Gold Crate Coupon.", isUsed: false },
+  { id: "cod5", title: "TEC-9-Nova Break", code: "CTUIZBZGG7", expiry: "2025-05-31", platform: "Call of Duty", category: "game_code", description: "Get 1x TEC-9-Nova Break.", isUsed: false },
 ];
+
+// Helper for robust date parsing if needed for sorting mixed formats
+function parseDateString(dateStr: string): Date {
+    let parsedDate = new Date(dateStr); 
+    if (isNaN(parsedDate.getTime())) {
+      // Try "MMMM d, yyyy" or similar; date-fns `parse` is more robust for specific formats
+      // For simplicity here, we'll rely on Date constructor's flexibility or ensure data is consistent
+    }
+    return parsedDate;
+}
 
 export default function CallOfDutyCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
@@ -25,6 +39,18 @@ export default function CallOfDutyCodesPage() {
     initialCallOfDutyCodes
       .filter(c => !isCodeExpired(c.expiry))
       .map(c => ({...c, isUsed: c.isUsed || false }))
+      .sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          const dateA = new Date(a.expiry.includes("-") ? a.expiry : parseDateString(a.expiry));
+          const dateB = new Date(b.expiry.includes("-") ? b.expiry : parseDateString(b.expiry));
+          return dateB.getTime() - dateA.getTime();
+        } catch (e) {
+          console.error("Error parsing date for sorting:", e);
+          return 0; 
+        }
+      })
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
@@ -66,7 +92,18 @@ export default function CallOfDutyCodesPage() {
         return;
     }
     
-    setCodes(prevCodes => [...prevCodes, newPromo]);
+    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+         try {
+          const dateA = new Date(a.expiry.includes("-") ? a.expiry : parseDateString(a.expiry));
+          const dateB = new Date(b.expiry.includes("-") ? b.expiry : parseDateString(b.expiry));
+          return dateB.getTime() - dateA.getTime();
+        } catch (e) {
+          console.error("Error parsing date for sorting:", e);
+          return 0;
+        }
+      }));
     setIsAddCodeFormOpen(false);
     toast({
       title: "Code Added!",
@@ -143,7 +180,7 @@ export default function CallOfDutyCodesPage() {
                      {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry.includes("-") ? item.expiry : parseDateString(item.expiry)), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
@@ -151,7 +188,7 @@ export default function CallOfDutyCodesPage() {
                     <div className="flex items-center space-x-2 order-last sm:order-first mt-2 sm:mt-0">
                       <Checkbox
                         id={`used-${item.id}`}
-                        checked={item.isUsed}
+                        checked={!!item.isUsed}
                         onCheckedChange={() => handleToggleUsed(item.id)}
                         aria-labelledby={`label-used-${item.id}`}
                       />
@@ -163,7 +200,7 @@ export default function CallOfDutyCodesPage() {
                       variant="outline" 
                       size="sm" 
                       onClick={() => handleCopyCode(item.code)}
-                      disabled={item.isUsed}
+                      disabled={!!item.isUsed}
                       className={cn(
                         mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
                         "w-full sm:w-auto" 
