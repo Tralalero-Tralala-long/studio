@@ -3,16 +3,17 @@
 
 import type React from 'react';
 import { createContext, useContext, useState, useMemo, useEffect }from 'react';
-import { auth, db } from '@/lib/firebase/config'; // Import db
+import { useRouter } from 'next/navigation'; // Import useRouter
+import { auth, db } from '@/lib/firebase/config';
 import { signOut as firebaseSignOut, type User as FirebaseUser } from 'firebase/auth';
-import { collection, doc, setDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore'; // Firestore imports
+import { collection, doc, setDoc, deleteDoc, getDocs, query } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export type Mode = 'shopping' | 'gaming';
 
 export interface PromoExample {
-  id: string; // Ensure ID is always a string, critical for Firestore doc IDs
+  id: string;
   title: string;
   code: string;
   platform: string;
@@ -65,8 +66,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const isActuallyMobile = useIsMobile();
   const [manualMobileModeOverride, setManualMobileModeOverrideState] = useState<ManualMobileModeOverride>('auto');
   const [isMobileViewActive, setIsMobileViewActive] = useState<boolean>(false);
-
   const [savedCouponIds, setSavedCouponIds] = useState<string[]>([]);
+  const router = useRouter(); // Initialize useRouter
 
   const fetchSavedCouponIds = async (firebaseUser: FirebaseUser | null) => {
     if (firebaseUser) {
@@ -77,7 +78,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSavedCouponIds(ids);
       } catch (error) {
         console.error("Error fetching saved coupon IDs: ", error);
-        // Optionally show a toast error
       }
     } else {
       setSavedCouponIds([]);
@@ -86,14 +86,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
-      setUserState(firebaseUser); // Set user state first
+      setUserState(firebaseUser);
       if (firebaseUser) {
         setIsAuthenticatedState(true);
         const displayName = firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User";
         const userEmail = firebaseUser.email;
         setUsernameState(displayName);
         setEmailState(userEmail);
-        fetchSavedCouponIds(firebaseUser); // Fetch saved codes for the logged-in user
+        fetchSavedCouponIds(firebaseUser);
 
         if (userEmail === "virajdatla0204@gmail.com") {
           setIsDeveloperModeState(true);
@@ -110,7 +110,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setUsernameState(null);
         setEmailState(null);
         setIsDeveloperModeState(false);
-        setSavedCouponIds([]); // Clear saved codes on logout
+        setSavedCouponIds([]);
         localStorage.setItem('promoPulseIsAuthenticated', JSON.stringify(false));
         localStorage.removeItem('promoPulseUsername');
         localStorage.removeItem('promoPulseEmail');
@@ -118,7 +118,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Load other settings from localStorage
     const storedMode = localStorage.getItem('promoPulseMode') as Mode | null;
     if (storedMode) {
         setModeState(storedMode);
@@ -148,7 +147,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('promoPulseMode', newMode);
   };
 
-  const toggleMode = () => setMode(mode === 'shopping' ? 'gaming' : 'shopping');
+  const toggleMode = () => {
+    const newMode = mode === 'shopping' ? 'gaming' : 'shopping';
+    setMode(newMode);
+    router.push('/'); // Redirect to homepage
+  };
 
   const handleSetDealAlerts = (enabled: boolean) => {
     setDealAlerts(enabled);
@@ -180,7 +183,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const performSignOut = async () => {
     try {
       await firebaseSignOut(auth);
-      // onAuthStateChanged will handle clearing user state and savedCouponIds
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
@@ -208,7 +210,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       const promoRef = doc(db, "userCoupons", user.uid, "savedCodes", promo.id);
       await setDoc(promoRef, promo);
-      setSavedCouponIds(prev => [...new Set([...prev, promo.id])]); // Add to local state and ensure uniqueness
+      setSavedCouponIds(prev => [...new Set([...prev, promo.id])]);
       toast({ title: "Coupon Saved!", description: `"${promo.title}" has been saved to My Coupons.` });
     } catch (error: any) {
       console.error("Error saving coupon: ", error);
@@ -224,7 +226,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       const promoRef = doc(db, "userCoupons", user.uid, "savedCodes", promoId);
       await deleteDoc(promoRef);
-      setSavedCouponIds(prev => prev.filter(id => id !== promoId)); // Remove from local state
+      setSavedCouponIds(prev => prev.filter(id => id !== promoId));
       toast({ title: "Coupon Unsaved", description: "The coupon has been removed from My Coupons." });
     } catch (error: any) {
       console.error("Error unsaving coupon: ", error);
@@ -257,7 +259,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     unsaveCoupon,
   }), [
       mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode,
-      manualMobileModeOverride, isMobileViewActive, savedCouponIds, toast // Added savedCouponIds and toast
+      manualMobileModeOverride, isMobileViewActive, savedCouponIds, toast, router // Added router to dependency array
     ]
   );
 
