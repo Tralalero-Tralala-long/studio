@@ -64,42 +64,7 @@ export default function GameCodesPage() {
           </div>
           
           <div className="mt-6 grid grid-cols-1 gap-4">
-            <Link
-              href="/ecommerce-codes"
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
-                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
-              )}
-            >
-              <ShoppingCart className="mr-2 h-6 w-6" /> 
-              <span>E-commerce Codes</span>
-            </Link>
-
-            <Link
-              href="/delivery-codes"
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
-                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
-              )}
-            >
-              <Truck className="mr-2 h-6 w-6" /> 
-              <span>Delivery Codes</span>
-            </Link>
-
-            <Link
-              href="/education-codes"
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
-                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
-              )}
-            >
-              <School className="mr-2 h-6 w-6" /> 
-              <span>Education Codes</span>
-            </Link>
-
+            {/* E-commerce, Delivery, and Education buttons removed from here */}
             <Link
               href="/roblox-codes"
               className={cn(
