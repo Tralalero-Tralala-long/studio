@@ -64,6 +64,12 @@ const nextConfig: NextConfig = {
         hostname: 'preview.redd.it',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'user-images.githubusercontent.com', // Added for the new background image
+        port: '',
+        pathname: '/**',
       }
     ],
   },

@@ -21,12 +21,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Flame, LogIn, UserCircle, Mail, Lock } from 'lucide-react';
 import { useAppContext } from "@/contexts/AppContext";
 import { auth } from '@/lib/firebase/config';
-import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser, OAuthProvider } from 'firebase/auth';
 import { useToast } from "@/hooks/use-toast";
 import DealAlertsToggle from "@/components/DealAlertsToggle";
 import { Label } from "@/components/ui/label";
-
-// Email domain validation removed as per user request
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -131,7 +129,7 @@ export default function LoginPage() {
                 description = "Firebase API Key is not valid. Please check your Firebase project configuration in src/lib/firebase/config.ts.";
                 break;
             case 'auth/configuration-not-found':
-                description = `The ${providerName} sign-in method is not enabled. Please enable it in your Firebase project's Authentication settings. For Email/Password, ensure it's enabled. For Google/Apple, ensure they are enabled and correctly configured.`;
+                 description = `The ${providerName} sign-in method is not enabled. Please enable it in your Firebase project's Authentication settings. For Email/Password, ensure it's enabled. For Google, ensure it's enabled and correctly configured.`;
                 break;
             default:
                 description = error.message || description;
@@ -184,16 +182,14 @@ export default function LoginPage() {
   return (
     <>
       <div className="fixed inset-0 z-[-2] overflow-hidden">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline 
-          className="absolute top-1/2 left-1/2 w-auto min-w-full min-h-full max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
-        >
-          <source src="/videos/login-background.mp4" type="video/mp4" />
-          Your browser does not support the video tag. Please place your video at public/videos/login-background.mp4
-        </video>
+        <Image
+          src="https://user-images.githubusercontent.com/14080295/291889848-a76a0235-f557-4f5d-821e-5c265557ac61.png"
+          alt="Brand logos background"
+          data-ai-hint="brand logos background"
+          layout="fill"
+          objectFit="cover"
+          priority
+        />
       </div>
       <div className="fixed inset-0 z-[-1] bg-black/50 dark:bg-black/70"></div>
 
@@ -285,7 +281,6 @@ export default function LoginPage() {
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.85l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
                   Google
                 </Button>
-                {/* Apple Sign In Button Removed */}
               </div>
             </div>
           </CardContent>
