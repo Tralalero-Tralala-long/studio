@@ -23,7 +23,7 @@ function LootDropItem({ title, buyLink, viewLink, mode }: LootDropItemProps) {
     )}>
       <CardHeader className="p-0 pb-4">
         <CardTitle className={cn(
-          "text-2xl text-center",
+          "text-xl text-center", // Reduced text size for title to help with overall space
           mode === 'gaming' ? 'font-rajdhani text-accent-foreground' : 'text-card-foreground'
         )}>
           {title}
@@ -114,7 +114,7 @@ export default function LootDropsPage() {
             ))}
           </div>
           <p className={cn(
-            "text-sm text-center mt-8", // Added mt-8 for spacing
+            "text-sm text-center mt-8", 
             mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'
           )}>
             More loot drops coming soon. Check back daily!
