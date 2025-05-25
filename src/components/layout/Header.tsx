@@ -37,9 +37,7 @@ export default function Header() {
           <Link href="/" className={navLinkClass}>
             <Home className="inline-block w-4 h-4 mr-1" /> Home
           </Link>
-          <Link href="/game-codes" className={navLinkClass}>
-            <Code className="inline-block w-4 h-4 mr-1" /> Code Categories
-          </Link>
+          {/* "Code Categories" link removed */}
           <Link href="/my-coupons" className={navLinkClass}>
             <Ticket className="inline-block w-4 h-4 mr-1" /> My Coupons
           </Link>
