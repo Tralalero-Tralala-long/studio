@@ -10,6 +10,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Box, Gamepad2, Gift, ShoppingCart, ExternalLink, Truck, School } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRef } from 'react';
+import { useToast } from "@/hooks/use-toast"; // Import useToast
 
 // Data for Special Gaming Features
 const gamingFeatures = [
@@ -20,16 +21,16 @@ const gamingFeatures = [
     imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain",
     dataAiHint: "treasure chest gold",
     isExternalLink: false,
-    href: "/loot-drops" // Updated href
+    href: "/loot-drops"
   },
   {
-    title: 'Gaming Offers',
+    title: 'Gaming Shop', // Renamed
     description: 'Discounts on games and DLCs.',
     icon: <Gamepad2 className="w-12 h-12 mx-auto mb-3 text-accent" />,
     imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png",
     dataAiHint: "gaming deals sale",
     isExternalLink: false,
-    href: "/gaming-offers" // Updated href
+    href: "#gaming-shop-coming-soon" // Changed href to indicate special handling
   },
   {
     title: 'Game Codes',
@@ -37,22 +38,30 @@ const gamingFeatures = [
     icon: <Gift className="w-12 h-12 mx-auto mb-3 text-accent" />,
     imageUrl: "https://gamblemaniacs.com/admin/assets/images/07/07681a_promo-code.jpg",
     dataAiHint: "promo codes gaming",
-    isExternalLink: false, 
-    href: "/game-codes" 
+    isExternalLink: false,
+    href: "/game-codes"
   }
 ];
 
 export default function HomePage() {
   const { mode } = useAppContext();
   const homeTabsRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast(); // Initialize toast
 
+  const handleComingSoon = () => {
+    toast({
+      title: "Coming Soon!",
+      description: "This feature is under development.",
+    });
+  };
 
   const handleGamingFeatureClick = (feature: typeof gamingFeatures[0]) => {
-    // This function is now only relevant if href is "#" or not set
-    if (feature.isExternalLink && feature.href) { 
+    if (feature.href === "#gaming-shop-coming-soon") {
+      handleComingSoon();
+    } else if (feature.isExternalLink && feature.href) {
       window.open(feature.href, '_blank');
     }
-    // Internal navigation is handled by <Link> component directly
+    // Internal navigation for other links is handled by the <Link> component
   };
 
 
@@ -123,7 +132,7 @@ export default function HomePage() {
     );
   } else { // mode === 'gaming'
     const heroTitle = "Level Up Your Savings!";
-    const heroDescription = "Discover exciting gaming offers, loot drops from major platforms like Steam, Epic Games Store, Call of Duty, Fortnite, GTA, FIFA, plus in-game codes for titles like Roblox, TDS, and more.";
+    const heroDescription = "Discover exciting gaming offers, loot drops, and in-game codes for titles like Roblox, Call of Duty, Fortnite, GTA, FIFA, plus platforms like Steam, Epic Games Store, and more.";
     return (
       <div className="w-full space-y-8">
         <Card className="shadow-xl bg-card text-card-foreground border-primary">
@@ -177,7 +186,15 @@ export default function HomePage() {
                   <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
                 <CardFooter>
-                  {feature.isExternalLink ? (
+                  {feature.href === "#gaming-shop-coming-soon" ? (
+                     <Button
+                      variant="outline"
+                      className="w-full button-glow-gaming"
+                      onClick={handleComingSoon}
+                    >
+                      Explore
+                    </Button>
+                  ) : feature.isExternalLink ? (
                     <a
                       href={feature.href}
                       target="_blank"
@@ -186,21 +203,13 @@ export default function HomePage() {
                     >
                       Explore <ExternalLink className="ml-2 h-4 w-4" />
                     </a>
-                  ) : feature.href && feature.href !== "#" ? (
+                  ) : (
                     <Link
-                      href={feature.href}
+                      href={feature.href || "#"}
                       className={cn(buttonVariants({ variant: 'outline' }), "w-full button-glow-gaming")}
                     >
                       Explore
                     </Link>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="w-full button-glow-gaming"
-                      onClick={() => handleGamingFeatureClick(feature)} 
-                    >
-                      Explore
-                    </Button>
                   )}
                 </CardFooter>
               </Card>
