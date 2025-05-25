@@ -22,7 +22,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,6 +73,7 @@ export default function TopContributorsPage() {
   });
 
   useEffect(() => {
+    // Initial sort
     setContributors(prev => [...prev].sort((a, b) => b.promoPoints - a.promoPoints));
   }, []); 
 
@@ -83,25 +83,33 @@ export default function TopContributorsPage() {
         c => c.username.toLowerCase() === data.contributorUsername.toLowerCase()
       );
 
-      if (contributorIndex === -1) {
-        toast({
-          title: "Error",
-          description: `Contributor "${data.contributorUsername}" not found.`,
-          variant: "destructive",
-        });
-        return prevContributors;
-      }
+      let updatedContributors;
 
-      const updatedContributors = [...prevContributors];
-      updatedContributors[contributorIndex] = {
-        ...updatedContributors[contributorIndex],
-        promoPoints: updatedContributors[contributorIndex].promoPoints + data.pointsToAdd,
-      };
-      
-      toast({
-        title: "Success!",
-        description: `${data.pointsToAdd} PromoPoints added to ${updatedContributors[contributorIndex].username}.`,
-      });
+      if (contributorIndex !== -1) {
+        // Contributor found, update points
+        updatedContributors = [...prevContributors];
+        updatedContributors[contributorIndex] = {
+          ...updatedContributors[contributorIndex],
+          promoPoints: updatedContributors[contributorIndex].promoPoints + data.pointsToAdd,
+        };
+        toast({
+          title: "Success!",
+          description: `${data.pointsToAdd} PromoPoints added to ${updatedContributors[contributorIndex].username}.`,
+        });
+      } else {
+        // Contributor not found, add new contributor
+        const newContributor: Contributor = {
+          id: Date.now().toString(), // Simple unique ID
+          username: data.contributorUsername,
+          promoPoints: data.pointsToAdd,
+          avatarUrl: "https://placehold.co/40x40.png", // Default avatar
+        };
+        updatedContributors = [...prevContributors, newContributor];
+        toast({
+          title: "New Contributor Added!",
+          description: `${newContributor.username} added to the leaderboard with ${newContributor.promoPoints} PromoPoints.`,
+        });
+      }
       
       return updatedContributors.sort((a, b) => b.promoPoints - a.promoPoints);
     });
@@ -154,7 +162,7 @@ export default function TopContributorsPage() {
                     <DialogHeader>
                       <DialogTitle>Add PromoPoints to Contributor</DialogTitle>
                       <DialogDescription>
-                        Enter the contributor's username and the number of PromoPoints to add.
+                        Enter the contributor's username and the number of PromoPoints to add. If the username doesn't exist, a new contributor will be created.
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={form.handleSubmit(handleAddPromoPointsSubmit)} className="space-y-6 py-4">
@@ -279,3 +287,5 @@ export default function TopContributorsPage() {
     
 
       
+
+    
