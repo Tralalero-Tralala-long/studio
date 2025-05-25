@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from 'next/link';
+import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
@@ -16,33 +17,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// RadioGroup and RadioGroupItem removed as they are no longer used
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, LogIn, UserCircle, Mail, Lock } from 'lucide-react'; // Removed Bell, Smartphone, BellOff
+import { Flame, LogIn, UserCircle, Mail, Lock } from 'lucide-react';
 import { useAppContext } from "@/contexts/AppContext";
 import { auth } from '@/lib/firebase/config';
 import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth';
 import { useToast } from "@/hooks/use-toast";
-import DealAlertsToggle from "@/components/DealAlertsToggle"; // Import DealAlertsToggle
-import { Label } from "@/components/ui/label"; // Import Label
+import DealAlertsToggle from "@/components/DealAlertsToggle";
+import { Label } from "@/components/ui/label";
 
-const allowedEmailDomains = [
-  "@gmail.com", "@yahoo.com", "@yahoo.co.in", "@ymail.com", "@rocketmail.com",
-  "@outlook.com", "@outlook.in", "@live.com", "@hotmail.com", "@msn.com",
-  "@icloud.com", "@me.com", "@mac.com", "@aol.com", "@zoho.com", "@zohomail.com",
-  "@protonmail.com", "@gmx.com", "@gmx.net", "@rediffmail.com", "@sify.com",
-  "@bsnl.in", "@airtelmail.in", "@mail.com", "@tutanota.com", "@fastmail.com",
-  "@yandex.com", "@yandex.ru"
-];
+// Email domain validation removed as per user request
 
 const loginFormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." })
-    .refine(email => allowedEmailDomains.some(domain => email.endsWith(domain)), {
-      message: "Please use an email from a supported provider (e.g., Gmail, Outlook, Yahoo, etc.)."
-    }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   username: z.string().min(3, { message: "Username must be at least 3 characters." }),
-  // notifications field removed
 });
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
@@ -58,7 +47,6 @@ export default function LoginPage() {
       email: "",
       password: "",
       username: "",
-      // notifications default removed
     },
   });
 
@@ -79,11 +67,10 @@ export default function LoginPage() {
     setUser(firebaseUser);
     setIsAuthenticated(true);
     const displayName = formUsername || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User";
-    const userEmail = firebaseUser.email; // Get email from firebaseUser
+    const userEmail = firebaseUser.email; 
     
-    setEmail(userEmail); // Set email in context
+    setEmail(userEmail); 
     setUsername(displayName);
-
 
     if (userEmail === "virajdatla0204@gmail.com") {
       setIsDeveloperMode(true);
@@ -103,12 +90,11 @@ export default function LoginPage() {
       updateProfile(firebaseUser, { displayName: formUsername })
         .then(() => {
             if (auth.currentUser && auth.currentUser.displayName) {
-                setUsername(auth.currentUser.displayName); // Update context with potentially updated displayName
+                setUsername(auth.currentUser.displayName); 
             }
         })
         .catch(err => console.error("Error updating Firebase profile:", err));
     } else if (!isNewUser && formUsername && firebaseUser.displayName !== formUsername) {
-      // If signing in and username from form is different, update it
        updateProfile(firebaseUser, { displayName: formUsername })
         .then(() => {
             if (auth.currentUser && auth.currentUser.displayName) {
@@ -117,7 +103,6 @@ export default function LoginPage() {
         })
         .catch(err => console.error("Error updating Firebase profile on sign-in:", err));
     }
-
 
     router.push('/');
   };
@@ -146,7 +131,7 @@ export default function LoginPage() {
                 description = "Firebase API Key is not valid. Please check your Firebase project configuration in src/lib/firebase/config.ts.";
                 break;
             case 'auth/configuration-not-found':
-                description = `The ${providerName} sign-in method is not enabled. Please enable it in your Firebase project's Authentication settings.`;
+                description = `The ${providerName} sign-in method is not enabled. Please enable it in your Firebase project's Authentication settings. For Email/Password, ensure it's enabled. For Google/Apple, ensure they are enabled and correctly configured.`;
                 break;
             default:
                 description = error.message || description;
@@ -164,22 +149,18 @@ export default function LoginPage() {
     if (!checkFirebaseConfig()) return;
 
     try {
-      // Try to sign in first
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       handleFirebaseAuthSuccess(userCredential.user, false, data.username); 
     } catch (signInError: any) {
       if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/wrong-password' || signInError.code === 'auth/invalid-credential') {
-        // If user not found or wrong password, try to create a new user
         try {
           const newUserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-          // Update profile immediately after creation
           await updateProfile(newUserCredential.user, { displayName: data.username });
            handleFirebaseAuthSuccess(newUserCredential.user, true, data.username);
         } catch (signUpError: any) {
           handleFirebaseAuthError(signUpError, "Email/Password (Sign-Up)");
         }
       } else {
-        // Other sign-in errors
         handleFirebaseAuthError(signInError, "Email/Password (Sign-In)");
       }
     }
@@ -192,8 +173,6 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      // For Google Sign-In, the username might come from the Google profile or be derived.
-      // We pass undefined for formUsername, handleFirebaseAuthSuccess will use Google's displayName.
       handleFirebaseAuthSuccess(result.user);
     } catch (error) {
       handleFirebaseAuthError(error, "Google");
@@ -280,8 +259,6 @@ export default function LoginPage() {
                   )}
                 />
                 
-                {/* Removed RadioGroup for notifications */}
-                {/* Added DealAlertsToggle */}
                 <div className="flex items-center justify-between space-y-0 pt-2">
                   <Label htmlFor="deal-alerts-login-page" className="text-base">Deal Alerts</Label>
                   <DealAlertsToggle />
@@ -303,7 +280,7 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <div className="mt-6 grid grid-cols-1 gap-4"> {/* Changed to grid-cols-1 */}
+              <div className="mt-6 grid grid-cols-1 gap-4"> 
                 <Button variant="outline" className={`w-full ${buttonClass}`} onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.85l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
                   Google
