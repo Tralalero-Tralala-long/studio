@@ -10,13 +10,26 @@ import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialFreeFireCodes: PromoExample[] = [
-  // Example: { id: "ff1", title: "Diamond Bundle", code: "FREEFIREMAX", expiry: "2024-11-30", platform: "Free Fire (Garena)", category: "game_code", description: "Get 500 Diamonds.", isUsed: false }
+  { id: "ff1", title: "Max Power 2025", code: "FIRE-4MAX-2025", expiry: "Not specified", platform: "Free Fire (Garena)", category: "game_code", description: "Get a special in-game item for Free Fire Max.", isUsed: false, reward: "Special Item" },
+  { id: "ff2", title: "Redeem Code DE03", code: "REDE-EMCO-DE03", expiry: "2025-06-04", platform: "Free Fire (Garena)", category: "game_code", description: "Redeem for an in-game reward.", isUsed: false, reward: "In-game Reward" },
+  { id: "ff3", title: "Max Battle 2025", code: "MAXB-ATTLE-2025", expiry: "2025-06-01", platform: "Free Fire (Garena)", category: "game_code", description: "Unlock battle items for Free Fire Max.", isUsed: false, reward: "Battle Items" },
+  { id: "ff4", title: "Special Code FY9", code: "FY9U1I3O5PF4", expiry: "2025-05-31", platform: "Free Fire (Garena)", category: "game_code", description: "A special redeemable code for Free Fire.", isUsed: false, reward: "Special Reward" },
+  { id: "ff5", title: "Special Code FD7", code: "FD7S1A9G3HL2", expiry: "2025-05-31", platform: "Free Fire (Garena)", category: "game_code", description: "Another special redeemable code for Free Fire.", isUsed: false, reward: "Special Reward" },
 ];
+
+// Helper for robust date parsing if needed for sorting mixed formats
+function parseDateString(dateStr: string): Date {
+    let parsedDate = new Date(dateStr); 
+    if (isNaN(parsedDate.getTime())) {
+      // Try "MMMM d, yyyy" or similar; date-fns `parse` is more robust for specific formats
+    }
+    return parsedDate;
+}
 
 export default function FreeFireCodesPage() {
   const { mode, isDeveloperMode } = useAppContext();
@@ -24,7 +37,19 @@ export default function FreeFireCodesPage() {
   const [codes, setCodes] = useState<PromoExample[]>(
     initialFreeFireCodes
       .filter(c => !isCodeExpired(c.expiry))
-      .map(c => ({...c, isUsed: c.isUsed || false }))
+      .map(c => ({...c, isUsed: c.isUsed || false, reward: c.reward || c.description }))
+      .sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          const dateA = new Date(a.expiry.includes("-") ? a.expiry : parseDateString(a.expiry));
+          const dateB = new Date(b.expiry.includes("-") ? b.expiry : parseDateString(b.expiry));
+          return dateB.getTime() - dateA.getTime();
+        } catch (e) {
+          console.error("Error parsing date for sorting:", e);
+          return 0; 
+        }
+      })
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
@@ -53,6 +78,7 @@ export default function FreeFireCodesPage() {
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
+      reward: formData.description,
       isUsed: false, 
     };
 
@@ -66,7 +92,18 @@ export default function FreeFireCodesPage() {
         return;
     }
 
-    setCodes(prevCodes => [...prevCodes, newPromo]);
+    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+         try {
+          const dateA = new Date(a.expiry.includes("-") ? a.expiry : parseDateString(a.expiry));
+          const dateB = new Date(b.expiry.includes("-") ? b.expiry : parseDateString(b.expiry));
+          return dateB.getTime() - dateA.getTime();
+        } catch (e) {
+          console.error("Error parsing date for sorting:", e);
+          return 0;
+        }
+      }));
     setIsAddCodeFormOpen(false);
     toast({
       title: "Code Added!",
@@ -100,7 +137,7 @@ export default function FreeFireCodesPage() {
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Code
                   </Button>
                 )}
-                <Link href="/game-codes" passHref> {/* Reverted back link */}
+                <Link href="/game-codes" passHref>
                   <Button 
                     variant="outline" 
                     className={cn(
@@ -140,10 +177,11 @@ export default function FreeFireCodesPage() {
                         item.isUsed ? 'line-through' : ''
                       )}>{item.code}</p>
                     <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>{item.description}</p>
+                    {item.reward && item.reward !== item.description && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
                      {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry.includes("-") ? item.expiry : parseDateString(item.expiry)), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
@@ -151,7 +189,7 @@ export default function FreeFireCodesPage() {
                     <div className="flex items-center space-x-2 order-last sm:order-first mt-2 sm:mt-0">
                       <Checkbox
                         id={`used-${item.id}`}
-                        checked={item.isUsed}
+                        checked={!!item.isUsed}
                         onCheckedChange={() => handleToggleUsed(item.id)}
                         aria-labelledby={`label-used-${item.id}`}
                       />
@@ -163,7 +201,7 @@ export default function FreeFireCodesPage() {
                       variant="outline" 
                       size="sm" 
                       onClick={() => handleCopyCode(item.code)}
-                      disabled={item.isUsed}
+                      disabled={!!item.isUsed}
                       className={cn(
                         mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
                         "w-full sm:w-auto" 
