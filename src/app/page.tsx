@@ -20,7 +20,7 @@ const gamingFeatures = [
     imageUrl: "https://th.bing.com/th/id/OIP.SuNYeiboWqUmRqq8nTyeOwHaFj?rs=1&pid=ImgDetMain",
     dataAiHint: "treasure chest gold",
     isExternalLink: false,
-    href: "#"
+    href: "/loot-drops" // Updated href
   },
   {
     title: 'Gaming Offers',
@@ -29,7 +29,7 @@ const gamingFeatures = [
     imageUrl: "https://media.wired.com/photos/674769026811d4146e6fa13c/191:100/w_1280,c_limit/cyber-monday-gaming-deals.png",
     dataAiHint: "gaming deals sale",
     isExternalLink: false,
-    href: "#"
+    href: "/gaming-offers" // Updated href
   },
   {
     title: 'Game Codes',
@@ -48,16 +48,15 @@ export default function HomePage() {
 
 
   const handleGamingFeatureClick = (feature: typeof gamingFeatures[0]) => {
+    // This function is now only relevant if href is "#" or not set
     if (feature.isExternalLink && feature.href) { 
       window.open(feature.href, '_blank');
-    } else if (feature.href === "/game-codes") {
-        // No specific action needed here if it's an internal link handled by Next.js Link component
     }
-    // If not external and not handled by Link component below, this click does nothing for href="#"
+    // Internal navigation is handled by <Link> component directly
   };
 
 
-  if (mode === 'shopping') { // Changed 'normal' to 'shopping'
+  if (mode === 'shopping') {
     const heroTitle = "Find Amazing Deals!";
     const heroDescription = "Scan for the latest promo codes from your favorite e-commerce and delivery platforms.";
     return (
@@ -88,7 +87,7 @@ export default function HomePage() {
           </CardContent>
         </Card>
 
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 grid grid-cols-1 gap-4">
            <Link
               href="/ecommerce-codes"
               className={cn(
@@ -120,10 +119,6 @@ export default function HomePage() {
               <span>Education Codes</span>
             </Link>
         </div>
-        {/* HomeTabs is removed from normal mode as per previous request */}
-        {/* <div id="home-tabs-section" ref={homeTabsRef}> */}
-        {/*  <HomeTabs /> */}
-        {/* </div> */}
       </div>
     );
   } else { // mode === 'gaming'
@@ -202,7 +197,7 @@ export default function HomePage() {
                     <Button
                       variant="outline"
                       className="w-full button-glow-gaming"
-                      onClick={() => handleGamingFeatureClick(feature)}
+                      onClick={() => handleGamingFeatureClick(feature)} 
                     >
                       Explore
                     </Button>
@@ -212,10 +207,6 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-         {/* HomeTabs is not rendered in gaming mode as per previous request */}
-        {/* <div id="home-tabs-section-gaming" ref={homeTabsRef}> */}
-        {/*   <HomeTabs /> */}
-        {/* </div> */}
       </div>
     );
   }
