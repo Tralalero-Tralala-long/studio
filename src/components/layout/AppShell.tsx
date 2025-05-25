@@ -2,12 +2,13 @@
 "use client";
 
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react'; // Added useState
 import { useAppContext } from '@/contexts/AppContext';
 import Header from '@/components/layout/Header';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { mode } = useAppContext();
+  const [currentYear, setCurrentYear] = useState<number | string>(''); // State for the year
 
   useEffect(() => {
     if (mode === 'gaming') {
@@ -25,6 +26,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   }, [mode]);
 
+  useEffect(() => {
+    // Set the year only on the client, after hydration
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <div className={`min-h-screen flex flex-col ${mode === 'gaming' ? 'font-orbitron' : 'font-geist-sans'}`}>
       <Header />
@@ -32,7 +38,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} PromoPulse. All rights reserved.
+        © {currentYear} PromoPulse. All rights reserved.
       </footer>
     </div>
   );
