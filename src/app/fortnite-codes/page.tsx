@@ -4,9 +4,9 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare } from "lucide-react";
+import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Heart } from "lucide-react";
 import Link from "next/link";
-import { cn, isCodeExpired } from "@/lib/utils"; 
+import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -19,14 +19,15 @@ export const initialFortniteCodes: PromoExample[] = [
 ];
 
 export default function FortniteCodesPage() {
-  const { mode, isDeveloperMode } = useAppContext();
+  const { mode, isDeveloperMode, saveCoupon, unsaveCoupon, savedCouponIds, isAuthenticated, user } = useAppContext();
   const { toast } = useToast();
   const [codes, setCodes] = useState<PromoExample[]>(
     initialFortniteCodes
       .filter(c => !isCodeExpired(c.expiry))
-      .map(c => ({...c, isUsed: c.isUsed || false }))
+      .map(c => ({...c, isUsed: c.isUsed || false, id: String(c.id) }))
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
+  const [savingStates, setSavingStates] = useState<{[key: string]: boolean}>({});
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -49,11 +50,11 @@ export default function FortniteCodesPage() {
       id: Date.now().toString(),
       title: formData.title,
       code: formData.code,
-      platform: "Fortnite", 
+      platform: "Fortnite",
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      isUsed: false, 
+      isUsed: false,
     };
 
     if (isCodeExpired(newPromo.expiry)) {
@@ -82,6 +83,20 @@ export default function FortniteCodesPage() {
     );
   };
 
+  const handleSaveToggle = async (promo: PromoExample) => {
+    if (!isAuthenticated) {
+      toast({ title: "Login Required", description: "Please log in to save coupons.", variant: "destructive"});
+      return;
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: true }));
+    if (savedCouponIds.includes(promo.id)) {
+      await unsaveCoupon(promo.id);
+    } else {
+      await saveCoupon(promo);
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: false }));
+  };
+
   return (
     <>
       <div className="container mx-auto p-4 md:p-8">
@@ -100,9 +115,9 @@ export default function FortniteCodesPage() {
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Code
                   </Button>
                 )}
-                <Link href="/game-codes" passHref> {/* Reverted back link */}
-                  <Button 
-                    variant="outline" 
+                <Link href="/game-codes" passHref>
+                  <Button
+                    variant="outline"
                     className={cn(
                       mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
                     )}
@@ -120,8 +135,8 @@ export default function FortniteCodesPage() {
           <CardContent className="space-y-4">
             {codes.length > 0 ? (
               codes.map((item) => (
-                <Card 
-                  key={item.id} 
+                <Card
+                  key={item.id}
                   className={cn(
                     `p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`,
                     mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted',
@@ -143,7 +158,7 @@ export default function FortniteCodesPage() {
                     {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
@@ -159,14 +174,25 @@ export default function FortniteCodesPage() {
                         Mark as Used
                       </Label>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSaveToggle(item)}
+                        disabled={savingStates[item.id] || !isAuthenticated}
+                        className={cn(mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal', "w-full sm:w-auto")}
+                        title={isAuthenticated ? (savedCouponIds.includes(item.id) ? "Unsave Code" : "Save Code") : "Log in to save"}
+                      >
+                        <Heart className={cn("mr-2 h-4 w-4", savedCouponIds.includes(item.id) ? "fill-red-500 text-red-500" : "")} />
+                        {savingStates[item.id] ? "..." : (savedCouponIds.includes(item.id) ? "Saved" : "Save")}
+                      </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleCopyCode(item.code)}
                       disabled={item.isUsed}
                       className={cn(
                         mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
-                        "w-full sm:w-auto" 
+                        "w-full sm:w-auto"
                       )}
                     >
                       <Copy className="mr-2 h-4 w-4" /> Copy Code

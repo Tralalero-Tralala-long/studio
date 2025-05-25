@@ -4,9 +4,9 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { School, Copy, PlusCircle, CalendarDays, ArrowLeft, CheckSquare } from "lucide-react";
+import { School, Copy, PlusCircle, CalendarDays, ArrowLeft, CheckSquare, Heart } from "lucide-react";
 import Link from "next/link";
-import { cn, isCodeExpired } from "@/lib/utils"; 
+import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -22,14 +22,15 @@ export const initialTopprCodes: PromoExample[] = [
 ];
 
 export default function TopprCodesPage() {
-  const { mode, isDeveloperMode } = useAppContext();
+  const { mode, isDeveloperMode, saveCoupon, unsaveCoupon, savedCouponIds, isAuthenticated, user } = useAppContext();
   const { toast } = useToast();
   const [codes, setCodes] = useState<PromoExample[]>(
     initialTopprCodes
       .filter(c => !isCodeExpired(c.expiry))
-      .map(c => ({...c, isUsed: c.isUsed || false }))
+      .map(c => ({...c, isUsed: c.isUsed || false, id: String(c.id) }))
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
+  const [savingStates, setSavingStates] = useState<{[key: string]: boolean}>({});
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -52,11 +53,11 @@ export default function TopprCodesPage() {
       id: Date.now().toString(),
       title: formData.title,
       code: formData.code,
-      platform: "Toppr", 
+      platform: "Toppr",
       category: "education_platform",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      isUsed: false, 
+      isUsed: false,
     };
 
     if (isCodeExpired(newPromo.expiry)) {
@@ -68,7 +69,7 @@ export default function TopprCodesPage() {
         setIsAddCodeFormOpen(false);
         return;
     }
-    
+
     setCodes(prevCodes => [...prevCodes, newPromo]);
     setIsAddCodeFormOpen(false);
     toast({
@@ -83,6 +84,20 @@ export default function TopprCodesPage() {
         code.id === itemId ? { ...code, isUsed: !code.isUsed } : code
       )
     );
+  };
+
+  const handleSaveToggle = async (promo: PromoExample) => {
+    if (!isAuthenticated) {
+      toast({ title: "Login Required", description: "Please log in to save coupons.", variant: "destructive"});
+      return;
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: true }));
+    if (savedCouponIds.includes(promo.id)) {
+      await unsaveCoupon(promo.id);
+    } else {
+      await saveCoupon(promo);
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: false }));
   };
 
   return (
@@ -104,8 +119,8 @@ export default function TopprCodesPage() {
                   </Button>
                 )}
                 <Link href="/education-codes" passHref>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className={cn(
                       mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
                     )}
@@ -123,8 +138,8 @@ export default function TopprCodesPage() {
           <CardContent className="space-y-4">
             {codes.length > 0 ? (
               codes.map((item) => (
-                <Card 
-                  key={item.id} 
+                <Card
+                  key={item.id}
                   className={cn(
                     `p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`,
                     mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted',
@@ -162,14 +177,25 @@ export default function TopprCodesPage() {
                         Mark as Used
                       </Label>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSaveToggle(item)}
+                        disabled={savingStates[item.id] || !isAuthenticated}
+                        className={cn(mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal', "w-full sm:w-auto")}
+                        title={isAuthenticated ? (savedCouponIds.includes(item.id) ? "Unsave Code" : "Save Code") : "Log in to save"}
+                      >
+                        <Heart className={cn("mr-2 h-4 w-4", savedCouponIds.includes(item.id) ? "fill-red-500 text-red-500" : "")} />
+                        {savingStates[item.id] ? "..." : (savedCouponIds.includes(item.id) ? "Saved" : "Save")}
+                      </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleCopyCode(item.code)}
                       disabled={item.isUsed}
                       className={cn(
                         mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
-                        "w-full sm:w-auto" 
+                        "w-full sm:w-auto"
                       )}
                     >
                       <Copy className="mr-2 h-4 w-4" /> Copy Code

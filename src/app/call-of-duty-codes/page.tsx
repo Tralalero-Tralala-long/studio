@@ -4,9 +4,9 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare } from "lucide-react";
+import { ArrowLeft, Gamepad2, Copy, PlusCircle, CalendarDays, CheckSquare, Heart } from "lucide-react";
 import Link from "next/link";
-import { cn, isCodeExpired } from "@/lib/utils"; 
+import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AddCodeForm from "@/components/AddCodeForm";
@@ -24,7 +24,7 @@ export const initialCallOfDutyCodes: PromoExample[] = [
 
 // Helper for robust date parsing if needed for sorting mixed formats
 function parseDateString(dateStr: string): Date {
-    let parsedDate = new Date(dateStr); 
+    let parsedDate = new Date(dateStr);
     if (isNaN(parsedDate.getTime())) {
       // Try "MMMM d, yyyy" or similar; date-fns `parse` is more robust for specific formats
       // For simplicity here, we'll rely on Date constructor's flexibility or ensure data is consistent
@@ -33,12 +33,12 @@ function parseDateString(dateStr: string): Date {
 }
 
 export default function CallOfDutyCodesPage() {
-  const { mode, isDeveloperMode } = useAppContext();
+  const { mode, isDeveloperMode, saveCoupon, unsaveCoupon, savedCouponIds, isAuthenticated, user } = useAppContext();
   const { toast } = useToast();
   const [codes, setCodes] = useState<PromoExample[]>(
     initialCallOfDutyCodes
       .filter(c => !isCodeExpired(c.expiry))
-      .map(c => ({...c, isUsed: c.isUsed || false }))
+      .map(c => ({...c, isUsed: c.isUsed || false, id: String(c.id) }))
       .sort((a, b) => {
         if (a.expiry === "Not specified") return 1;
         if (b.expiry === "Not specified") return -1;
@@ -48,11 +48,13 @@ export default function CallOfDutyCodesPage() {
           return dateB.getTime() - dateA.getTime();
         } catch (e) {
           console.error("Error parsing date for sorting:", e);
-          return 0; 
+          return 0;
         }
       })
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
+  const [savingStates, setSavingStates] = useState<{[key: string]: boolean}>({});
+
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -75,11 +77,11 @@ export default function CallOfDutyCodesPage() {
       id: Date.now().toString(),
       title: formData.title,
       code: formData.code,
-      platform: "Call of Duty", 
+      platform: "Call of Duty",
       category: "game_code",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
-      isUsed: false, 
+      isUsed: false,
     };
 
     if (isCodeExpired(newPromo.expiry)) {
@@ -91,7 +93,7 @@ export default function CallOfDutyCodesPage() {
         setIsAddCodeFormOpen(false);
         return;
     }
-    
+
     setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => {
         if (a.expiry === "Not specified") return 1;
         if (b.expiry === "Not specified") return -1;
@@ -119,6 +121,21 @@ export default function CallOfDutyCodesPage() {
     );
   };
 
+  const handleSaveToggle = async (promo: PromoExample) => {
+    if (!isAuthenticated) {
+      toast({ title: "Login Required", description: "Please log in to save coupons.", variant: "destructive"});
+      return;
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: true }));
+    if (savedCouponIds.includes(promo.id)) {
+      await unsaveCoupon(promo.id);
+    } else {
+      await saveCoupon(promo);
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: false }));
+  };
+
+
   return (
     <>
       <div className="container mx-auto p-4 md:p-8">
@@ -138,8 +155,8 @@ export default function CallOfDutyCodesPage() {
                   </Button>
                 )}
                 <Link href="/game-codes" passHref>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className={cn(
                       mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
                     )}
@@ -157,8 +174,8 @@ export default function CallOfDutyCodesPage() {
           <CardContent className="space-y-4">
             {codes.length > 0 ? (
               codes.map((item) => (
-                <Card 
-                  key={item.id} 
+                <Card
+                  key={item.id}
                   className={cn(
                     `p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`,
                     mode === 'gaming' ? 'bg-background/30 border-accent' : 'bg-muted',
@@ -196,14 +213,25 @@ export default function CallOfDutyCodesPage() {
                         Mark as Used
                       </Label>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                     <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSaveToggle(item)}
+                        disabled={savingStates[item.id] || !isAuthenticated}
+                        className={cn(mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal', "w-full sm:w-auto")}
+                        title={isAuthenticated ? (savedCouponIds.includes(item.id) ? "Unsave Code" : "Save Code") : "Log in to save"}
+                      >
+                        <Heart className={cn("mr-2 h-4 w-4", savedCouponIds.includes(item.id) ? "fill-red-500 text-red-500" : "")} />
+                        {savingStates[item.id] ? "..." : (savedCouponIds.includes(item.id) ? "Saved" : "Save")}
+                      </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleCopyCode(item.code)}
                       disabled={!!item.isUsed}
                       className={cn(
                         mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
-                        "w-full sm:w-auto" 
+                        "w-full sm:w-auto"
                       )}
                     >
                       <Copy className="mr-2 h-4 w-4" /> Copy Code

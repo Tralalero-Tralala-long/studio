@@ -4,7 +4,7 @@
 import { useAppContext, type PromoExample } from "@/contexts/AppContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Store, Copy, PlusCircle, CalendarDays, ArrowLeft, CheckSquare } from "lucide-react";
+import { Store, Copy, PlusCircle, CalendarDays, ArrowLeft, CheckSquare, Heart } from "lucide-react";
 import Link from "next/link";
 import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -23,14 +23,15 @@ export const initialFlipkartCodes: PromoExample[] = [
 ];
 
 export default function FlipkartCodesPage() {
-  const { mode, isDeveloperMode } = useAppContext();
+  const { mode, isDeveloperMode, saveCoupon, unsaveCoupon, savedCouponIds, isAuthenticated, user } = useAppContext();
   const { toast } = useToast();
   const [codes, setCodes] = useState<PromoExample[]>(
     initialFlipkartCodes
       .filter(c => !isCodeExpired(c.expiry))
-      .map(c => ({ ...c, isUsed: c.isUsed || false }))
+      .map(c => ({ ...c, isUsed: c.isUsed || false, id: String(c.id) }))
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
+  const [savingStates, setSavingStates] = useState<{[key: string]: boolean}>({});
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -54,7 +55,7 @@ export default function FlipkartCodesPage() {
       title: formData.title,
       code: formData.code,
       platform: "Flipkart",
-      category: "general_ecommerce", 
+      category: "general_ecommerce",
       expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
       description: formData.description,
       isUsed: false,
@@ -84,6 +85,20 @@ export default function FlipkartCodesPage() {
         code.id === itemId ? { ...code, isUsed: !code.isUsed } : code
       )
     );
+  };
+
+  const handleSaveToggle = async (promo: PromoExample) => {
+    if (!isAuthenticated) {
+      toast({ title: "Login Required", description: "Please log in to save coupons.", variant: "destructive"});
+      return;
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: true }));
+    if (savedCouponIds.includes(promo.id)) {
+      await unsaveCoupon(promo.id);
+    } else {
+      await saveCoupon(promo);
+    }
+    setSavingStates(prev => ({ ...prev, [promo.id]: false }));
   };
 
   return (
@@ -154,7 +169,7 @@ export default function FlipkartCodesPage() {
                     {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
@@ -170,6 +185,17 @@ export default function FlipkartCodesPage() {
                         Mark as Used
                       </Label>
                     </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSaveToggle(item)}
+                        disabled={savingStates[item.id] || !isAuthenticated}
+                        className={cn(mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal', "w-full sm:w-auto")}
+                        title={isAuthenticated ? (savedCouponIds.includes(item.id) ? "Unsave Code" : "Save Code") : "Log in to save"}
+                      >
+                        <Heart className={cn("mr-2 h-4 w-4", savedCouponIds.includes(item.id) ? "fill-red-500 text-red-500" : "")} />
+                        {savingStates[item.id] ? "..." : (savedCouponIds.includes(item.id) ? "Saved" : "Save")}
+                      </Button>
                     <Button
                       variant="outline"
                       size="sm"

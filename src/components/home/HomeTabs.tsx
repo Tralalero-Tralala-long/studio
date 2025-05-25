@@ -6,7 +6,7 @@ import { useAppContext, type PromoExample } from '@/contexts/AppContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Truck, Gift, CheckSquare, Square, Code } from 'lucide-react'; 
+import { ShoppingCart, Truck, Gift, CheckSquare, Heart, CalendarDays, Copy } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -16,18 +16,26 @@ import AddCodeForm from "@/components/AddCodeForm";
 import { format } from "date-fns";
 
 
-export const initialPromoExamples: PromoExample[] = [ 
+export const initialPromoExamples: PromoExample[] = [
   { id: "2", title: "Free Delivery", code: "FREEDEL", platform: "Delivery", expiry: "N/A", description: "Enjoy free delivery on orders over $25.", category: "delivery_discount", isUsed: false },
   { id: "3", title: "$10 Referral Bonus", code: "REF10", platform: "Referral", expiry: "N/A", description: "Refer a friend and you both get $10.", category: "referral_bonus", isUsed: false },
 ];
 
 interface PromoCardDisplayProps extends PromoExample {
-  mode: 'shopping' | 'gaming'; // Updated mode type
+  mode: 'shopping' | 'gaming';
   onToggleUsed: (id: string) => void;
+  onSaveToggle: (promo: PromoExample) => void;
+  isSaved: boolean;
+  isAuthenticated: boolean;
 }
 
-function PromoCardDisplay({ id, title, code, platform, expiry, description, mode, isUsed, onToggleUsed, category, game }: PromoCardDisplayProps) {
+function PromoCardDisplay({
+  id, title, code, platform, expiry, description, mode, isUsed, onToggleUsed, category, game,
+  onSaveToggle, isSaved, isAuthenticated
+}: PromoCardDisplayProps) {
   const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleCopyCode = () => {
     navigator.clipboard.writeText(code);
     toast({
@@ -35,6 +43,17 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
       description: `${code} copied to clipboard.`,
     });
   };
+
+  const handleSaveClick = async () => {
+    if (!isAuthenticated) {
+      toast({ title: "Login Required", description: "Please log in to save coupons.", variant: "destructive"});
+      return;
+    }
+    setIsSaving(true);
+    await onSaveToggle({ id, title, code, platform, expiry, description, category, game, isUsed });
+    setIsSaving(false);
+  };
+
   return (
     <Card className={cn(
         `w-full shadow-lg hover:shadow-xl transition-shadow duration-300`,
@@ -48,7 +67,7 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
             isUsed ? 'line-through' : ''
           )}>{title}</CardTitle>
         <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>
-          {platform} {game ? `(${game})` : ''} - Expires: {expiry}
+          {platform} {game ? `(${game})` : ''}
           {category && <span className="block text-xs">Category: {category}</span>}
         </CardDescription>
       </CardHeader>
@@ -58,9 +77,15 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
             "text-sm font-semibold",
             isUsed ? 'line-through' : ''
           )}>Code: <span className={`p-1 rounded ${mode === 'gaming' ? 'bg-accent text-accent-foreground' : 'bg-primary text-primary-foreground'}`}>{code}</span></p>
+         {expiry && expiry !== "Not specified" && expiry !== "N/A" && (
+          <div className={`flex items-center text-xs mt-1 ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
+            <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+            <span>Expires: {format(new Date(expiry), "MMMM d, yyyy")}</span>
+          </div>
+        )}
       </CardContent>
-      <CardFooter className="flex-col items-start space-y-3">
-        <div className="flex items-center space-x-2">
+      <CardFooter className="flex-col items-start space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
+        <div className="flex items-center space-x-2 order-first">
           <Checkbox
             id={`used-${id}-${platform.replace(/\s+/g, '-')}-${game || 'nogame'}`}
             checked={isUsed || false}
@@ -71,44 +96,56 @@ function PromoCardDisplay({ id, title, code, platform, expiry, description, mode
             Mark as Used
           </Label>
         </div>
-        <Button 
-          onClick={handleCopyCode}
-          variant={mode === 'gaming' ? 'outline' : 'default'} 
-          className={`${mode === 'gaming' ? 'button-glow-gaming w-full' : 'button-glow-normal w-full'} font-bold`}
-          disabled={isUsed}
-        >
-          Copy Code
-        </Button>
+        <div className="flex items-center gap-2 w-full sm:w-auto order-last mt-2 sm:mt-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSaveClick}
+            disabled={isSaving || !isAuthenticated}
+            className={cn(
+              mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal',
+              "flex-1 sm:flex-none"
+            )}
+            title={isAuthenticated ? (isSaved ? "Unsave Code" : "Save Code") : "Log in to save"}
+          >
+            <Heart className={cn("mr-2 h-4 w-4", isSaved ? "fill-red-500 text-red-500" : "")} />
+            {isSaving ? "..." : (isSaved ? "Saved" : "Save")}
+          </Button>
+          <Button
+            variant={mode === 'gaming' ? 'outline' : 'default'}
+            size="sm"
+            onClick={handleCopyCode}
+            className={`${mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal'} font-bold flex-1 sm:flex-none`}
+            disabled={isUsed}
+          >
+            <Copy className="mr-2 h-4 w-4" /> Copy
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
 }
 
 export default function HomeTabs() {
-  const { mode, isDeveloperMode } = useAppContext(); 
+  const { mode, isDeveloperMode, saveCoupon, unsaveCoupon, savedCouponIds, isAuthenticated, user } = useAppContext();
   const { toast } = useToast();
-  
+
   const [promoExamples, setPromoExamples] = useState<PromoExample[]>(
     initialPromoExamples
       .filter(c => !isCodeExpired(c.expiry))
-      .map(p => ({...p, isUsed: p.isUsed || false}))
+      .map(p => ({...p, isUsed: p.isUsed || false, id: String(p.id)})) // Ensure ID is string
   );
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
-  
-  // State for AddCodeForm dialog (for shopping mode tabs)
-  const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
-  const [currentPlatformForForm, setCurrentPlatformForForm] = useState<string | undefined>(undefined);
 
-
-  const shoppingTabs = [ // Renamed from normalTabs
+  const shoppingTabs = [
     { value: 'ecommerce', label: 'E-commerce', icon: <ShoppingCart className="w-4 h-4 mr-2" /> },
     { value: 'delivery', label: 'Delivery', icon: <Truck className="w-4 h-4 mr-2" /> },
     { value: 'referral', label: 'Referral', icon: <Gift className="w-4 h-4 mr-2" /> },
   ];
 
-  const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = []; // Empty for now
+  const gamingTabs: { value: string; label: string; icon: JSX.Element }[] = [];
 
-  const tabsToDisplay = useMemo(() => (mode === 'shopping' ? shoppingTabs : gamingTabs), [mode]); // Updated logic
+  const tabsToDisplay = useMemo(() => (mode === 'shopping' ? shoppingTabs : gamingTabs), [mode]);
 
   useEffect(() => {
     if (tabsToDisplay.length > 0) {
@@ -128,65 +165,33 @@ export default function HomeTabs() {
       )
     );
   };
-  
-  const handleAddCodeSubmitForShoppingTabs = (formData: { title: string; code: string; expiry?: Date; description: string; category?: string }) => {
-    if (!currentPlatformForForm) {
-        toast({ title: "Error", description: "Platform not specified for new code.", variant: "destructive" });
-        return;
+
+  const handleSaveToggle = (promo: PromoExample) => {
+    if (savedCouponIds.includes(promo.id)) {
+      unsaveCoupon(promo.id);
+    } else {
+      saveCoupon(promo);
     }
-    const newPromo: PromoExample = {
-      id: Date.now().toString(),
-      title: formData.title,
-      code: formData.code,
-      platform: currentPlatformForForm, // Set platform based on current tab
-      expiry: formData.expiry ? format(formData.expiry, "yyyy-MM-dd") : "Not specified",
-      description: formData.description,
-      category: formData.category || currentPlatformForForm.toLowerCase(), // Default category to platform name if not provided
-      isUsed: false,
-    };
-    
-    if (isCodeExpired(newPromo.expiry)) {
-      toast({
-        title: "Expired Code",
-        description: "This code is already expired and will not be added.",
-        variant: "destructive",
-      });
-      setIsAddCodeFormOpen(false);
-      return;
-    }
-
-    setPromoExamples(prevCodes => [newPromo, ...prevCodes]);
-    setIsAddCodeFormOpen(false);
-    toast({
-      title: "Code Added!",
-      description: `"${newPromo.title}" has been successfully added to ${currentPlatformForForm}.`,
-    });
   };
-
-  const handleOpenAddCodeForm = (platform: string) => {
-    setCurrentPlatformForForm(platform);
-    setIsAddCodeFormOpen(true);
-  };
-
 
   const getPromosForTab = (tabValue: string | undefined) => {
     if (!tabValue) return [];
-    
+
     const tabDetails = tabsToDisplay.find(t => t.value.toLowerCase() === tabValue.toLowerCase());
-    const platformToFilter = tabDetails ? tabDetails.label : tabValue; 
-  
-    if (mode === 'shopping') { // Updated logic
-      return promoExamples.filter(p => 
+    const platformToFilter = tabDetails ? tabDetails.label : tabValue;
+
+    if (mode === 'shopping') {
+      return promoExamples.filter(p =>
         p.platform.toLowerCase() === platformToFilter.toLowerCase() && !isCodeExpired(p.expiry)
       );
     }
-    return []; 
+    return [];
   };
-  
-  if ((mode === 'gaming' && tabsToDisplay.length === 0) || (mode === 'shopping' && tabsToDisplay.length === 0)) { // Updated logic
-     return null; 
+
+  if ((mode === 'gaming' && tabsToDisplay.length === 0) || (mode === 'shopping' && tabsToDisplay.length === 0)) {
+     return null;
   }
-  
+
   const currentActiveTabValue = activeTab || (tabsToDisplay.length > 0 ? tabsToDisplay[0].value : undefined);
 
   return (
@@ -206,15 +211,18 @@ export default function HomeTabs() {
           const promosForThisTab = getPromosForTab(tab.value);
           return (
             <TabsContent key={tab.value} value={tab.value}>
-              {isDeveloperMode && mode === 'shopping' && (
-                <div className="flex justify-end mb-4">
-                  <Button onClick={() => handleOpenAddCodeForm(tab.label)}>Add Code to {tab.label}</Button>
-                </div>
-              )}
               {promosForThisTab.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {promosForThisTab.map(promo => (
-                    <PromoCardDisplay key={promo.id} {...promo} mode={mode} onToggleUsed={handleToggleUsed} />
+                    <PromoCardDisplay
+                      key={promo.id}
+                      {...promo}
+                      mode={mode}
+                      onToggleUsed={handleToggleUsed}
+                      onSaveToggle={handleSaveToggle}
+                      isSaved={savedCouponIds.includes(promo.id)}
+                      isAuthenticated={isAuthenticated}
+                    />
                   ))}
                 </div>
               ) : (
@@ -226,14 +234,6 @@ export default function HomeTabs() {
           );
         })}
       </Tabs>
-      {isDeveloperMode && mode === 'shopping' && (
-        <AddCodeForm
-          isOpen={isAddCodeFormOpen}
-          setIsOpen={setIsAddCodeFormOpen}
-          onSubmitCode={handleAddCodeSubmitForShoppingTabs}
-          formTitle={`Add New ${currentPlatformForForm || ''} Code`}
-        />
-      )}
     </>
   );
 }

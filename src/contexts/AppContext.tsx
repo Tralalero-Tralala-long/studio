@@ -3,19 +3,20 @@
 
 import type React from 'react';
 import { createContext, useContext, useState, useMemo, useEffect }from 'react';
-import { auth } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config'; // Import db
 import { signOut as firebaseSignOut, type User as FirebaseUser } from 'firebase/auth';
+import { collection, doc, setDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore'; // Firestore imports
 import { useToast } from '@/hooks/use-toast';
-import { useIsMobile } from '@/hooks/use-mobile'; // For auto-detection
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export type Mode = 'shopping' | 'gaming';
 
 export interface PromoExample {
-  id: string;
+  id: string; // Ensure ID is always a string, critical for Firestore doc IDs
   title: string;
   code: string;
   platform: string;
-  expiry: string; 
+  expiry: string;
   description: string;
   category?: string;
   game?: string;
@@ -32,12 +33,12 @@ interface AppContextProps {
   setDealAlerts: (enabled: boolean) => void;
   toggleMode: () => void;
   isAuthenticated: boolean;
-  setIsAuthenticated: (isAuth: boolean) => void; 
-  user: FirebaseUser | null; 
-  setUser: (user: FirebaseUser | null) => void; 
-  username: string | null; 
+  setIsAuthenticated: (isAuth: boolean) => void;
+  user: FirebaseUser | null;
+  setUser: (user: FirebaseUser | null) => void;
+  username: string | null;
   setUsername: (name: string | null) => void;
-  email: string | null; 
+  email: string | null;
   setEmail: (email: string | null) => void;
   signOut: () => Promise<void>;
   isDeveloperMode: boolean;
@@ -45,6 +46,9 @@ interface AppContextProps {
   manualMobileModeOverride: ManualMobileModeOverride;
   setManualMobileModeOverride: (override: ManualMobileModeOverride) => void;
   isMobileViewActive: boolean;
+  savedCouponIds: string[];
+  saveCoupon: (promo: PromoExample) => Promise<void>;
+  unsaveCoupon: (promoId: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -53,26 +57,43 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<Mode>('shopping');
   const [dealAlerts, setDealAlerts] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticatedState] = useState<boolean>(false);
-  const [user, setUserState] = useState<FirebaseUser | null>(null); 
+  const [user, setUserState] = useState<FirebaseUser | null>(null);
   const [username, setUsernameState] = useState<string | null>(null);
   const [email, setEmailState] = useState<string | null>(null);
   const [isDeveloperMode, setIsDeveloperModeState] = useState<boolean>(false);
   const { toast } = useToast();
-
-  const isActuallyMobile = useIsMobile(); // Hook for viewport-based mobile detection
+  const isActuallyMobile = useIsMobile();
   const [manualMobileModeOverride, setManualMobileModeOverrideState] = useState<ManualMobileModeOverride>('auto');
   const [isMobileViewActive, setIsMobileViewActive] = useState<boolean>(false);
 
+  const [savedCouponIds, setSavedCouponIds] = useState<string[]>([]);
+
+  const fetchSavedCouponIds = async (firebaseUser: FirebaseUser | null) => {
+    if (firebaseUser) {
+      try {
+        const q = query(collection(db, "userCoupons", firebaseUser.uid, "savedCodes"));
+        const querySnapshot = await getDocs(q);
+        const ids = querySnapshot.docs.map(doc => doc.id);
+        setSavedCouponIds(ids);
+      } catch (error) {
+        console.error("Error fetching saved coupon IDs: ", error);
+        // Optionally show a toast error
+      }
+    } else {
+      setSavedCouponIds([]);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
+      setUserState(firebaseUser); // Set user state first
       if (firebaseUser) {
-        setUserState(firebaseUser);
         setIsAuthenticatedState(true);
         const displayName = firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User";
         const userEmail = firebaseUser.email;
         setUsernameState(displayName);
         setEmailState(userEmail);
+        fetchSavedCouponIds(firebaseUser); // Fetch saved codes for the logged-in user
 
         if (userEmail === "virajdatla0204@gmail.com") {
           setIsDeveloperModeState(true);
@@ -81,17 +102,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setIsDeveloperModeState(false);
           localStorage.setItem('promoPulseIsDeveloperMode', JSON.stringify(false));
         }
-
         localStorage.setItem('promoPulseIsAuthenticated', JSON.stringify(true));
         if (displayName) localStorage.setItem('promoPulseUsername', displayName);
         if (userEmail) localStorage.setItem('promoPulseEmail', userEmail);
-
       } else {
-        setUserState(null);
         setIsAuthenticatedState(false);
         setUsernameState(null);
         setEmailState(null);
         setIsDeveloperModeState(false);
+        setSavedCouponIds([]); // Clear saved codes on logout
         localStorage.setItem('promoPulseIsAuthenticated', JSON.stringify(false));
         localStorage.removeItem('promoPulseUsername');
         localStorage.removeItem('promoPulseEmail');
@@ -99,33 +118,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
+    // Load other settings from localStorage
     const storedMode = localStorage.getItem('promoPulseMode') as Mode | null;
     if (storedMode) {
         setModeState(storedMode);
-        if (storedMode === 'gaming') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    } else {
-        if (mode === 'gaming') { 
-             document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
     }
-    
     const storedDealAlerts = localStorage.getItem('promoPulseDealAlerts');
     if (storedDealAlerts) setDealAlerts(JSON.parse(storedDealAlerts));
-
-    const storedIsDeveloperMode = localStorage.getItem('promoPulseIsDeveloperMode');
-     if (storedIsDeveloperMode && auth.currentUser?.email === "virajdatla0204@gmail.com") {
-      setIsDeveloperModeState(JSON.parse(storedIsDeveloperMode));
-    } else if (storedIsDeveloperMode) {
-       setIsDeveloperModeState(false);
-       localStorage.setItem('promoPulseIsDeveloperMode', JSON.stringify(false));
-    }
-
     const storedManualMobileOverride = localStorage.getItem('promoPulseManualMobileOverride') as ManualMobileModeOverride | null;
     if (storedManualMobileOverride) {
       setManualMobileModeOverrideState(storedManualMobileOverride);
@@ -134,28 +133,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-
   useEffect(() => {
     if (manualMobileModeOverride === 'on') {
       setIsMobileViewActive(true);
     } else if (manualMobileModeOverride === 'off') {
       setIsMobileViewActive(false);
-    } else { // 'auto'
-      setIsMobileViewActive(isActuallyMobile === undefined ? false : isActuallyMobile); // Default to false if isActuallyMobile is undefined initially
+    } else {
+      setIsMobileViewActive(isActuallyMobile === undefined ? false : isActuallyMobile);
     }
   }, [manualMobileModeOverride, isActuallyMobile]);
-
 
   const setMode = (newMode: Mode) => {
     setModeState(newMode);
     localStorage.setItem('promoPulseMode', newMode);
-    if (newMode === 'gaming') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   };
-  
+
   const toggleMode = () => setMode(mode === 'shopping' ? 'gaming' : 'shopping');
 
   const handleSetDealAlerts = (enabled: boolean) => {
@@ -179,7 +171,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (addr) localStorage.setItem('promoPulseEmail', addr);
     else localStorage.removeItem('promoPulseEmail');
   };
-  
+
   const handleSetIsDeveloperMode = (isDev: boolean) => {
     setIsDeveloperModeState(isDev);
     localStorage.setItem('promoPulseIsDeveloperMode', JSON.stringify(isDev));
@@ -188,6 +180,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const performSignOut = async () => {
     try {
       await firebaseSignOut(auth);
+      // onAuthStateChanged will handle clearing user state and savedCouponIds
       toast({
         title: "Signed Out",
         description: "You have been successfully signed out.",
@@ -205,6 +198,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const handleSetManualMobileModeOverride = (override: ManualMobileModeOverride) => {
     setManualMobileModeOverrideState(override);
     localStorage.setItem('promoPulseManualMobileOverride', override);
+  };
+
+  const saveCoupon = async (promo: PromoExample) => {
+    if (!user) {
+      toast({ title: "Error", description: "You must be logged in to save coupons.", variant: "destructive" });
+      return;
+    }
+    try {
+      const promoRef = doc(db, "userCoupons", user.uid, "savedCodes", promo.id);
+      await setDoc(promoRef, promo);
+      setSavedCouponIds(prev => [...new Set([...prev, promo.id])]); // Add to local state and ensure uniqueness
+      toast({ title: "Coupon Saved!", description: `"${promo.title}" has been saved to My Coupons.` });
+    } catch (error: any) {
+      console.error("Error saving coupon: ", error);
+      toast({ title: "Save Error", description: error.message || "Could not save coupon.", variant: "destructive" });
+    }
+  };
+
+  const unsaveCoupon = async (promoId: string) => {
+    if (!user) {
+      toast({ title: "Error", description: "You must be logged in to manage coupons.", variant: "destructive" });
+      return;
+    }
+    try {
+      const promoRef = doc(db, "userCoupons", user.uid, "savedCodes", promoId);
+      await deleteDoc(promoRef);
+      setSavedCouponIds(prev => prev.filter(id => id !== promoId)); // Remove from local state
+      toast({ title: "Coupon Unsaved", description: "The coupon has been removed from My Coupons." });
+    } catch (error: any) {
+      console.error("Error unsaving coupon: ", error);
+      toast({ title: "Unsave Error", description: error.message || "Could not unsave coupon.", variant: "destructive" });
+    }
   };
 
   const contextValue = useMemo(() => ({
@@ -227,7 +252,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     manualMobileModeOverride,
     setManualMobileModeOverride: handleSetManualMobileModeOverride,
     isMobileViewActive,
-  }), [mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode, toast, manualMobileModeOverride, isMobileViewActive]);
+    savedCouponIds,
+    saveCoupon,
+    unsaveCoupon,
+  }), [
+      mode, dealAlerts, isAuthenticated, user, username, email, isDeveloperMode,
+      manualMobileModeOverride, isMobileViewActive, savedCouponIds, toast // Added savedCouponIds and toast
+    ]
+  );
 
   return (
     <AppContext.Provider value={contextValue}>
