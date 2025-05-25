@@ -4,7 +4,7 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Gift, ArrowLeft, Gamepad2, ShoppingCart, Truck, School } from "lucide-react"; 
+import { Gift, ArrowLeft, Gamepad2, ShoppingCart, Truck, School, Code } from "lucide-react"; 
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
@@ -64,7 +64,6 @@ export default function GameCodesPage() {
           </div>
           
           <div className="mt-6 grid grid-cols-1 gap-4">
-            {/* E-commerce, Delivery, and Education buttons removed from here */}
             <Link
               href="/roblox-codes"
               className={cn(
@@ -81,7 +80,7 @@ export default function GameCodesPage() {
             </Link>
 
             <Link
-              href="/fortnite-codes"
+              href="/call-of-duty-codes"
               className={cn(
                 buttonVariants({ variant: 'outline', size: 'lg' }),
                 "w-full text-lg py-6 flex items-center justify-center gap-2",
@@ -89,7 +88,7 @@ export default function GameCodesPage() {
               )}
             >
               <Gamepad2 className="mr-2 h-6 w-6" /> 
-              <span>Fortnite Game Codes</span>
+              <span>Call of Duty Codes</span>
             </Link>
 
             <Link
@@ -102,18 +101,6 @@ export default function GameCodesPage() {
             >
               <Gamepad2 className="mr-2 h-6 w-6" />
               <span>Free Fire (Garena) Codes</span>
-            </Link>
-
-            <Link
-              href="/brawl-stars-codes"
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                "w-full text-lg py-6 flex items-center justify-center gap-2",
-                mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary text-primary-foreground' : 'button-glow-normal'
-              )}
-            >
-              <Gamepad2 className="mr-2 h-6 w-6" />
-              <span>Brawl Stars Codes</span>
             </Link>
           </div>
 
