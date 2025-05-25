@@ -7,15 +7,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Box, ShoppingCart, Eye } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast"; // Import useToast
 
 interface LootDropItemProps {
   title: string;
-  buyLink: string;
-  viewLink: string;
   mode: 'shopping' | 'gaming';
+  onBuyClick: () => void;
+  onViewClick: () => void;
 }
 
-function LootDropItem({ title, buyLink, viewLink, mode }: LootDropItemProps) {
+function LootDropItem({ title, mode, onBuyClick, onViewClick }: LootDropItemProps) {
   return (
     <Card className={cn(
       "w-full p-6 shadow-lg",
@@ -23,37 +24,35 @@ function LootDropItem({ title, buyLink, viewLink, mode }: LootDropItemProps) {
     )}>
       <CardHeader className="p-0 pb-4">
         <CardTitle className={cn(
-          "text-xl text-center", // Reduced text size for title to help with overall space
+          "text-xl text-center", 
           mode === 'gaming' ? 'font-rajdhani text-accent-foreground' : 'text-card-foreground'
         )}>
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0 flex flex-col sm:flex-row justify-around items-center gap-4">
-        <Link href={buyLink} passHref className="w-full sm:w-auto">
-          <Button
-            variant={mode === 'gaming' ? 'outline' : 'default'}
-            className={cn(
-              "w-full",
-              mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
-            )}
-          >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            Buy Item
-          </Button>
-        </Link>
-        <Link href={viewLink} passHref className="w-full sm:w-auto">
-          <Button
-            variant="outline"
-            className={cn(
-              "w-full",
-              mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
-            )}
-          >
-            <Eye className="mr-2 h-5 w-5" />
-            View Details
-          </Button>
-        </Link>
+        <Button
+          variant={mode === 'gaming' ? 'outline' : 'default'}
+          className={cn(
+            "w-full",
+            mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+          )}
+          onClick={onBuyClick}
+        >
+          <ShoppingCart className="mr-2 h-5 w-5" />
+          Buy Item
+        </Button>
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full",
+            mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
+          )}
+          onClick={onViewClick}
+        >
+          <Eye className="mr-2 h-5 w-5" />
+          View Details
+        </Button>
       </CardContent>
     </Card>
   );
@@ -61,11 +60,19 @@ function LootDropItem({ title, buyLink, viewLink, mode }: LootDropItemProps) {
 
 export default function LootDropsPage() {
   const { mode } = useAppContext();
+  const { toast } = useToast(); // Initialize toast
+
+  const handleComingSoon = () => {
+    toast({
+      title: "Coming Soon!",
+      description: "This feature is under development.",
+    });
+  };
 
   const lootDrops = [
-    { id: "1", title: "Featured Loot Drop!", buyLink: "/loot-drops/buy-item", viewLink: "/loot-drops/view-item" },
-    { id: "2", title: "Rare Item Drop!", buyLink: "/loot-drops/buy-item", viewLink: "/loot-drops/view-item" },
-    { id: "3", title: "Limited Time Loot!", buyLink: "/loot-drops/buy-item", viewLink: "/loot-drops/view-item" },
+    { id: "1", title: "Roblox Loot Drops" },
+    { id: "2", title: "Fortnite Loot Drops" },
+    { id: "3", title: "Xbox Loot Drops" },
   ];
 
   return (
@@ -98,7 +105,7 @@ export default function LootDropsPage() {
             mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground',
             "pt-2"
           )}>
-            Check out the featured loot drops below!
+            Check out the featured loot drops below! (More features coming soon)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 flex flex-col items-center">
@@ -107,9 +114,9 @@ export default function LootDropsPage() {
               <LootDropItem 
                 key={drop.id} 
                 title={drop.title} 
-                buyLink={drop.buyLink} 
-                viewLink={drop.viewLink} 
-                mode={mode} 
+                mode={mode}
+                onBuyClick={handleComingSoon}
+                onViewClick={handleComingSoon}
               />
             ))}
           </div>
