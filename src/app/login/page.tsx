@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from 'next/link';
-// Removed Image import as we are using a video background now
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
@@ -17,14 +16,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+// RadioGroup and RadioGroupItem removed as they are no longer used
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, LogIn, UserCircle, Mail, Lock, Bell, Smartphone, BellOff } from 'lucide-react';
+import { Flame, LogIn, UserCircle, Mail, Lock } from 'lucide-react'; // Removed Bell, Smartphone, BellOff
 import { useAppContext } from "@/contexts/AppContext";
 import { auth } from '@/lib/firebase/config';
 import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth';
 import { useToast } from "@/hooks/use-toast";
-
+import DealAlertsToggle from "@/components/DealAlertsToggle"; // Import DealAlertsToggle
+import { Label } from "@/components/ui/label"; // Import Label
 
 const allowedEmailDomains = [
   "@gmail.com", "@yahoo.com", "@yahoo.co.in", "@ymail.com", "@rocketmail.com",
@@ -42,15 +42,13 @@ const loginFormSchema = z.object({
     }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   username: z.string().min(3, { message: "Username must be at least 3 characters." }),
-  notifications: z.enum(["none", "phone", "email", "both"], {
-    required_error: "You need to select a notification type.",
-  }),
+  // notifications field removed
 });
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
-  const { mode, setIsAuthenticated, setUsername, setEmail, setIsDeveloperMode, setUser } = useAppContext();
+  const { mode, setIsAuthenticated, setUsername, setEmail, setIsDeveloperMode, setUser, dealAlerts, setDealAlerts } = useAppContext();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -60,7 +58,7 @@ export default function LoginPage() {
       email: "",
       password: "",
       username: "",
-      notifications: "email",
+      // notifications default removed
     },
   });
 
@@ -81,11 +79,13 @@ export default function LoginPage() {
     setUser(firebaseUser);
     setIsAuthenticated(true);
     const displayName = formUsername || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "User";
-    setEmail(firebaseUser.email);
+    const userEmail = firebaseUser.email; // Get email from firebaseUser
+    
+    setEmail(userEmail); // Set email in context
     setUsername(displayName);
 
 
-    if (firebaseUser.email === "virajdatla0204@gmail.com") {
+    if (userEmail === "virajdatla0204@gmail.com") {
       setIsDeveloperMode(true);
       toast({
         title: "Developer Mode Activated",
@@ -103,11 +103,21 @@ export default function LoginPage() {
       updateProfile(firebaseUser, { displayName: formUsername })
         .then(() => {
             if (auth.currentUser && auth.currentUser.displayName) {
-                setUsername(auth.currentUser.displayName);
+                setUsername(auth.currentUser.displayName); // Update context with potentially updated displayName
             }
         })
         .catch(err => console.error("Error updating Firebase profile:", err));
+    } else if (!isNewUser && formUsername && firebaseUser.displayName !== formUsername) {
+      // If signing in and username from form is different, update it
+       updateProfile(firebaseUser, { displayName: formUsername })
+        .then(() => {
+            if (auth.currentUser && auth.currentUser.displayName) {
+                setUsername(auth.currentUser.displayName);
+            }
+        })
+        .catch(err => console.error("Error updating Firebase profile on sign-in:", err));
     }
+
 
     router.push('/');
   };
@@ -156,12 +166,13 @@ export default function LoginPage() {
     try {
       // Try to sign in first
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-      handleFirebaseAuthSuccess(userCredential.user, false, data.username);
+      handleFirebaseAuthSuccess(userCredential.user, false, data.username); 
     } catch (signInError: any) {
       if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/wrong-password' || signInError.code === 'auth/invalid-credential') {
         // If user not found or wrong password, try to create a new user
         try {
           const newUserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+          // Update profile immediately after creation
           await updateProfile(newUserCredential.user, { displayName: data.username });
            handleFirebaseAuthSuccess(newUserCredential.user, true, data.username);
         } catch (signUpError: any) {
@@ -181,6 +192,8 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
+      // For Google Sign-In, the username might come from the Google profile or be derived.
+      // We pass undefined for formUsername, handleFirebaseAuthSuccess will use Google's displayName.
       handleFirebaseAuthSuccess(result.user);
     } catch (error) {
       handleFirebaseAuthError(error, "Google");
@@ -191,20 +204,18 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* Video Background - Ensure your video is in public/videos/login-background.mp4 */}
       <div className="fixed inset-0 z-[-2] overflow-hidden">
         <video
           autoPlay
           loop
           muted
-          playsInline // Important for iOS Safari
+          playsInline 
           className="absolute top-1/2 left-1/2 w-auto min-w-full min-h-full max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
         >
           <source src="/videos/login-background.mp4" type="video/mp4" />
           Your browser does not support the video tag. Please place your video at public/videos/login-background.mp4
         </video>
       </div>
-      {/* Overlay for readability */}
       <div className="fixed inset-0 z-[-1] bg-black/50 dark:bg-black/70"></div>
 
       <div className="flex items-center justify-center min-h-[calc(100vh-var(--header-height,8rem))] py-12 px-4">
@@ -214,7 +225,7 @@ export default function LoginPage() {
             <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>Welcome to PromoPulse</CardTitle>
             <CardDescription className={`${mode === 'gaming' ? 'font-rajdhani' : ''}`}>
               Sign in or create an account to start saving!
-              (Dev Username: therealdev0025 / Pwd: 123456789)
+              (Dev Email: virajdatla0204@gmail.com / User: therealdev0025 / Pwd: 123456789)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -268,39 +279,14 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="notifications"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Notification Preferences</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="grid grid-cols-2 gap-4"
-                        >
-                          {[
-                            { value: "none", label: "None", icon: <BellOff className="w-4 h-4 mr-2" /> },
-                            { value: "phone", label: "Phone Only", icon: <Smartphone className="w-4 h-4 mr-2" /> },
-                            { value: "email", label: "Email Only", icon: <Mail className="w-4 h-4 mr-2" /> },
-                            { value: "both", label: "Both", icon: <Bell className="w-4 h-4 mr-2" /> },
-                          ].map(option => (
-                             <FormItem key={option.value} className={`flex items-center space-x-2 p-3 rounded-md border ${field.value === option.value ? (mode === 'gaming' ? 'border-primary bg-primary/10' : 'border-primary bg-primary/10') : 'border-border'}`}>
-                              <FormControl>
-                                <RadioGroupItem value={option.value} />
-                              </FormControl>
-                              <FormLabel className="font-normal flex items-center cursor-pointer">
-                                {option.icon} {option.label}
-                              </FormLabel>
-                            </FormItem>
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                
+                {/* Removed RadioGroup for notifications */}
+                {/* Added DealAlertsToggle */}
+                <div className="flex items-center justify-between space-y-0 pt-2">
+                  <Label htmlFor="deal-alerts-login-page" className="text-base">Deal Alerts</Label>
+                  <DealAlertsToggle />
+                </div>
+                
                 <Button type="submit" className={`w-full ${buttonClass} text-lg py-6`}>
                   <LogIn className="mr-2 h-5 w-5" /> Create Account / Sign In
                 </Button>
@@ -317,11 +303,12 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <div className="mt-6 grid grid-cols-1 gap-4">
+              <div className="mt-6 grid grid-cols-1 gap-4"> {/* Changed to grid-cols-1 */}
                 <Button variant="outline" className={`w-full ${buttonClass}`} onClick={handleGoogleSignIn}>
                   <svg className="mr-2 h-5 w-5" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.85l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
                   Google
                 </Button>
+                {/* Apple Sign In Button Removed */}
               </div>
             </div>
           </CardContent>
