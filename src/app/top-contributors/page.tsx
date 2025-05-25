@@ -29,7 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Users, Award, PlusCircle, Trash2 } from "lucide-react";
+import { Users, Award, PlusCircle, Trash2, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
@@ -144,61 +144,74 @@ export default function TopContributorsPage() {
       <div className="container mx-auto p-4 md:p-8">
         <Card className={cn(mode === 'gaming' ? 'bg-card border-primary' : 'bg-card', 'shadow-xl')}>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <Award className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
                   Top Contributors Leaderboard
                 </CardTitle>
               </div>
-              {isDeveloperMode && (
-                <Dialog open={isAddPointsDialogOpen} onOpenChange={setIsAddPointsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className={cn(mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal')}>
-                      <PlusCircle className="mr-2 h-4 w-4" /> Add PromoPoints
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Add PromoPoints to Contributor</DialogTitle>
-                      <DialogDescription>
-                        Enter the contributor's username and the number of PromoPoints to add. If the username doesn't exist, a new contributor will be created.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={form.handleSubmit(handleAddPromoPointsSubmit)} className="space-y-6 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="contributorUsername">Contributor Username</Label>
-                        <Input
-                          id="contributorUsername"
-                          placeholder="e.g., PromoKing123"
-                          {...form.register("contributorUsername")}
-                        />
-                        {form.formState.errors.contributorUsername && (
-                          <p className="text-sm text-destructive">{form.formState.errors.contributorUsername.message}</p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="pointsToAdd">PromoPoints Gained</Label>
-                        <Input
-                          id="pointsToAdd"
-                          type="number"
-                          placeholder="e.g., 100"
-                          {...form.register("pointsToAdd")}
-                        />
-                        {form.formState.errors.pointsToAdd && (
-                          <p className="text-sm text-destructive">{form.formState.errors.pointsToAdd.message}</p>
-                        )}
-                      </div>
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsAddPointsDialogOpen(false)}>Cancel</Button>
-                        <Button type="submit">
-                          <PlusCircle className="mr-2 h-4 w-4" /> Add Points
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-              )}
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSeiZxyNJ3CDhTkrfe2Yd9Bbi0aIwWqaABmKebu3CKLxh6EOEA/viewform"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal'
+                  )}
+                >
+                  Contribute / Nominate <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+                {isDeveloperMode && (
+                  <Dialog open={isAddPointsDialogOpen} onOpenChange={setIsAddPointsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className={cn(mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal')}>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add PromoPoints
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Add PromoPoints to Contributor</DialogTitle>
+                        <DialogDescription>
+                          Enter the contributor's username and the number of PromoPoints to add. If the username doesn't exist, a new contributor will be created.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={form.handleSubmit(handleAddPromoPointsSubmit)} className="space-y-6 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="contributorUsername">Contributor Username</Label>
+                          <Input
+                            id="contributorUsername"
+                            placeholder="e.g., PromoKing123"
+                            {...form.register("contributorUsername")}
+                          />
+                          {form.formState.errors.contributorUsername && (
+                            <p className="text-sm text-destructive">{form.formState.errors.contributorUsername.message}</p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="pointsToAdd">PromoPoints Gained</Label>
+                          <Input
+                            id="pointsToAdd"
+                            type="number"
+                            placeholder="e.g., 100"
+                            {...form.register("pointsToAdd")}
+                          />
+                          {form.formState.errors.pointsToAdd && (
+                            <p className="text-sm text-destructive">{form.formState.errors.pointsToAdd.message}</p>
+                          )}
+                        </div>
+                        <DialogFooter>
+                          <Button type="button" variant="outline" onClick={() => setIsAddPointsDialogOpen(false)}>Cancel</Button>
+                          <Button type="submit">
+                            <PlusCircle className="mr-2 h-4 w-4" /> Add Points
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
             </div>
             <CardDescription className={cn(mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground', 'pt-2')}>
               Check out our most active promo code contributors! Points are awarded for valuable contributions.
@@ -285,7 +298,5 @@ export default function TopContributorsPage() {
   );
 }
     
-
-      
 
     
