@@ -15,7 +15,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialRivalsCodes: PromoExample[] = [
-  // Example: { id: "rv1", title: "Free Credits", code: "RIVALCRED", reward: "Get 1000 Credits.", expiry: "2025-12-31", platform: "Roblox Codes", game: "Rivals", category: "game_code", description: "Grants 1000 in-game credits.", isUsed: false },
+  { id: "rv1", title: "x1 Community Wrap (NEW)", code: "COMMUNITY14", reward: "x1 Community Wrap (NEW)", expiry: "2025-07-16", platform: "Roblox Codes", game: "Rivals", category: "game_code", description: "Get x1 Community Wrap (NEW).", isUsed: false },
+  { id: "rv2", title: "5B Visits Finisher", code: "5B_VISITS_WHATTTTTT", reward: "5B Visits Finisher", expiry: "2025-07-16", platform: "Roblox Codes", game: "Rivals", category: "game_code", description: "Get the 5B Visits Finisher.", isUsed: false },
+  { id: "rv3", title: "x1 Community Wrap", code: "COMMUNITY13", reward: "x1 Community Wrap", expiry: "2025-07-10", platform: "Roblox Codes", game: "Rivals", category: "game_code", description: "Get x1 Community Wrap.", isUsed: false },
+  { id: "rv4", title: "x1 Community Wrap", code: "COMMUNITY12", reward: "x1 Community Wrap", expiry: "2025-07-16", platform: "Roblox Codes", game: "Rivals", category: "game_code", description: "Get x1 Community Wrap.", isUsed: false },
 ];
 
 export default function RivalsCodesPage() {
@@ -25,8 +28,33 @@ export default function RivalsCodesPage() {
     initialRivalsCodes
       .filter(c => !isCodeExpired(c.expiry))
       .map(c => ({...c, reward: c.reward || c.description, isUsed: c.isUsed || false }))
+      .sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          // Ensure consistent date parsing, especially if dates are mixed format like "yyyy-MM-dd" and "Month Day, Year"
+          const dateA = new Date(a.expiry.includes("-") ? a.expiry : parseDateString(a.expiry));
+          const dateB = new Date(b.expiry.includes("-") ? b.expiry : parseDateString(b.expiry));
+          return dateB.getTime() - dateA.getTime();
+        } catch (e) {
+          console.error("Error parsing date for sorting:", e);
+          return 0; 
+        }
+      })
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
+
+  // Helper for robust date parsing if needed for sorting mixed formats
+  function parseDateString(dateStr: string): Date {
+    // Attempt to parse common formats, this could be expanded
+    let parsedDate = new Date(dateStr); // Handles "yyyy-MM-dd" and some others
+    if (isNaN(parsedDate.getTime())) {
+      // Try "MMMM d, yyyy" or similar; date-fns `parse` is more robust for specific formats
+      // For simplicity here, we'll rely on Date constructor's flexibility or ensure data is consistent
+      // If using date-fns: parsedDate = parse(dateStr, "MMMM d, yyyy", new Date());
+    }
+    return parsedDate;
+  }
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -68,7 +96,18 @@ export default function RivalsCodesPage() {
         return;
     }
 
-    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => new Date(b.expiry).getTime() - new Date(a.expiry).getTime()));
+    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+         try {
+          const dateA = new Date(a.expiry.includes("-") ? a.expiry : parseDateString(a.expiry));
+          const dateB = new Date(b.expiry.includes("-") ? b.expiry : parseDateString(b.expiry));
+          return dateB.getTime() - dateA.getTime();
+        } catch (e) {
+          console.error("Error parsing date for sorting:", e);
+          return 0;
+        }
+      }));
     setIsAddCodeFormOpen(false);
     toast({
       title: "Code Added!",
@@ -93,7 +132,9 @@ export default function RivalsCodesPage() {
               <div className="flex items-center gap-2">
                 <Play className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Rivals Codes
+                  <a href="https://www.roblox.com/games/17625359962/RIVALS" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    Rivals
+                  </a> Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -141,12 +182,12 @@ export default function RivalsCodesPage() {
                         mode === 'gaming' ? 'text-primary' : 'text-primary',
                         item.isUsed ? 'line-through' : ''
                       )}>{item.code}</p>
-                    {item.reward && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
+                    {item.reward && item.reward !== item.description && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
                     <p className={`text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'} italic`}>Details: {item.description}</p>
                     {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry.includes("-") ? item.expiry : parseDateString(item.expiry)), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
