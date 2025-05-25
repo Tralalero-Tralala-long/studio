@@ -4,14 +4,33 @@
 import { useAppContext } from "@/contexts/AppContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Users, Award, PlusCircle } from "lucide-react";
+import { Users, Award, PlusCircle, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
@@ -20,7 +39,7 @@ interface Contributor {
   id: string;
   username: string;
   promoPoints: number;
-  avatarUrl?: string; // Optional: for future use
+  avatarUrl?: string; 
 }
 
 const addPromoPointsFormSchema = z.object({
@@ -30,7 +49,6 @@ const addPromoPointsFormSchema = z.object({
 
 type AddPromoPointsFormValues = z.infer<typeof addPromoPointsFormSchema>;
 
-// Placeholder initial data
 const initialContributors: Contributor[] = [
   { id: "1", username: "PromoKing123", promoPoints: 1500, avatarUrl: "https://placehold.co/40x40.png" },
   { id: "2", username: "DealHunterX", promoPoints: 1250, avatarUrl: "https://placehold.co/40x40.png" },
@@ -44,6 +62,8 @@ export default function TopContributorsPage() {
   const { toast } = useToast();
   const [contributors, setContributors] = useState<Contributor[]>(initialContributors);
   const [isAddPointsDialogOpen, setIsAddPointsDialogOpen] = useState(false);
+  const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
+  const [contributorToRemove, setContributorToRemove] = useState<Contributor | null>(null);
 
   const form = useForm<AddPromoPointsFormValues>({
     resolver: zodResolver(addPromoPointsFormSchema),
@@ -54,9 +74,8 @@ export default function TopContributorsPage() {
   });
 
   useEffect(() => {
-    // Sort contributors by promoPoints whenever the list changes
     setContributors(prev => [...prev].sort((a, b) => b.promoPoints - a.promoPoints));
-  }, []); // Initial sort
+  }, []); 
 
   const handleAddPromoPointsSubmit = (data: AddPromoPointsFormValues) => {
     setContributors(prevContributors => {
@@ -84,12 +103,32 @@ export default function TopContributorsPage() {
         description: `${data.pointsToAdd} PromoPoints added to ${updatedContributors[contributorIndex].username}.`,
       });
       
-      // Sort after updating points
       return updatedContributors.sort((a, b) => b.promoPoints - a.promoPoints);
     });
 
     form.reset();
     setIsAddPointsDialogOpen(false);
+  };
+
+  const openRemoveConfirmDialog = (contributor: Contributor) => {
+    setContributorToRemove(contributor);
+    setIsRemoveConfirmOpen(true);
+  };
+
+  const handleRemoveContributor = () => {
+    if (!contributorToRemove) return;
+
+    setContributors(prevContributors => 
+      prevContributors.filter(c => c.id !== contributorToRemove.id)
+    );
+
+    toast({
+      title: "Contributor Removed",
+      description: `"${contributorToRemove.username}" has been removed from the leaderboard.`,
+    });
+
+    setContributorToRemove(null);
+    setIsRemoveConfirmOpen(false);
   };
 
   return (
@@ -187,8 +226,21 @@ export default function TopContributorsPage() {
                         {contributor.username}
                       </span>
                     </div>
-                    <div className={`text-lg font-bold ${mode === 'gaming' ? 'text-primary font-orbitron' : 'text-primary'}`}>
-                      {contributor.promoPoints.toLocaleString()} PTS
+                    <div className="flex items-center gap-3">
+                      <div className={`text-lg font-bold ${mode === 'gaming' ? 'text-primary font-orbitron' : 'text-primary'}`}>
+                        {contributor.promoPoints.toLocaleString()} PTS
+                      </div>
+                      {isDeveloperMode && (
+                        <Button 
+                          variant="destructive" 
+                          size="icon" 
+                          onClick={() => openRemoveConfirmDialog(contributor)}
+                          className="h-8 w-8"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Remove {contributor.username}</span>
+                        </Button>
+                      )}
                     </div>
                   </Card>
                 ))}
@@ -201,8 +253,29 @@ export default function TopContributorsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {contributorToRemove && (
+        <AlertDialog open={isRemoveConfirmOpen} onOpenChange={setIsRemoveConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently remove{" "}
+                <strong>{contributorToRemove.username}</strong> from the leaderboard.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setContributorToRemove(null)}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleRemoveContributor}>
+                Yes, remove contributor
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </>
   );
 }
-
     
+
+      
