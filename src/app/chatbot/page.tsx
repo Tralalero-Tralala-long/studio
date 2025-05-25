@@ -12,12 +12,16 @@ import { chat, type ChatInput, type ChatOutput } from '@/ai/flows/chatbotFlow';
 import { useAppContext, type PromoExample } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 
-// Import initial data from other pages
+// Import initial data from various pages
 import { initialPromoExamples as homeTabsPromoExamples } from '@/components/home/HomeTabs';
 import { initialBloxFruitsCodes } from '../roblox-codes/blox-fruits/page';
+import { initialBladeBallCodes } from '../roblox-codes/blade-ball/page';
+import { initialArmWrestleSimulatorCodes } from '../roblox-codes/arm-wrestle-simulator/page';
+import { initialRivalsCodes } from '../roblox-codes/rivals/page';
 import { initialFortniteCodes } from '../fortnite-codes/page';
 import { initialFreeFireCodes } from '../free-fire-codes/page';
 import { initialBrawlStarsCodes } from '../brawl-stars-codes/page';
+import { initialCallOfDutyCodes } from '../call-of-duty-codes/page';
 import { initialMyntraCodes } from '../ecommerce-codes/myntra/page';
 import { initialFlipkartCodes } from '../ecommerce-codes/flipkart/page';
 import { initialAmazonCodes } from '../ecommerce-codes/amazon/page';
@@ -36,14 +40,18 @@ interface ChatMessage {
   parts: Array<{ text: string }>;
 }
 
-// Helper function to get initial codes
+// Helper function to get all promo codes
 const getAllPromoCodes = (): PromoExample[] => {
   const allCodes: PromoExample[] = [
     ...homeTabsPromoExamples,
     ...initialBloxFruitsCodes.map(c => ({...c, reward: c.reward || c.description })),
+    ...initialBladeBallCodes.map(c => ({...c, reward: c.reward || c.description })),
+    ...initialArmWrestleSimulatorCodes.map(c => ({...c, reward: c.reward || c.description })),
+    ...initialRivalsCodes.map(c => ({...c, reward: c.reward || c.description })),
     ...initialFortniteCodes,
-    ...initialFreeFireCodes,
+    ...initialFreeFireCodes.map(c => ({...c, reward: c.reward || c.description })),
     ...initialBrawlStarsCodes,
+    ...initialCallOfDutyCodes.map(c => ({...c, reward: c.reward || c.description })),
     ...initialMyntraCodes,
     ...initialFlipkartCodes,
     ...initialAmazonCodes,
@@ -55,9 +63,9 @@ const getAllPromoCodes = (): PromoExample[] => {
     ...initialTopprCodes,
     ...initialUdemyCodes,
   ];
-  // Remove duplicates by code, just in case
-  const uniqueCodes = Array.from(new Map(allCodes.map(code => [code.code, code])).values());
-  return uniqueCodes;
+  // Remove duplicates by code, just in case (though ID should be unique)
+  const uniqueCodes = Array.from(new Map(allCodes.map(code => [code.id, code])).values());
+  return uniqueCodes.map(c => ({...c, reward: c.reward || c.description})); // Ensure reward field
 };
 
 
