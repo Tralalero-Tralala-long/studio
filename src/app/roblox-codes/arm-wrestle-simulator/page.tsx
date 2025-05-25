@@ -15,7 +15,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 export const initialArmWrestleSimulatorCodes: PromoExample[] = [
-  // Example: { id: "aws1", title: "Strength Boost", code: "ARMWORLD", reward: "10 mins Strength Boost", expiry: "2025-12-31", platform: "Roblox Codes", game: "Arm Wrestle Simulator", category: "game_code", description: "Get a 10 minute strength boost.", isUsed: false },
+  { id: "aws_banker", title: "Stat boost (NEW!)", code: "banker", reward: "Stat boost", expiry: "2025-06-22", platform: "Roblox Codes", game: "Arm Wrestle Simulator", category: "game_code", description: "Get a Stat boost (NEW!).", isUsed: false },
+  { id: "aws_sorryoops", title: "Stat boost, new servers only", code: "sorryoops", reward: "Stat boost, new servers only", expiry: "2025-06-16", platform: "Roblox Codes", game: "Arm Wrestle Simulator", category: "game_code", description: "Get a Stat boost (new servers only).", isUsed: false },
+  { id: "aws_timetravel", title: "Stat boost", code: "timetravel", reward: "Stat boost", expiry: "2025-06-18", platform: "Roblox Codes", game: "Arm Wrestle Simulator", category: "game_code", description: "Get a Stat boost.", isUsed: false },
+  { id: "aws_world19", title: "Strength boost", code: "world19", reward: "Strength boost", expiry: "2025-06-10", platform: "Roblox Codes", game: "Arm Wrestle Simulator", category: "game_code", description: "Get a Strength boost.", isUsed: false },
+  { id: "aws_bulk", title: "Stat boost", code: "bulk", reward: "Stat boost", expiry: "2025-06-01", platform: "Roblox Codes", game: "Arm Wrestle Simulator", category: "game_code", description: "Get a Stat boost.", isUsed: false },
 ];
 
 export default function ArmWrestleSimulatorCodesPage() {
@@ -25,6 +29,15 @@ export default function ArmWrestleSimulatorCodesPage() {
     initialArmWrestleSimulatorCodes
       .filter(c => !isCodeExpired(c.expiry))
       .map(c => ({...c, reward: c.reward || c.description, isUsed: c.isUsed || false }))
+      .sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          return new Date(b.expiry).getTime() - new Date(a.expiry).getTime();
+        } catch (e) {
+          return 0;
+        }
+      })
   );
   const [isAddCodeFormOpen, setIsAddCodeFormOpen] = useState(false);
 
@@ -68,7 +81,15 @@ export default function ArmWrestleSimulatorCodesPage() {
         return;
     }
 
-    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => new Date(b.expiry).getTime() - new Date(a.expiry).getTime()));
+    setCodes(prevCodes => [newPromo, ...prevCodes].sort((a, b) => {
+        if (a.expiry === "Not specified") return 1;
+        if (b.expiry === "Not specified") return -1;
+        try {
+          return new Date(b.expiry).getTime() - new Date(a.expiry).getTime();
+        } catch (e) {
+          return 0;
+        }
+      }));
     setIsAddCodeFormOpen(false);
     toast({
       title: "Code Added!",
@@ -93,7 +114,9 @@ export default function ArmWrestleSimulatorCodesPage() {
               <div className="flex items-center gap-2">
                 <Play className={`w-8 h-8 ${mode === 'gaming' ? 'text-primary' : 'text-primary'}`} />
                 <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                  Arm Wrestle Simulator Codes
+                  <a href="https://www.roblox.com/games/13127800756/Arm-Wrestle-Simulator" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    Arm Wrestle Simulator
+                  </a> Codes
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -141,12 +164,12 @@ export default function ArmWrestleSimulatorCodesPage() {
                         mode === 'gaming' ? 'text-primary' : 'text-primary',
                         item.isUsed ? 'line-through' : ''
                       )}>{item.code}</p>
-                    {item.reward && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
+                    {item.reward && item.reward !== item.description && <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>Reward: {item.reward}</p>}
                     <p className={`text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'} italic`}>Details: {item.description}</p>
                     {item.expiry && item.expiry !== "Not specified" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                        <span>Expires: {item.expiry}</span>
+                        <span>Expires: {format(new Date(item.expiry), "MMMM d, yyyy")}</span>
                       </div>
                     )}
                   </div>
