@@ -7,14 +7,67 @@ import { Button } from "@/components/ui/button";
 import { Ticket, Copy, CalendarDays, Heart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
 import { cn, isCodeExpired } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
+// Helper to get all promo codes from initialData sources
+// This needs to be updated if you add more sources of promo codes
+import { initialPromoExamples as homeTabsPromoExamples } from '@/components/home/HomeTabs';
+import { initialBloxFruitsCodes } from '../roblox-codes/blox-fruits/page';
+import { initialBladeBallCodes } from '../roblox-codes/blade-ball/page';
+import { initialArmWrestleSimulatorCodes } from '../roblox-codes/arm-wrestle-simulator/page';
+import { initialRivalsCodes } from '../roblox-codes/rivals/page';
+import { initialFortniteCodes } from '../fortnite-codes/page';
+import { initialFreeFireCodes } from '../free-fire-codes/page';
+import { initialBrawlStarsCodes } from '../brawl-stars-codes/page';
+import { initialCallOfDutyCodes } from '../call-of-duty-codes/page';
+import { initialMyntraCodes } from '../ecommerce-codes/myntra/page';
+import { initialFlipkartCodes } from '../ecommerce-codes/flipkart/page';
+import { initialAmazonCodes } from '../ecommerce-codes/amazon/page';
+import { initialBlinkitCodes } from '../ecommerce-codes/blinkit/page';
+import { initialZomatoCodes } from '../delivery-codes/zomato/page';
+import { initialSwiggyCodes } from '../delivery-codes/swiggy/page';
+import { initialDunzoCodes } from '../delivery-codes/dunzo/page';
+import { initialByjusCodes } from '../education-codes/byjus/page';
+import { initialTopprCodes } from '../education-codes/toppr/page';
+import { initialUdemyCodes } from '../education-codes/udemy/page';
+
+const getAllPromoCodes = (): PromoExample[] => {
+  const allCodes: PromoExample[] = [
+    ...homeTabsPromoExamples,
+    ...initialBloxFruitsCodes,
+    ...initialBladeBallCodes,
+    ...initialArmWrestleSimulatorCodes,
+    ...initialRivalsCodes,
+    ...initialFortniteCodes,
+    ...initialFreeFireCodes,
+    ...initialBrawlStarsCodes,
+    ...initialCallOfDutyCodes,
+    ...initialMyntraCodes,
+    ...initialFlipkartCodes,
+    ...initialAmazonCodes,
+    ...initialBlinkitCodes,
+    ...initialZomatoCodes,
+    ...initialSwiggyCodes,
+    ...initialDunzoCodes,
+    ...initialByjusCodes,
+    ...initialTopprCodes,
+    ...initialUdemyCodes,
+  ];
+  // Create a map to ensure unique IDs, preferring the first encountered version.
+  const uniqueCodesMap = new Map<string, PromoExample>();
+  allCodes.forEach(code => {
+    if (!uniqueCodesMap.has(code.id)) {
+      uniqueCodesMap.set(code.id, code);
+    }
+  });
+  return Array.from(uniqueCodesMap.values());
+};
+
+
 export default function MyCouponsPage() {
-  const { mode, user, isAuthenticated, unsaveCoupon, savedCouponIds } = useAppContext();
+  const { mode, user, isAuthenticated, unsaveCoupon, savedCouponIds, fetchSavedCouponIds } = useAppContext();
   const [savedPromos, setSavedPromos] = useState<PromoExample[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -22,27 +75,35 @@ export default function MyCouponsPage() {
   useEffect(() => {
     if (isAuthenticated && user) {
       setIsLoading(true);
-      const fetchSavedPromos = async () => {
-        try {
-          const q = query(collection(db, "userCoupons", user.uid, "savedCodes"));
-          const querySnapshot = await getDocs(q);
-          const promos = querySnapshot.docs
-            .map(doc => doc.data() as PromoExample)
-            .filter(promo => !isCodeExpired(promo.expiry)); // Filter out expired codes
-          setSavedPromos(promos.sort((a,b) => new Date(b.expiry).getTime() - new Date(a.expiry).getTime()));
-        } catch (error) {
-          console.error("Error fetching saved promos: ", error);
-          toast({ title: "Error", description: "Could not load your saved coupons.", variant: "destructive" });
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchSavedPromos();
+      // Fetch IDs from context (which loads from localStorage)
+      fetchSavedCouponIds(); // Ensure latest IDs are loaded in context
     } else {
       setIsLoading(false);
-      setSavedPromos([]); // Clear if user logs out
+      setSavedPromos([]);
     }
-  }, [isAuthenticated, user, toast, savedCouponIds]); // Re-fetch if savedCouponIds changes (e.g., after unsaving)
+  }, [isAuthenticated, user, fetchSavedCouponIds]);
+
+  useEffect(() => {
+    // Once savedCouponIds are updated in context, filter all known promos
+    if (isAuthenticated && user && savedCouponIds.length >= 0) {
+      const allCodes = getAllPromoCodes();
+      const userSavedPromos = allCodes
+        .filter(promo => savedCouponIds.includes(promo.id) && !isCodeExpired(promo.expiry))
+        .sort((a,b) => {
+            if (a.expiry === "N/A" || a.expiry === "Not specified") return 1;
+            if (b.expiry === "N/A" || b.expiry === "Not specified") return -1;
+            try {
+              return new Date(b.expiry).getTime() - new Date(a.expiry).getTime();
+            } catch { return 0; }
+        });
+      setSavedPromos(userSavedPromos);
+      setIsLoading(false);
+    } else if (!isAuthenticated) {
+        setSavedPromos([]);
+        setIsLoading(false);
+    }
+  }, [isAuthenticated, user, savedCouponIds]);
+
 
   const handleCopyCode = (codeToCopy: string) => {
     navigator.clipboard.writeText(codeToCopy).then(() => {
@@ -62,7 +123,7 @@ export default function MyCouponsPage() {
 
   const handleUnsave = async (promoId: string) => {
     await unsaveCoupon(promoId);
-    // The useEffect above will re-filter and update savedPromos
+    // The useEffect listening to savedCouponIds will update the displayed list
   };
 
   if (!isAuthenticated && !isLoading) {
@@ -127,11 +188,17 @@ export default function MyCouponsPage() {
                     <p className={`text-sm ${mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'}`}>
                       {item.description} ({item.platform} {item.game ? `- ${item.game}` : ''})
                     </p>
-                    {item.expiry && item.expiry !== "Not specified" && (
+                    {item.expiry && item.expiry !== "Not specified" && item.expiry !== "N/A" && (
                       <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
                         <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
                         <span>Expires: {format(new Date(item.expiry.includes("-") ? item.expiry : item.expiry), "MMMM d, yyyy")}</span>
                       </div>
+                    )}
+                     {item.expiry && (item.expiry === "N/A" || item.expiry === "Not specified") && (
+                        <div className={`flex items-center text-xs ${mode === 'gaming' ? 'text-muted-foreground/80 font-rajdhani' : 'text-muted-foreground/80'}`}>
+                           <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+                           <span>Expires: Ongoing</span>
+                        </div>
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-3 self-end sm:self-center w-full sm:w-auto">
@@ -172,3 +239,4 @@ export default function MyCouponsPage() {
     </div>
   );
 }
+

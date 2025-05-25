@@ -11,37 +11,32 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-import { auth } from '@/lib/firebase/config'; // Added Firebase auth import
 
 export default function ProfilePage() {
-  const { mode, username, email, signOut, isAuthenticated } = useAppContext(); // Added isAuthenticated
+  const { mode, username, email, signOut, isAuthenticated, user } = useAppContext();
   const router = useRouter();
   const { toast } = useToast();
   
-  // Local state for inputs, primarily for display. Direct editing not fully supported without backend.
   const [currentUsername, setCurrentUsername] = useState(username || "");
   const [currentEmail, setCurrentEmail] = useState(email || "");
 
   useEffect(() => {
-    // If not authenticated, redirect to login. This is an extra layer of protection.
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !user) { // Check both for stricter redirect
       router.push('/login');
       return;
     }
     setCurrentUsername(username || "User");
     setCurrentEmail(email || "user@example.com");
-  }, [username, email, isAuthenticated, router]);
+  }, [username, email, isAuthenticated, user, router]);
 
 
   const handleSignOutClick = async () => {
     await signOut();
-    // The AppContext's onAuthStateChanged listener should handle redirecting
-    // or clearing user data. If direct redirect is needed after sign out:
-    router.push('/login'); 
+    // AppContext signOut should handle clearing state and localStorage.
+    // Router push is also in AppContext signOut.
   };
 
-  // If not authenticated and useEffect hasn't redirected yet, show loading or nothing
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !user) {
       return (
         <div className="container mx-auto p-4 md:p-8 text-center">
           <p>Loading profile or redirecting...</p>
@@ -63,8 +58,7 @@ export default function ProfilePage() {
         <CardContent className="space-y-6">
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              {/* Placeholder for user's actual avatar if available from Firebase (user.photoURL) */}
-              <AvatarImage src={auth.currentUser?.photoURL || "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="person avatar"/>
+              <AvatarImage src={"https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="person avatar"/>
               <AvatarFallback>{currentUsername ? currentUsername.substring(0, 2).toUpperCase() : "UP"}</AvatarFallback>
             </Avatar>
             <div>
@@ -78,7 +72,6 @@ export default function ProfilePage() {
             <Input 
               id="username" 
               value={currentUsername} 
-              // onChange={(e) => setCurrentUsername(e.target.value)} // Not for direct update without backend
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
               readOnly
             />
@@ -89,7 +82,6 @@ export default function ProfilePage() {
               id="email" 
               type="email" 
               value={currentEmail} 
-              // onChange={(e) => setCurrentEmail(e.target.value)} // Not for direct update without backend
               className={`${mode === 'gaming' ? 'bg-input border-border' : ''}`} 
               readOnly
             />
