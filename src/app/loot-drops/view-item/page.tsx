@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Eye } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 export default function ViewLootItemPage() {
   const { mode } = useAppContext();
@@ -42,28 +41,15 @@ export default function ViewLootItemPage() {
             mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground',
             "pt-2"
           )}>
-            Details of the featured loot item.
+            Details of our upcoming loot items will appear here.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 flex flex-col items-center">
           <div className="w-full max-w-sm p-6 border border-dashed rounded-lg text-center text-muted-foreground">
-            <Image 
-              src="https://placehold.co/300x200.png"
-              alt="Loot Item Image"
-              data-ai-hint="fantasy weapon sword"
-              width={300}
-              height={200}
-              className="rounded-md mx-auto mb-4 shadow-md"
-            />
-            <h3 className={cn(
-              "text-xl font-semibold mb-2",
-              mode === 'gaming' ? 'text-accent-foreground font-rajdhani' : 'text-card-foreground'
-            )}>
-              Legendary Sword Skin
-            </h3>
-            <p className="text-sm">A rare skin for your sword, imbued with ancient power.</p>
-            <p className="text-sm mt-1">Type: Cosmetic Skin</p>
-            <p className="text-sm mt-1">Rarity: Legendary</p>
+            <p className="text-lg font-semibold">Item Details Coming Soon!</p>
+            <p className="text-sm mt-2">
+              We're preparing detailed views of our exciting upcoming loot drops. Stay tuned!
+            </p>
           </div>
         </CardContent>
       </Card>

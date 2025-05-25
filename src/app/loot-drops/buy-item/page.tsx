@@ -22,7 +22,7 @@ export default function BuyLootItemPage() {
             <div className="flex items-center gap-2">
               <ShoppingCart className={`w-8 h-8 ${mode === 'gaming' ? 'text-accent' : 'text-primary'}`} />
               <CardTitle className={`text-3xl font-bold ${mode === 'gaming' ? 'font-orbitron' : ''}`}>
-                Confirm Loot Purchase
+                Buy Loot Items
               </CardTitle>
             </div>
             <Link href="/loot-drops" passHref>
@@ -41,21 +41,15 @@ export default function BuyLootItemPage() {
             mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground',
             "pt-2"
           )}>
-            Review your item and confirm your purchase.
+            Exciting items will be available for purchase soon!
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="p-6 border border-dashed rounded-lg text-center text-muted-foreground">
-            <p className="text-lg">Item: Legendary Sword Skin</p>
-            <p className="text-lg">Price: 500 Gems</p>
-            <Button 
-              className={cn(
-                "mt-6",
-                mode === 'gaming' ? 'button-glow-gaming' : 'button-glow-normal'
-              )}
-            >
-              Confirm Purchase
-            </Button>
+            <p className="text-lg font-semibold">Items Coming Soon!</p>
+            <p className="text-sm mt-2">
+              We're working hard to bring you amazing loot. Check back later for items you can purchase.
+            </p>
           </div>
         </CardContent>
       </Card>

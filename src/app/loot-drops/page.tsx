@@ -7,16 +7,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Box, ShoppingCart, Eye } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast"; // Import useToast
 
 interface LootDropItemProps {
   title: string;
   mode: 'shopping' | 'gaming';
-  onBuyClick: () => void;
-  onViewClick: () => void;
 }
 
-function LootDropItem({ title, mode, onBuyClick, onViewClick }: LootDropItemProps) {
+function LootDropItem({ title, mode }: LootDropItemProps) {
   return (
     <Card className={cn(
       "w-full p-6 shadow-lg",
@@ -24,35 +21,37 @@ function LootDropItem({ title, mode, onBuyClick, onViewClick }: LootDropItemProp
     )}>
       <CardHeader className="p-0 pb-4">
         <CardTitle className={cn(
-          "text-xl text-center", 
+          "text-xl text-center",
           mode === 'gaming' ? 'font-rajdhani text-accent-foreground' : 'text-card-foreground'
         )}>
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0 flex flex-col sm:flex-row justify-around items-center gap-4">
-        <Button
-          variant={mode === 'gaming' ? 'outline' : 'default'}
-          className={cn(
-            "w-full",
-            mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
-          )}
-          onClick={onBuyClick}
-        >
-          <ShoppingCart className="mr-2 h-5 w-5" />
-          Buy Item
-        </Button>
-        <Button
-          variant="outline"
-          className={cn(
-            "w-full",
-            mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
-          )}
-          onClick={onViewClick}
-        >
-          <Eye className="mr-2 h-5 w-5" />
-          View Details
-        </Button>
+        <Link href="/loot-drops/buy-item" className="w-full">
+          <Button
+            variant={mode === 'gaming' ? 'outline' : 'default'}
+            className={cn(
+              "w-full",
+              mode === 'gaming' ? 'button-glow-gaming border-accent hover:border-primary' : 'button-glow-normal'
+            )}
+          >
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            Buy Item
+          </Button>
+        </Link>
+        <Link href="/loot-drops/view-item" className="w-full">
+          <Button
+            variant="outline"
+            className={cn(
+              "w-full",
+              mode === 'gaming' ? 'button-glow-gaming hover:border-accent' : 'button-glow-normal hover:border-primary'
+            )}
+          >
+            <Eye className="mr-2 h-5 w-5" />
+            View Details
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );
@@ -60,14 +59,6 @@ function LootDropItem({ title, mode, onBuyClick, onViewClick }: LootDropItemProp
 
 export default function LootDropsPage() {
   const { mode } = useAppContext();
-  const { toast } = useToast(); // Initialize toast
-
-  const handleComingSoon = () => {
-    toast({
-      title: "Coming Soon!",
-      description: "This feature is under development.",
-    });
-  };
 
   const lootDrops = [
     { id: "1", title: "Roblox Loot Drops" },
@@ -105,23 +96,21 @@ export default function LootDropsPage() {
             mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground',
             "pt-2"
           )}>
-            Check out the featured loot drops below! (More features coming soon)
+            Check out the featured loot drops below! More items coming soon.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 flex flex-col items-center">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {lootDrops.map(drop => (
-              <LootDropItem 
-                key={drop.id} 
-                title={drop.title} 
+              <LootDropItem
+                key={drop.id}
+                title={drop.title}
                 mode={mode}
-                onBuyClick={handleComingSoon}
-                onViewClick={handleComingSoon}
               />
             ))}
           </div>
           <p className={cn(
-            "text-sm text-center mt-8", 
+            "text-sm text-center mt-8",
             mode === 'gaming' ? 'text-muted-foreground font-rajdhani' : 'text-muted-foreground'
           )}>
             More loot drops coming soon. Check back daily!
